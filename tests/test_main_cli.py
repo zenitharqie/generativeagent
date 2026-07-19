@@ -34,9 +34,21 @@ def test_main_help_runs() -> None:
     assert result.stderr == ""
 
 
-def test_validate_config_is_an_explicit_placeholder() -> None:
+def test_validate_config_loads_current_configuration() -> None:
     result = run_cli("validate-config")
 
     assert result.returncode == 0
-    assert "not implemented yet" in result.stdout
+    assert "Configuration valid" in result.stdout
+    assert "4 agents" in result.stdout
+    assert "7 natural blocks" in result.stdout
+    assert "5 target events" in result.stdout
     assert result.stderr == ""
+
+
+def test_validate_config_reports_missing_directory() -> None:
+    result = run_cli("validate-config", "--config-dir", "does-not-exist")
+
+    assert result.returncode == 1
+    assert result.stdout == ""
+    assert "Configuration validation failed" in result.stderr
+    assert "missing configuration file" in result.stderr
