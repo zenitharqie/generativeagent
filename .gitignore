@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Environment
+.env
+
+# Logs and generated outputs
+logs/
+data/generated/
+outputs/
+evaluation_outputs/
+analysis_outputs/
+
+# IDE
+.vscode/
+.idea/
