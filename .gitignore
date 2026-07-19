@@ -5,14 +5,24 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
 .venv/
 venv/
+build/
+dist/
+*.egg-info/
 
 # Environment
 .env
+.env.*
+!.env.example
 
 # Logs and generated outputs
-logs/
+logs/*
+!logs/.gitkeep
 data/generated/
 outputs/
 evaluation_outputs/
