@@ -1,0 +1,22 @@
+{
+  "simulation_days": 6,
+  "natural_blocks_total": 7,
+  "target_events_total": 5,
+  "turns_per_agent_per_natural_block": 3,
+  "total_turns_per_natural_block": 12,
+  "teacher_opens_natural_block": true,
+  "top_k": 5,
+  "repetitions": 3,
+  "primary_mra_step_type": "target_event",
+  "primary_bcr_step_type": "target_event",
+  "natural_block_primary_evaluation": false,
+  "target_event_primary_evaluation": true,
+  "dummy_mode_default": true,
+  "allow_real_llm_default": false,
+  "allow_full_experiment_default": false,
+  "response_limits": {
+    "natural_interaction_sentences": 2,
+    "target_event_max_paragraphs": 1,
+    "reflection_sentences": 1
+  }
+}

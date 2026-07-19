@@ -1,0 +1,108 @@
+{
+  "evaluation_step_type": "target_event",
+  "status": "initial_configurable",
+  "freeze_required_before_final_experiment": true,
+  "notes": "These initial category sets apply only to target-event MRA. They require methodological review and evaluation freeze before the final experiment.",
+  "targets": [
+    {
+      "event_id": "event_01",
+      "agent_id": "teacher",
+      "expected_categories": ["teacher_guidance", "classroom_norms"]
+    },
+    {
+      "event_id": "event_01",
+      "agent_id": "active_student",
+      "expected_categories": ["exam_concern", "question_asking", "study_strategy"]
+    },
+    {
+      "event_id": "event_01",
+      "agent_id": "quiet_student",
+      "expected_categories": ["exam_concern", "quiet_style", "study_strategy"]
+    },
+    {
+      "event_id": "event_01",
+      "agent_id": "academic_student",
+      "expected_categories": ["exam_concern", "academic_focus", "study_strategy"]
+    },
+    {
+      "event_id": "event_02",
+      "agent_id": "teacher",
+      "expected_categories": ["teacher_guidance", "classroom_norms"]
+    },
+    {
+      "event_id": "event_02",
+      "agent_id": "active_student",
+      "expected_categories": ["classroom_norms", "question_asking", "social_learning"]
+    },
+    {
+      "event_id": "event_02",
+      "agent_id": "quiet_student",
+      "expected_categories": ["classroom_norms", "quiet_style"]
+    },
+    {
+      "event_id": "event_02",
+      "agent_id": "academic_student",
+      "expected_categories": ["classroom_norms", "academic_focus"]
+    },
+    {
+      "event_id": "event_03",
+      "agent_id": "teacher",
+      "expected_categories": ["teacher_guidance", "classroom_norms", "social_learning"]
+    },
+    {
+      "event_id": "event_03",
+      "agent_id": "active_student",
+      "expected_categories": ["social_learning", "question_asking"]
+    },
+    {
+      "event_id": "event_03",
+      "agent_id": "quiet_student",
+      "expected_categories": ["quiet_style", "social_learning", "classroom_norms"]
+    },
+    {
+      "event_id": "event_03",
+      "agent_id": "academic_student",
+      "expected_categories": ["academic_focus", "study_strategy", "social_learning"]
+    },
+    {
+      "event_id": "event_04",
+      "agent_id": "teacher",
+      "expected_categories": ["teacher_guidance", "classroom_norms"]
+    },
+    {
+      "event_id": "event_04",
+      "agent_id": "active_student",
+      "expected_categories": ["social_learning", "classroom_norms"]
+    },
+    {
+      "event_id": "event_04",
+      "agent_id": "quiet_student",
+      "expected_categories": ["quiet_style", "classroom_norms", "social_learning"]
+    },
+    {
+      "event_id": "event_04",
+      "agent_id": "academic_student",
+      "expected_categories": ["academic_focus", "classroom_norms", "social_learning"]
+    },
+    {
+      "event_id": "event_05",
+      "agent_id": "teacher",
+      "expected_categories": ["teacher_guidance", "classroom_norms"]
+    },
+    {
+      "event_id": "event_05",
+      "agent_id": "active_student",
+      "expected_categories": ["exam_concern", "study_strategy", "social_learning"]
+    },
+    {
+      "event_id": "event_05",
+      "agent_id": "quiet_student",
+      "expected_categories": ["exam_concern", "quiet_style", "study_strategy"]
+    },
+    {
+      "event_id": "event_05",
+      "agent_id": "academic_student",
+      "expected_categories": ["exam_concern", "academic_focus", "study_strategy"]
+    }
+  ]
+}
