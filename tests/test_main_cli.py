@@ -38,10 +38,19 @@ def test_validate_config_loads_current_configuration() -> None:
     result = run_cli("validate-config")
 
     assert result.returncode == 0
-    assert "Configuration valid" in result.stdout
-    assert "4 agents" in result.stdout
-    assert "7 natural blocks" in result.stdout
-    assert "5 target events" in result.stdout
+    assert result.stdout.splitlines() == [
+        "Configuration valid.",
+        "Simulation days: 6",
+        "Agents: 4",
+        "Natural blocks: 7",
+        "Target events: 5",
+        "Retrieval configs: 4",
+        "Top-K: 5",
+        "Repetitions: 3",
+        "Primary evaluation: target_event only",
+        "Natural block primary evaluation: disabled",
+        "Target event primary evaluation: enabled",
+    ]
     assert result.stderr == ""
 
 

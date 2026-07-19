@@ -11,6 +11,7 @@ from src.config_loader import (
     DEFAULT_CONFIG_DIRECTORY,
     ConfigLoadError,
     ConfigValidationError,
+    ExperimentConfig,
     load_experiment_config,
 )
 
@@ -34,8 +35,38 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def format_validation_summary(config: ExperimentConfig) -> str:
+    """Format validated architecture constants for supervisor review."""
+    natural_blocks = sum(
+        step.step_type == "natural_interaction_block" for step in config.steps
+    )
+    settings = config.settings
+    primary_evaluation = settings.primary_mra_step_type
+    natural_evaluation = (
+        "enabled" if settings.natural_block_primary_evaluation else "disabled"
+    )
+    target_evaluation = (
+        "enabled" if settings.target_event_primary_evaluation else "disabled"
+    )
+    return "\n".join(
+        (
+            "Configuration valid.",
+            f"Simulation days: {settings.simulation_days}",
+            f"Agents: {len(config.agents)}",
+            f"Natural blocks: {natural_blocks}",
+            f"Target events: {len(config.target_events)}",
+            f"Retrieval configs: {len(config.retrieval_configs)}",
+            f"Top-K: {settings.top_k}",
+            f"Repetitions: {settings.repetitions}",
+            f"Primary evaluation: {primary_evaluation} only",
+            f"Natural block primary evaluation: {natural_evaluation}",
+            f"Target event primary evaluation: {target_evaluation}",
+        )
+    )
+
+
 def main(argv: Sequence[str] | None = None) -> int:
-    """Run the placeholder CLI and return a process exit code."""
+    """Run the CLI and return a process exit code."""
     parser = build_parser()
     args = parser.parse_args(argv)
 
@@ -45,16 +76,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         except (ConfigLoadError, ConfigValidationError) as exc:
             print(f"Configuration validation failed: {exc}", file=sys.stderr)
             return 1
-        natural_blocks = sum(
-            step.step_type == "natural_interaction_block" for step in config.steps
-        )
-        print(
-            "Configuration valid: "
-            f"{len(config.agents)} agents, "
-            f"{natural_blocks} natural blocks, "
-            f"{len(config.target_events)} target events, "
-            f"{len(config.retrieval_configs)} retrieval configurations."
-        )
+        print(format_validation_summary(config))
         return 0
 
     print("Classroom generative-agents repository scaffold is ready.")
