@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Mapping
 
@@ -9,7 +10,13 @@ from src.domain.agents import FIXED_AGENT_IDS
 
 
 MEMORY_TYPES = frozenset({"seed_persona", "observation", "plan", "action", "reflection"})
-SOURCE_STEP_TYPES = frozenset({"natural_interaction_block", "target_event"})
+AGENT_INITIALIZATION_SOURCE_STEP_TYPE = "agent_initialization"
+SIMULATION_SOURCE_STEP_TYPES = frozenset(
+    {"natural_interaction_block", "target_event"}
+)
+SOURCE_STEP_TYPES = SIMULATION_SOURCE_STEP_TYPES | {
+    AGENT_INITIALIZATION_SOURCE_STEP_TYPE
+}
 
 
 @dataclass(frozen=True)
@@ -45,6 +52,13 @@ class MemoryEntry:
             raise ValueError(f"unsupported memory_type: {self.memory_type!r}")
         if self.source_step_type not in SOURCE_STEP_TYPES:
             raise ValueError(f"unsupported source_step_type: {self.source_step_type!r}")
+        if (
+            self.source_step_type == AGENT_INITIALIZATION_SOURCE_STEP_TYPE
+            and self.memory_type != "seed_persona"
+        ):
+            raise ValueError(
+                "agent_initialization source is valid only for seed_persona memories"
+            )
         if isinstance(self.importance, bool) or not isinstance(
             self.importance, (int, float)
         ):
@@ -56,6 +70,8 @@ class MemoryEntry:
             for value in (self.created_at, self.last_accessed_at)
         ):
             raise ValueError("memory timestamps must be non-negative")
+        if self.last_accessed_at < self.created_at:
+            raise ValueError("last_accessed_at must not precede created_at")
         if self.embedding is not None and (
             not isinstance(self.embedding, tuple)
             or any(
@@ -68,3 +84,6 @@ class MemoryEntry:
             not isinstance(self.run_id, str) or not self.run_id.strip()
         ):
             raise ValueError("run_id must be a non-empty string or None")
+        if not isinstance(self.metadata, Mapping):
+            raise ValueError("metadata must be a mapping")
+        object.__setattr__(self, "metadata", deepcopy(dict(self.metadata)))
