@@ -1,7 +1,8 @@
 # Codex Phase Prompts — Final Clean Repository Implementation
 
 **Project:** Classroom-Based Generative Agents for Retrieval Weighting Experiment  
-**Target repository:** `classroom-generative-agents-clean` or `classroom-memory-retrieval-agents`  
+**Target repository:** `classroom-generative-agents-clean` 
+ 
 **Research focus:** Pengaruh konfigurasi bobot retrieval memori terhadap konsistensi perilaku agen generatif berbasis LLM  
 **Primary documents:**
 
