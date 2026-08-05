@@ -1,1 +1,67 @@
-"""LLM service package placeholder."""
+"""Provider-neutral Phase 06 LLM contracts and deterministic development doubles."""
+
+from src.llm.base import (
+    EmbeddingError,
+    LLMCallType,
+    LLMClient,
+    LLMClientError,
+    LLMContext,
+    LLMError,
+    LLMRequest,
+    LLMRequestError,
+    TextEmbeddingProvider,
+    UnsupportedLLMCallTypeError,
+)
+from src.llm.dummy_client import (
+    DEFAULT_DUMMY_RESPONSES,
+    DummyEmbeddingProvider,
+    DummyLLMClient,
+    DummyLLMError,
+    LLMInvocation,
+)
+from src.llm.output_parsers import (
+    ActionOutput,
+    EmptyLLMOutputError,
+    ImportanceOutput,
+    LLMOutputError,
+    LLMOutputParseError,
+    LLMOutputValidationError,
+    PlaceholderLLMOutputError,
+    PlanOutput,
+    ReflectionOutput,
+    parse_action_output,
+    parse_importance_output,
+    parse_plan_output,
+    parse_reflection_output,
+)
+
+__all__ = [
+    "ActionOutput",
+    "DEFAULT_DUMMY_RESPONSES",
+    "DummyEmbeddingProvider",
+    "DummyLLMClient",
+    "DummyLLMError",
+    "EmbeddingError",
+    "EmptyLLMOutputError",
+    "ImportanceOutput",
+    "LLMCallType",
+    "LLMClient",
+    "LLMClientError",
+    "LLMContext",
+    "LLMError",
+    "LLMInvocation",
+    "LLMOutputError",
+    "LLMOutputParseError",
+    "LLMOutputValidationError",
+    "LLMRequest",
+    "LLMRequestError",
+    "PlanOutput",
+    "PlaceholderLLMOutputError",
+    "ReflectionOutput",
+    "TextEmbeddingProvider",
+    "UnsupportedLLMCallTypeError",
+    "parse_action_output",
+    "parse_importance_output",
+    "parse_plan_output",
+    "parse_reflection_output",
+]
