@@ -22,6 +22,7 @@ from src.logging_system.schemas import (
     ErrorLogRecord,
     LoggingError,
     MemoryLogRecord,
+    NaturalBlockSummaryRecord,
     ReflectionLogRecord,
     RetrievalCandidateRecord,
     RetrievalLogRecord,
@@ -29,6 +30,7 @@ from src.logging_system.schemas import (
     RunLogMetadata,
     SCHEMA_VERSION,
     StepLogMetadata,
+    TargetEventSummaryRecord,
     TurnLogMetadata,
 )
 
@@ -54,6 +56,7 @@ _STEP_FIELDS = {
 }
 _TURN_FIELDS = {"turn_id", "turn_index", "agent_id"}
 _SHARED_FIELDS = _RUN_FIELDS | _STEP_FIELDS | _TURN_FIELDS | {"schema_version"}
+_STEP_SHARED_FIELDS = _RUN_FIELDS | _STEP_FIELDS | {"schema_version"}
 _CANDIDATE_FIELDS = {
     "memory_id",
     "category",
@@ -74,6 +77,8 @@ _CANONICAL_RECORD_TYPES: dict[str, type[object]] = {
     "reflection_logs.jsonl": ReflectionLogRecord,
     "api_usage_logs.jsonl": APIUsageLogRecord,
     "errors.jsonl": ErrorLogRecord,
+    "event_summaries.jsonl": TargetEventSummaryRecord,
+    "natural_block_summaries.jsonl": NaturalBlockSummaryRecord,
 }
 _CANONICAL_JSONL_FILENAMES = frozenset(
     {
@@ -126,12 +131,34 @@ _CANONICAL_FIELDS = {
     },
     "errors.jsonl": _SHARED_FIELDS
     | {"error_type", "message", "recoverable", "retry_count"},
+    "event_summaries.jsonl": _STEP_SHARED_FIELDS
+    | {
+        "ordered_main_turn_ids",
+        "participant_ids",
+        "per_agent_main_turn_counts",
+        "completed_main_turn_count",
+        "reflection_count",
+        "final_logical_timestamp",
+        "ordered_responding_agent_ids",
+        "response_count",
+    },
+    "natural_block_summaries.jsonl": _STEP_SHARED_FIELDS
+    | {
+        "ordered_main_turn_ids",
+        "participant_ids",
+        "per_agent_main_turn_counts",
+        "completed_main_turn_count",
+        "reflection_count",
+        "final_logical_timestamp",
+    },
 }
 _CANONICAL_DUPLICATE_FIELDS: dict[str, tuple[str, ...]] = {
     "retrieval_logs.jsonl": ("experiment_id", "run_id", "turn_id"),
     "behavior_logs.jsonl": ("experiment_id", "run_id", "turn_id"),
     "memory_logs.jsonl": ("experiment_id", "run_id", "memory_id"),
     "reflection_logs.jsonl": ("experiment_id", "run_id", "turn_id"),
+    "event_summaries.jsonl": ("experiment_id", "run_id", "step_id"),
+    "natural_block_summaries.jsonl": ("experiment_id", "run_id", "step_id"),
 }
 
 __all__ = [
@@ -421,6 +448,50 @@ def _validate_canonical_mapping(path: Path, value: Mapping[str, Any]) -> None:
                 status=value["status"],
                 error_type=value["error_type"],
             )
+        elif filename == "event_summaries.jsonl":
+            for field_name in (
+                "ordered_main_turn_ids",
+                "participant_ids",
+                "ordered_responding_agent_ids",
+            ):
+                if not isinstance(value[field_name], list):
+                    raise JsonlValidationError(f"{field_name} must be an array")
+            counts = value["per_agent_main_turn_counts"]
+            if not isinstance(counts, Mapping):
+                raise JsonlValidationError(
+                    "per_agent_main_turn_counts must be an object"
+                )
+            rebuilt = TargetEventSummaryRecord(
+                step=_step_metadata_from_mapping(value, run),
+                ordered_main_turn_ids=tuple(value["ordered_main_turn_ids"]),
+                participant_ids=tuple(value["participant_ids"]),
+                per_agent_main_turn_counts=counts,
+                completed_main_turn_count=value["completed_main_turn_count"],
+                reflection_count=value["reflection_count"],
+                final_logical_timestamp=value["final_logical_timestamp"],
+                ordered_responding_agent_ids=tuple(
+                    value["ordered_responding_agent_ids"]
+                ),
+                response_count=value["response_count"],
+            )
+        elif filename == "natural_block_summaries.jsonl":
+            for field_name in ("ordered_main_turn_ids", "participant_ids"):
+                if not isinstance(value[field_name], list):
+                    raise JsonlValidationError(f"{field_name} must be an array")
+            counts = value["per_agent_main_turn_counts"]
+            if not isinstance(counts, Mapping):
+                raise JsonlValidationError(
+                    "per_agent_main_turn_counts must be an object"
+                )
+            rebuilt = NaturalBlockSummaryRecord(
+                step=_step_metadata_from_mapping(value, run),
+                ordered_main_turn_ids=tuple(value["ordered_main_turn_ids"]),
+                participant_ids=tuple(value["participant_ids"]),
+                per_agent_main_turn_counts=counts,
+                completed_main_turn_count=value["completed_main_turn_count"],
+                reflection_count=value["reflection_count"],
+                final_logical_timestamp=value["final_logical_timestamp"],
+            )
         else:
             if value["step_id"] is None:
                 context_fields = _STEP_FIELDS | _TURN_FIELDS
@@ -460,10 +531,13 @@ def _validate_canonical_mapping(path: Path, value: Mapping[str, Any]) -> None:
 
 def _validate_record_type_for_path(path: Path, record: object) -> None:
     if path.name in _CONTROLLER_RESERVED_FILENAMES:
-        raise JsonlValidationError(
-            f"{path.name} is reserved until the simulation controller defines "
-            "its persisted record schema"
-        )
+        expected = _CANONICAL_RECORD_TYPES[path.name]
+        if not isinstance(record, expected):
+            raise JsonlValidationError(
+                f"{path.name} is a simulation controller stream and requires "
+                f"{expected.__name__}, got {type(record).__name__}"
+            )
+        return
     expected = _CANONICAL_RECORD_TYPES.get(path.name)
     if expected is not None and not isinstance(record, expected):
         raise JsonlValidationError(
@@ -716,6 +790,65 @@ def _cross_validate_seed_memory_with_snapshot(
             )
 
 
+def _cross_validate_step_summary_with_snapshot(
+    summary_path: Path,
+    summary: NaturalBlockSummaryRecord | TargetEventSummaryRecord,
+) -> None:
+    """Keep summary participation/order owned by the snapshotted timeline."""
+    from src.config_loader import (
+        ConfigLoadError,
+        ConfigValidationError,
+        load_experiment_config,
+    )
+
+    snapshot = summary_path.parent / "config_snapshot"
+    sibling_summary = summary_path.parent / "run_summary.json"
+    if not snapshot.exists() and not sibling_summary.exists():
+        # Low-level standalone logger tests may omit a run layout. Every
+        # published run has both artifacts and therefore takes the strict path.
+        return
+    try:
+        config = load_experiment_config(snapshot)
+    except (ConfigLoadError, ConfigValidationError) as exc:
+        raise JsonlValidationError(
+            f"cannot validate step summary against config_snapshot/"
+            f"simulation_steps.json: {exc}"
+        ) from exc
+
+    configured_steps = {step.step_id: step for step in config.steps}
+    configured = configured_steps.get(summary.step.step_id)
+    if configured is None:
+        raise JsonlValidationError(
+            f"summary step_id {summary.step.step_id!r} is absent from "
+            "config_snapshot/simulation_steps.json"
+        )
+    expected_event_id = getattr(configured, "event_id", None)
+    if (
+        configured.step_type != summary.step.step_type
+        or configured.is_target_event != summary.step.is_target_event
+        or configured.evaluation_enabled != summary.step.evaluation_enabled
+        or configured.day != summary.step.day
+        or configured.period != summary.step.period
+        or expected_event_id != summary.step.event_id
+    ):
+        raise JsonlValidationError(
+            "step summary metadata does not match "
+            "config_snapshot/simulation_steps.json"
+        )
+    if summary.participant_ids != configured.participants:
+        raise JsonlValidationError(
+            "step summary participant_ids do not match configured participant order"
+        )
+    if (
+        isinstance(summary, TargetEventSummaryRecord)
+        and summary.ordered_responding_agent_ids != configured.participants
+    ):
+        raise JsonlValidationError(
+            "target summary responding-agent order does not match configured "
+            "participant order"
+        )
+
+
 def _require_matching_turn_metadata(
     persisted: Mapping[str, Any],
     current: TurnLogMetadata,
@@ -843,6 +976,14 @@ class JsonlLogger:
         ):
             _cross_validate_seed_memory_with_snapshot(self._path, record)
             _cross_validate_memory_with_persisted_retrievals(self._path, record)
+        elif (
+            self._path.name in _CONTROLLER_RESERVED_FILENAMES
+            and isinstance(
+                record,
+                (NaturalBlockSummaryRecord, TargetEventSummaryRecord),
+            )
+        ):
+            _cross_validate_step_summary_with_snapshot(self._path, record)
         existing_records = _read_existing_records(self._path)
         if duplicate_strategies:
             for existing_record in existing_records:

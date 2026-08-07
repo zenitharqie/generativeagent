@@ -10,6 +10,8 @@ from src.cognition.pipeline import (
     CognitiveResultValidationError,
     CognitiveStateError,
     CognitiveTurnInput,
+    PostStepReflectionInput,
+    PostStepReflectionResult,
 )
 from src.cognition.planner import Planner
 from src.cognition.query_builder import (
@@ -28,6 +30,8 @@ __all__ = [
     "CognitiveResultValidationError",
     "CognitiveStateError",
     "CognitiveTurnInput",
+    "PostStepReflectionInput",
+    "PostStepReflectionResult",
     "Perception",
     "PerceptionError",
     "Planner",

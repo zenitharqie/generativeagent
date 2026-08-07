@@ -124,6 +124,26 @@ def _normalize_string_tuple(value: object, field_name: str) -> tuple[str, ...]:
     return normalized
 
 
+def _normalize_agent_count_mapping(
+    value: object,
+    participant_ids: tuple[str, ...],
+    field_name: str,
+) -> Mapping[str, int]:
+    if not isinstance(value, Mapping):
+        raise LogSchemaError(f"{field_name} must be a mapping")
+    if set(value) != set(participant_ids):
+        raise LogSchemaError(
+            f"{field_name} keys must exactly match participant_ids"
+        )
+    normalized: dict[str, int] = {}
+    for agent_id in participant_ids:
+        normalized[agent_id] = _require_non_negative_int(
+            value[agent_id],
+            f"{field_name}[{agent_id!r}]",
+        )
+    return MappingProxyType(normalized)
+
+
 def _freeze_json(value: object, field_name: str) -> object:
     """Validate JSON data while converting mutable containers to immutable ones."""
     if value is None or isinstance(value, (str, bool)):
@@ -286,6 +306,239 @@ class TurnLogMetadata:
                 "turn_id": self.turn_id,
                 "turn_index": self.turn_index,
                 "agent_id": self.agent_id,
+            }
+        )
+        return data
+
+
+@dataclass(frozen=True)
+class NaturalBlockSummaryRecord:
+    """Structural completion audit for one natural interaction block."""
+
+    step: StepLogMetadata
+    ordered_main_turn_ids: tuple[str, ...]
+    participant_ids: tuple[str, ...]
+    per_agent_main_turn_counts: Mapping[str, int]
+    completed_main_turn_count: int
+    reflection_count: int
+    final_logical_timestamp: int
+    schema_version: str = field(default=SCHEMA_VERSION, init=False)
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.step, StepLogMetadata):
+            raise LogSchemaError("step must be StepLogMetadata")
+        if self.step.step_type != "natural_interaction_block":
+            raise LogSchemaError(
+                "natural block summary requires natural-interaction step metadata"
+            )
+        turn_ids = _normalize_string_tuple(
+            self.ordered_main_turn_ids,
+            "ordered_main_turn_ids",
+        )
+        if len(turn_ids) != 12:
+            raise LogSchemaError(
+                "natural block ordered_main_turn_ids must contain exactly 12 values"
+            )
+        expected_turn_ids = tuple(
+            f"{self.step.step_id}_turn_{index:02d}" for index in range(1, 13)
+        )
+        if turn_ids != expected_turn_ids:
+            raise LogSchemaError(
+                "natural block ordered_main_turn_ids must match the deterministic "
+                "one-based step turn IDs"
+            )
+        object.__setattr__(self, "ordered_main_turn_ids", turn_ids)
+
+        participant_ids = _normalize_string_tuple(
+            self.participant_ids,
+            "participant_ids",
+        )
+        if set(participant_ids) != FIXED_AGENT_IDS:
+            raise LogSchemaError(
+                "natural block participant_ids must contain all four fixed agents"
+            )
+        object.__setattr__(self, "participant_ids", participant_ids)
+
+        counts = _normalize_agent_count_mapping(
+            self.per_agent_main_turn_counts,
+            participant_ids,
+            "per_agent_main_turn_counts",
+        )
+        if any(count != 3 for count in counts.values()):
+            raise LogSchemaError(
+                "natural block must contain exactly three main turns per agent"
+            )
+        object.__setattr__(self, "per_agent_main_turn_counts", counts)
+
+        _require_positive_int(
+            self.completed_main_turn_count,
+            "completed_main_turn_count",
+        )
+        if (
+            self.completed_main_turn_count != 12
+            or self.completed_main_turn_count != len(turn_ids)
+            or self.completed_main_turn_count != sum(counts.values())
+        ):
+            raise LogSchemaError(
+                "natural block completed_main_turn_count must equal exactly 12"
+            )
+        _require_non_negative_int(self.reflection_count, "reflection_count")
+        if self.reflection_count != len(participant_ids):
+            raise LogSchemaError(
+                "natural block reflection_count must equal participant count"
+            )
+        _require_positive_int(
+            self.final_logical_timestamp,
+            "final_logical_timestamp",
+        )
+        if self.final_logical_timestamp != self.step.timestamp:
+            raise LogSchemaError(
+                "final_logical_timestamp must match step metadata timestamp"
+            )
+
+    def to_dict(self) -> dict[str, Any]:
+        data = {"schema_version": self.schema_version}
+        data.update(self.step.to_dict())
+        data.update(
+            {
+                "ordered_main_turn_ids": list(self.ordered_main_turn_ids),
+                "participant_ids": list(self.participant_ids),
+                "per_agent_main_turn_counts": dict(
+                    self.per_agent_main_turn_counts
+                ),
+                "completed_main_turn_count": self.completed_main_turn_count,
+                "reflection_count": self.reflection_count,
+                "final_logical_timestamp": self.final_logical_timestamp,
+            }
+        )
+        return data
+
+
+@dataclass(frozen=True)
+class TargetEventSummaryRecord:
+    """Structural completion audit for one target-event response step."""
+
+    step: StepLogMetadata
+    ordered_main_turn_ids: tuple[str, ...]
+    participant_ids: tuple[str, ...]
+    per_agent_main_turn_counts: Mapping[str, int]
+    completed_main_turn_count: int
+    reflection_count: int
+    final_logical_timestamp: int
+    ordered_responding_agent_ids: tuple[str, ...]
+    response_count: int
+    schema_version: str = field(default=SCHEMA_VERSION, init=False)
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.step, StepLogMetadata):
+            raise LogSchemaError("step must be StepLogMetadata")
+        if self.step.step_type != "target_event":
+            raise LogSchemaError(
+                "target event summary requires target-event step metadata"
+            )
+        turn_ids = _normalize_string_tuple(
+            self.ordered_main_turn_ids,
+            "ordered_main_turn_ids",
+        )
+        if len(turn_ids) != 4:
+            raise LogSchemaError(
+                "target event ordered_main_turn_ids must contain exactly four values"
+            )
+        expected_turn_ids = tuple(
+            f"{self.step.step_id}_turn_{index:02d}" for index in range(1, 5)
+        )
+        if turn_ids != expected_turn_ids:
+            raise LogSchemaError(
+                "target event ordered_main_turn_ids must match the deterministic "
+                "one-based step turn IDs"
+            )
+        object.__setattr__(self, "ordered_main_turn_ids", turn_ids)
+
+        participant_ids = _normalize_string_tuple(
+            self.participant_ids,
+            "participant_ids",
+        )
+        if set(participant_ids) != FIXED_AGENT_IDS:
+            raise LogSchemaError(
+                "target event participant_ids must contain all four fixed agents"
+            )
+        object.__setattr__(self, "participant_ids", participant_ids)
+
+        counts = _normalize_agent_count_mapping(
+            self.per_agent_main_turn_counts,
+            participant_ids,
+            "per_agent_main_turn_counts",
+        )
+        if any(count != 1 for count in counts.values()):
+            raise LogSchemaError(
+                "target event must contain exactly one main turn per agent"
+            )
+        object.__setattr__(self, "per_agent_main_turn_counts", counts)
+
+        _require_positive_int(
+            self.completed_main_turn_count,
+            "completed_main_turn_count",
+        )
+        if (
+            self.completed_main_turn_count != 4
+            or self.completed_main_turn_count != len(turn_ids)
+            or self.completed_main_turn_count != sum(counts.values())
+        ):
+            raise LogSchemaError(
+                "target event completed_main_turn_count must equal exactly four"
+            )
+        _require_non_negative_int(self.reflection_count, "reflection_count")
+        if self.reflection_count != len(participant_ids):
+            raise LogSchemaError(
+                "target event reflection_count must equal participant count"
+            )
+        _require_positive_int(
+            self.final_logical_timestamp,
+            "final_logical_timestamp",
+        )
+        if self.final_logical_timestamp != self.step.timestamp:
+            raise LogSchemaError(
+                "final_logical_timestamp must match step metadata timestamp"
+            )
+
+        responding_agent_ids = _normalize_string_tuple(
+            self.ordered_responding_agent_ids,
+            "ordered_responding_agent_ids",
+        )
+        if responding_agent_ids != participant_ids:
+            raise LogSchemaError(
+                "ordered_responding_agent_ids must equal participant_ids in order"
+            )
+        object.__setattr__(
+            self,
+            "ordered_responding_agent_ids",
+            responding_agent_ids,
+        )
+        _require_positive_int(self.response_count, "response_count")
+        if (
+            self.response_count != 4
+            or self.response_count != len(responding_agent_ids)
+            or self.response_count != self.completed_main_turn_count
+        ):
+            raise LogSchemaError("target event response_count must equal exactly four")
+
+    def to_dict(self) -> dict[str, Any]:
+        data = {"schema_version": self.schema_version}
+        data.update(self.step.to_dict())
+        data.update(
+            {
+                "ordered_main_turn_ids": list(self.ordered_main_turn_ids),
+                "participant_ids": list(self.participant_ids),
+                "per_agent_main_turn_counts": dict(
+                    self.per_agent_main_turn_counts
+                ),
+                "completed_main_turn_count": self.completed_main_turn_count,
+                "reflection_count": self.reflection_count,
+                "final_logical_timestamp": self.final_logical_timestamp,
+                "ordered_responding_agent_ids": list(
+                    self.ordered_responding_agent_ids
+                ),
+                "response_count": self.response_count,
             }
         )
         return data
@@ -831,6 +1084,8 @@ PersistedLogRecord = (
     | ReflectionLogRecord
     | APIUsageLogRecord
     | ErrorLogRecord
+    | NaturalBlockSummaryRecord
+    | TargetEventSummaryRecord
 )
 
 
@@ -1127,6 +1382,8 @@ def record_to_dict(record: PersistedLogRecord) -> dict[str, Any]:
         ReflectionLogRecord,
         APIUsageLogRecord,
         ErrorLogRecord,
+        NaturalBlockSummaryRecord,
+        TargetEventSummaryRecord,
     )
     if not isinstance(record, supported):
         raise SerializationError(
@@ -1163,6 +1420,7 @@ __all__ = [
     "LogSchemaError",
     "LoggingError",
     "MemoryLogRecord",
+    "NaturalBlockSummaryRecord",
     "PersistedLogRecord",
     "ReflectionLogRecord",
     "RetrievalCandidateRecord",
@@ -1172,6 +1430,7 @@ __all__ = [
     "SCHEMA_VERSION",
     "SerializationError",
     "StepLogMetadata",
+    "TargetEventSummaryRecord",
     "TurnLogMetadata",
     "behavior_record_from_result",
     "cognitive_records_from_result",

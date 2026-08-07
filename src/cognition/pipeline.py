@@ -19,6 +19,7 @@ from src.config_loader import (
 from src.domain import (
     AgentProfile,
     MemoryEntry,
+    NaturalInteractionBlockStep,
     RetrievalConfig,
     SimulationStep,
     TargetEvent,
@@ -371,6 +372,210 @@ class CognitiveResult:
         return self.action.memory_to_store
 
 
+@dataclass(frozen=True)
+class PostStepReflectionInput:
+    """Validated inputs for one agent's literal post-step reflection."""
+
+    agent_id: str
+    source_step_id: str
+    memory_stream: MemoryStream
+    logical_timestamp: int
+    conversation_context: tuple[str, ...]
+    final_turn_result: CognitiveResult
+    event_id: str | None = None
+
+    def __post_init__(self) -> None:
+        for field_name in ("agent_id", "source_step_id"):
+            object.__setattr__(
+                self,
+                field_name,
+                _require_text(getattr(self, field_name), field_name),
+            )
+        if self.agent_id not in FIXED_AGENT_IDS:
+            raise CognitiveInputError(f"unsupported agent_id: {self.agent_id!r}")
+        if not isinstance(self.memory_stream, MemoryStream):
+            raise CognitiveInputError("memory_stream must be a MemoryStream")
+        if self.memory_stream.run_id is None:
+            raise CognitiveInputError(
+                "post-step reflection requires a run-owned MemoryStream"
+            )
+        if self.memory_stream.agent_id != self.agent_id:
+            raise CognitiveInputError(
+                "memory-stream ownership does not match the requested agent"
+            )
+        if (
+            isinstance(self.logical_timestamp, bool)
+            or not isinstance(self.logical_timestamp, int)
+            or self.logical_timestamp < 1
+        ):
+            raise CognitiveInputError(
+                "post-step logical_timestamp must be a positive integer"
+            )
+        object.__setattr__(
+            self,
+            "conversation_context",
+            _normalize_context(self.conversation_context),
+        )
+        if self.event_id is not None:
+            object.__setattr__(
+                self,
+                "event_id",
+                _require_text(self.event_id, "event_id"),
+            )
+        if not isinstance(self.final_turn_result, CognitiveResult):
+            raise CognitiveInputError(
+                "final_turn_result must be a CognitiveResult"
+            )
+        final_result = self.final_turn_result
+        if (
+            final_result.agent_id != self.agent_id
+            or final_result.source_step_id != self.source_step_id
+            or final_result.event_id != self.event_id
+        ):
+            raise CognitiveInputError(
+                "final_turn_result identity does not match post-step reflection input"
+            )
+        if self.logical_timestamp < final_result.logical_timestamp:
+            raise CognitiveInputError(
+                "post-step logical_timestamp must not precede the final agent turn"
+            )
+
+        result_memories = (
+            final_result.retrieval_result.selected_memories
+            + final_result.created_memories
+        )
+        if any(
+            memory.run_id != self.memory_stream.run_id
+            for memory in result_memories
+        ):
+            raise CognitiveInputError(
+                "final_turn_result does not belong to the MemoryStream run"
+            )
+
+
+@dataclass(frozen=True)
+class PostStepReflectionResult:
+    """Immutable output of one reflection-only post-step operation."""
+
+    final_turn_id: str
+    agent_id: str
+    source_step_id: str
+    source_step_type: str
+    event_id: str | None
+    retrieval_config_id: str
+    run_id: str
+    logical_timestamp: int
+    conversation_context: tuple[str, ...]
+    selected_memory_ids: tuple[str, ...]
+    selected_memory_texts: tuple[str, ...]
+    reflection: ReflectionOutput
+    reflection_importance: ImportanceOutput
+    reflection_memory: MemoryEntry
+
+    def __post_init__(self) -> None:
+        for field_name in (
+            "final_turn_id",
+            "agent_id",
+            "source_step_id",
+            "retrieval_config_id",
+            "run_id",
+        ):
+            value = getattr(self, field_name)
+            if not isinstance(value, str) or not value.strip():
+                raise CognitiveResultValidationError(
+                    f"{field_name} must be a non-empty string"
+                )
+        if self.agent_id not in FIXED_AGENT_IDS:
+            raise CognitiveResultValidationError(
+                f"unsupported result agent_id: {self.agent_id!r}"
+            )
+        if self.source_step_type not in STEP_TYPES:
+            raise CognitiveResultValidationError(
+                f"unsupported result source_step_type: {self.source_step_type!r}"
+            )
+        if self.source_step_type == "target_event":
+            if not isinstance(self.event_id, str) or not self.event_id.strip():
+                raise CognitiveResultValidationError(
+                    "target-event reflection result requires event_id"
+                )
+        elif self.event_id is not None:
+            raise CognitiveResultValidationError(
+                "natural-interaction reflection result must not include event_id"
+            )
+        if (
+            isinstance(self.logical_timestamp, bool)
+            or not isinstance(self.logical_timestamp, int)
+            or self.logical_timestamp < 1
+        ):
+            raise CognitiveResultValidationError(
+                "post-step logical_timestamp must be a positive integer"
+            )
+        if not isinstance(self.conversation_context, tuple) or any(
+            not isinstance(item, str) or not item.strip()
+            for item in self.conversation_context
+        ):
+            raise CognitiveResultValidationError(
+                "conversation_context must be a tuple of non-empty strings"
+            )
+        if not isinstance(self.selected_memory_ids, tuple) or any(
+            not isinstance(memory_id, str) or not memory_id.strip()
+            for memory_id in self.selected_memory_ids
+        ):
+            raise CognitiveResultValidationError(
+                "selected_memory_ids must be a tuple of non-empty strings"
+            )
+        if not isinstance(self.selected_memory_texts, tuple) or any(
+            not isinstance(text, str) or not text.strip()
+            for text in self.selected_memory_texts
+        ):
+            raise CognitiveResultValidationError(
+                "selected_memory_texts must be a tuple of non-empty strings"
+            )
+        if len(self.selected_memory_ids) != len(self.selected_memory_texts):
+            raise CognitiveResultValidationError(
+                "selected memory IDs and texts must have equal lengths"
+            )
+        if not isinstance(self.reflection, ReflectionOutput):
+            raise CognitiveResultValidationError(
+                "reflection must be a ReflectionOutput"
+            )
+        if not isinstance(self.reflection_importance, ImportanceOutput):
+            raise CognitiveResultValidationError(
+                "reflection_importance must be an ImportanceOutput"
+            )
+        if not isinstance(self.reflection_memory, MemoryEntry):
+            raise CognitiveResultValidationError(
+                "reflection_memory must be a MemoryEntry"
+            )
+        memory = self.reflection_memory
+        if (
+            memory.agent_id != self.agent_id
+            or memory.run_id != self.run_id
+            or memory.memory_type != "reflection"
+            or memory.source_step_id != self.source_step_id
+            or memory.source_step_type != self.source_step_type
+            or memory.created_at != self.logical_timestamp
+            or memory.last_accessed_at != self.logical_timestamp
+            or memory.embedding is None
+            or memory.text != self.reflection.reflection
+            or memory.category != self.reflection.category
+            or memory.importance != self.reflection_importance.importance
+        ):
+            raise CognitiveResultValidationError(
+                "reflection memory does not match post-step reflection output"
+            )
+
+    @property
+    def created_memories(self) -> tuple[MemoryEntry, ...]:
+        """Expose the single reflection memory as an immutable tuple."""
+        return (self.reflection_memory,)
+
+    @property
+    def created_memory(self) -> MemoryEntry:
+        """Return the single created memory for controller persistence."""
+        return self.reflection_memory
+
+
 class CognitivePipeline:
     """Run one deterministic turn and commit memory only after full preflight."""
 
@@ -562,7 +767,276 @@ class CognitivePipeline:
             memory_stream.add_memory(memory)
         return result
 
+    def run_post_step_reflection(
+        self,
+        reflection_input: PostStepReflectionInput,
+    ) -> PostStepReflectionResult:
+        """Reflect once after a completed step without action or retrieval work."""
+        if not isinstance(reflection_input, PostStepReflectionInput):
+            raise CognitiveInputError(
+                "reflection_input must be a PostStepReflectionInput"
+            )
+        agent, step, event = self._resolve_post_step_reflection_input(
+            reflection_input
+        )
+        final_result = reflection_input.final_turn_result
+        memory_stream = reflection_input.memory_stream
+        initial_memories = memory_stream.list_memories()
+        if any(
+            reflection_input.logical_timestamp < memory.last_accessed_at
+            for memory in initial_memories
+        ):
+            raise CognitiveInputError(
+                "logical_timestamp must not precede memory access timestamps"
+            )
+        if any(
+            memory.memory_type == "reflection"
+            and memory.source_step_id == step.step_id
+            for memory in initial_memories
+        ):
+            raise CognitiveInputError(
+                "post-step reflection already exists for this agent and step"
+            )
+
+        self._validate_complete_step_context(
+            reflection_input=reflection_input,
+            agent=agent,
+            step=step,
+        )
+        selected_memories = final_result.retrieval_result.selected_memories
+        perception = build_perception(
+            agent=agent,
+            step=step,
+            logical_timestamp=reflection_input.logical_timestamp,
+            conversation_context=reflection_input.conversation_context,
+            event=event,
+        )
+        llm_context = self._build_llm_context(perception, selected_memories)
+        reflection = self._reflector.generate(
+            context=llm_context,
+            plan=final_result.plan,
+            action=final_result.action,
+            sentence_limit=self._config.settings.response_limits.reflection_sentences,
+        )
+        reflection_importance = self._generate_importance(
+            context=llm_context,
+            text=reflection.reflection,
+            memory_kind="reflection",
+        )
+        reflection_embedding = self._generate_embedding(
+            reflection.reflection,
+            expected_dimensions=self._post_step_embedding_dimensions(final_result),
+        )
+        reflection_memory = self._build_post_step_reflection_memory(
+            memory_stream=memory_stream,
+            initial_memories=initial_memories,
+            reflection_input=reflection_input,
+            step=step,
+            reflection=reflection,
+            reflection_importance=reflection_importance,
+            reflection_embedding=reflection_embedding,
+        )
+        result = PostStepReflectionResult(
+            final_turn_id=final_result.turn_id,
+            agent_id=agent.agent_id,
+            source_step_id=step.step_id,
+            source_step_type=step.step_type,
+            event_id=event.event_id if event is not None else None,
+            retrieval_config_id=final_result.retrieval_config_id,
+            run_id=memory_stream.run_id,
+            logical_timestamp=reflection_input.logical_timestamp,
+            conversation_context=reflection_input.conversation_context,
+            selected_memory_ids=final_result.selected_memory_ids,
+            selected_memory_texts=tuple(
+                memory.text for memory in selected_memories
+            ),
+            reflection=reflection,
+            reflection_importance=reflection_importance,
+            reflection_memory=reflection_memory,
+        )
+
+        if memory_stream.list_memories() != initial_memories:
+            raise CognitiveStateError(
+                "memory stream changed before post-step reflection preflight"
+            )
+        self._preflight_mutations(
+            memory_stream=memory_stream,
+            initial_memories=initial_memories,
+            accessed_memory_ids=(),
+            logical_timestamp=reflection_input.logical_timestamp,
+            created_memories=result.created_memories,
+        )
+        if memory_stream.list_memories() != initial_memories:
+            raise CognitiveStateError(
+                "memory stream changed before the approved commit boundary"
+            )
+
+        # All fallible cognitive and validation work is complete before commit.
+        memory_stream.add_memory(result.reflection_memory)
+        return result
+
     run = run_turn
+
+    def _resolve_post_step_reflection_input(
+        self,
+        reflection_input: PostStepReflectionInput,
+    ) -> tuple[AgentProfile, SimulationStep, TargetEvent | None]:
+        try:
+            agent = self._agents[reflection_input.agent_id]
+        except KeyError as exc:
+            raise CognitiveInputError(
+                f"unknown agent_id: {reflection_input.agent_id!r}"
+            ) from exc
+        try:
+            step = self._steps[reflection_input.source_step_id]
+        except KeyError as exc:
+            raise CognitiveInputError(
+                f"unknown source_step_id: {reflection_input.source_step_id!r}"
+            ) from exc
+
+        final_result = reflection_input.final_turn_result
+        if (
+            final_result.source_step_type != step.step_type
+            or final_result.agent_id != agent.agent_id
+            or final_result.source_step_id != step.step_id
+        ):
+            raise CognitiveInputError(
+                "final_turn_result does not match the configured agent and step"
+            )
+        if final_result.retrieval_config_id not in self._retrieval_configs:
+            raise CognitiveInputError(
+                "final_turn_result references an unknown retrieval configuration"
+            )
+        if agent.agent_id not in step.participants:
+            raise CognitiveInputError(
+                f"agent {agent.agent_id!r} is not a participant in {step.step_id!r}"
+            )
+        if not step.memory_generation_enabled:
+            raise CognitiveInputError(
+                "post-step reflection requires enabled memory generation"
+            )
+        if final_result.reflection_requested or final_result.reflection is not None:
+            raise CognitiveInputError(
+                "post-step reflection requires an ordinary main turn without inline reflection"
+            )
+        if (
+            len(final_result.created_memories) != 1
+            or final_result.created_memories[0].memory_type != "action"
+        ):
+            raise CognitiveInputError(
+                "final_turn_result must contain exactly one action memory"
+            )
+
+        current_memories = reflection_input.memory_stream.list_memories()
+        final_action_memory = final_result.created_memories[0]
+        if not current_memories or current_memories[-1] != final_action_memory:
+            raise CognitiveInputError(
+                "final_turn_result is not the agent's final committed main turn"
+            )
+
+        event: TargetEvent | None = None
+        if isinstance(step, TargetEventStep):
+            try:
+                event = self._events[step.event_id]
+            except KeyError as exc:
+                raise CognitiveInputError(
+                    f"unknown event_id referenced by step: {step.event_id!r}"
+                ) from exc
+            if reflection_input.event_id != event.event_id:
+                raise CognitiveInputError(
+                    "post-step event_id does not match the configured step event"
+                )
+        elif reflection_input.event_id is not None:
+            raise CognitiveInputError(
+                "natural-interaction reflection must not include an event_id"
+            )
+        return agent, step, event
+
+    @staticmethod
+    def _validate_complete_step_context(
+        *,
+        reflection_input: PostStepReflectionInput,
+        agent: AgentProfile,
+        step: SimulationStep,
+    ) -> None:
+        context = reflection_input.conversation_context
+        expected_count = (
+            step.total_turns
+            if isinstance(step, NaturalInteractionBlockStep)
+            else len(step.participants)
+        )
+        if len(context) != expected_count:
+            raise CognitiveInputError(
+                "post-step conversation_context must contain every main response"
+            )
+
+        final_result = reflection_input.final_turn_result
+        prior_context = final_result.perception.conversation_context
+        if context[: len(prior_context)] != prior_context:
+            raise CognitiveInputError(
+                "post-step conversation_context does not preserve final-turn history"
+            )
+        if len(prior_context) >= len(context):
+            raise CognitiveInputError(
+                "post-step conversation_context is missing the final agent response"
+            )
+        expected_response = f"{agent.display_name}: {final_result.response}"
+        if context[len(prior_context)] != expected_response:
+            raise CognitiveInputError(
+                "post-step conversation_context does not contain the speaker-labelled "
+                "final agent response in turn order"
+            )
+
+    @staticmethod
+    def _post_step_embedding_dimensions(final_result: CognitiveResult) -> int:
+        memories = (
+            final_result.retrieval_result.selected_memories
+            + final_result.created_memories
+        )
+        dimensions = {
+            len(memory.embedding)
+            for memory in memories
+            if memory.embedding is not None
+        }
+        if not dimensions:
+            raise CognitiveResultValidationError(
+                "final_turn_result does not establish embedding dimensions"
+            )
+        if len(dimensions) != 1:
+            raise CognitiveResultValidationError(
+                "final_turn_result contains inconsistent embedding dimensions"
+            )
+        return dimensions.pop()
+
+    def _build_post_step_reflection_memory(
+        self,
+        *,
+        memory_stream: MemoryStream,
+        initial_memories: tuple[MemoryEntry, ...],
+        reflection_input: PostStepReflectionInput,
+        step: SimulationStep,
+        reflection: ReflectionOutput,
+        reflection_importance: ImportanceOutput,
+        reflection_embedding: tuple[float, ...],
+    ) -> MemoryEntry:
+        factory = MemoryFactory(
+            reflection_input.agent_id,
+            run_id=memory_stream.run_id,
+            start_sequence=self._next_memory_sequence(
+                reflection_input.agent_id,
+                initial_memories,
+            ),
+        )
+        return factory.create_memory(
+            memory_type="reflection",
+            text=reflection.reflection,
+            category=reflection.category,
+            importance=reflection_importance.importance,
+            created_at=reflection_input.logical_timestamp,
+            source_step_id=step.step_id,
+            source_step_type=step.step_type,
+            embedding=reflection_embedding,
+        )
 
     def _resolve_input(
         self,
