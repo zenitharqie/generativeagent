@@ -94,6 +94,27 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Fresh run ID; defaults deterministically from config and repetition.",
     )
+    evaluate_parser = subparsers.add_parser(
+        "evaluate",
+        help="Evaluate one persisted run without rerunning simulation components.",
+    )
+    evaluate_parser.add_argument(
+        "--run-dir",
+        type=Path,
+        required=True,
+        help="Completed source run directory containing persisted research artifacts.",
+    )
+    evaluate_parser.add_argument(
+        "--output-dir",
+        type=Path,
+        required=True,
+        help="Fresh, separate directory for atomic evaluation publication.",
+    )
+    evaluate_parser.add_argument(
+        "--diagnostic",
+        action="store_true",
+        help="Permit an excluded pilot as explicitly non-primary diagnostic input.",
+    )
     return parser
 
 
@@ -184,6 +205,33 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Completed target events: {summary.completed_target_events}")
         print(f"Completed main turns: {summary.completed_main_turns}")
         print(f"Run directory: {result.run_paths.run_dir}")
+        return 0
+
+    if args.command == "evaluate":
+        try:
+            from src.evaluation import EvaluationError, evaluate_run
+
+            result = evaluate_run(
+                run_dir=args.run_dir,
+                output_dir=args.output_dir,
+                diagnostic=args.diagnostic,
+            )
+        except EvaluationError as exc:
+            print(
+                f"Evaluation failed: {type(exc).__name__}: {exc}",
+                file=sys.stderr,
+            )
+            return 1
+        print("Evaluation completed successfully.")
+        print(f"Evaluation mode: {result.summary.evaluation_mode}")
+        print(
+            "Primary eligible: "
+            + ("yes" if result.summary.primary_eligible else "no")
+        )
+        print(f"MRA records: {len(result.mra_records)}")
+        print(f"BCR export records: {len(result.bcr_records)}")
+        print(f"Run MRA: {result.summary.mra_aggregates.run.mean_mra}")
+        print(f"Evaluation directory: {result.output_dir}")
         return 0
 
     print("Classroom generative-agents repository scaffold is ready.")
