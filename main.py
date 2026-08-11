@@ -115,6 +115,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Permit an excluded pilot as explicitly non-primary diagnostic input.",
     )
+    smoke_parser = subparsers.add_parser(
+        "llm-smoke-test",
+        help="Run one minimal non-research real-provider structured request.",
+    )
+    smoke_parser.add_argument(
+        "--real",
+        action="store_true",
+        required=True,
+        help="Explicitly authorize the single real OpenAI smoke request.",
+    )
     return parser
 
 
@@ -232,6 +242,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"BCR export records: {len(result.bcr_records)}")
         print(f"Run MRA: {result.summary.mra_aggregates.run.mean_mra}")
         print(f"Evaluation directory: {result.output_dir}")
+        return 0
+
+    if args.command == "llm-smoke-test":
+        try:
+            from src.llm import run_real_llm_smoke_test
+
+            result = run_real_llm_smoke_test()
+        except Exception as exc:
+            print(
+                f"LLM smoke test failed: {type(exc).__name__}",
+                file=sys.stderr,
+            )
+            return 1
+        for line in result.sanitized_lines():
+            print(line)
         return 0
 
     print("Classroom generative-agents repository scaffold is ready.")

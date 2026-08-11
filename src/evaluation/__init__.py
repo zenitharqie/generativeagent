@@ -6,6 +6,12 @@ from src.evaluation.aggregator import (
 )
 from src.evaluation.bcr_export import build_bcr_export
 from src.evaluation.errors import (
+    BCRJudgmentConflictError,
+    BCRJudgmentError,
+    BCRJudgmentFailure,
+    BCRJudgmentIndependenceError,
+    BCRJudgmentInputError,
+    BCRJudgmentPersistenceError,
     EvaluationAggregationError,
     EvaluationCalculationError,
     EvaluationConflictError,
@@ -16,6 +22,20 @@ from src.evaluation.errors import (
     EvaluationJoinError,
     EvaluationPersistenceError,
     EvaluationSchemaError,
+)
+from src.evaluation.judged_schemas import (
+    BCR_JUDGMENT_SCHEMA_VERSION,
+    BCRJudgedRecord,
+    BCRJudgmentSummary,
+)
+from src.evaluation.judgment_persistence import BCR_JUDGMENT_FILENAMES
+from src.evaluation.judgment_reader import LoadedBCRExport, load_bcr_export
+from src.evaluation.judgment_service import (
+    BCRJudgeOutcome,
+    BCRJudgeService,
+    BCRJudgmentRunResult,
+    judge_bcr_export,
+    validate_evaluator_independence,
 )
 from src.evaluation.mra import calculate_mra, calculate_run_mra
 from src.evaluation.persistence import EVALUATION_FILENAMES, publish_evaluation
@@ -46,8 +66,21 @@ from src.evaluation.schemas import (
 from src.evaluation.service import EvaluationRunResult, evaluate_run
 
 __all__ = [
+    "BCR_JUDGMENT_FILENAMES",
+    "BCR_JUDGMENT_SCHEMA_VERSION",
     "BCRExportRecord",
+    "BCRJudgedRecord",
+    "BCRJudgeOutcome",
+    "BCRJudgeService",
     "BCRJudgeInput",
+    "BCRJudgmentConflictError",
+    "BCRJudgmentError",
+    "BCRJudgmentFailure",
+    "BCRJudgmentIndependenceError",
+    "BCRJudgmentInputError",
+    "BCRJudgmentPersistenceError",
+    "BCRJudgmentRunResult",
+    "BCRJudgmentSummary",
     "BCRModelMetadata",
     "ConfigurationMRAAggregate",
     "EVALUATION_FILENAMES",
@@ -67,6 +100,7 @@ __all__ = [
     "EvaluationUnitIdentity",
     "FutureBCRJudgment",
     "LoadedEvaluationRun",
+    "LoadedBCRExport",
     "MRAEvaluationResult",
     "MRAGroupAggregate",
     "PersonaJudgeInput",
@@ -83,6 +117,9 @@ __all__ = [
     "calculate_run_mra",
     "evaluate_run",
     "future_bcr_contract_dict",
+    "judge_bcr_export",
+    "load_bcr_export",
     "load_evaluation_run",
     "publish_evaluation",
+    "validate_evaluator_independence",
 ]
