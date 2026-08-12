@@ -189,6 +189,18 @@ class LLMService:
             )
             try:
                 response = self._provider.generate_structured(provider_request)
+            except KeyboardInterrupt:
+                record = self._record(
+                    logical_call_id=logical_call_id,
+                    attempt_index=attempt_index,
+                    request=request,
+                    rendered=rendered,
+                    status="failed",
+                    error_type="KeyboardInterrupt",
+                )
+                attempts.append(record)
+                self._last_attempts = tuple(attempts)
+                raise
             except ProviderError as exc:
                 record = self._record(
                     logical_call_id=logical_call_id,

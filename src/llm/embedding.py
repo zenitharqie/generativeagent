@@ -110,6 +110,14 @@ class OpenAIEmbeddingProvider:
         for attempt_index in range(1, MAX_PROVIDER_ATTEMPTS + 1):
             try:
                 response = self._provider.create_embedding(request)
+            except KeyboardInterrupt:
+                self._record(
+                    logical_call_id,
+                    attempt_index,
+                    "failed",
+                    error_type="KeyboardInterrupt",
+                )
+                raise
             except ProviderError as exc:
                 self._record(
                     logical_call_id,

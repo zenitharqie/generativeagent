@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import deque
+import json
 
 import pytest
 
@@ -91,6 +92,31 @@ def test_embedding_two_transient_failures_are_terminal() -> None:
     with pytest.raises(RealEmbeddingError, match="call failed"):
         provider.embed("One memory.")
     assert len(api.requests) == 2
+
+
+def test_embedding_keyboard_interrupt_is_recorded_once_then_reraised() -> None:
+    sentinel = "raw-embedding-interrupt-detail"
+    api = ScriptedEmbeddingAPI(KeyboardInterrupt(sentinel))
+    provider = OpenAIEmbeddingProvider(
+        api,
+        sleeper=lambda _: pytest.fail("interruption must not retry"),
+    )
+
+    with pytest.raises(KeyboardInterrupt, match=sentinel):
+        provider.embed("One memory.")
+
+    assert len(api.requests) == 1
+    assert len(provider.usage_records) == 1
+    attempt = provider.usage_records[0]
+    assert attempt.attempt_index == 1
+    assert attempt.status == "failed"
+    assert attempt.error_type == "KeyboardInterrupt"
+    assert attempt.usage.to_dict() == {
+        "input_tokens": None,
+        "output_tokens": None,
+        "total_tokens": None,
+    }
+    assert sentinel not in json.dumps(attempt.to_dict(), sort_keys=True)
 
 
 def test_embedding_logical_identity_is_deterministic_for_fresh_services() -> None:

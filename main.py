@@ -20,12 +20,19 @@ DEFAULT_PILOT_EXPERIMENT_ID = "phase08_dummy_pilot"
 
 
 def _parse_pilot_days(value: str) -> tuple[int, ...]:
-    """Parse the only partial scope authorized for the Phase 08 pilot."""
+    """Parse the only partial scope authorized for the guarded pilot."""
     if value != "1-2":
         raise argparse.ArgumentTypeError(
-            "Phase 08 run-pilot supports only the exact day range '1-2'"
+            "run-pilot supports only the exact day range '1-2'"
         )
     return (1, 2)
+
+
+def _parse_explicit_true(value: str) -> bool:
+    """Require the deliberate literal used by paid-call authorization flags."""
+    if value != "true":
+        raise argparse.ArgumentTypeError("value must be the exact literal 'true'")
+    return True
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -46,12 +53,36 @@ def build_parser() -> argparse.ArgumentParser:
     )
     pilot_parser = subparsers.add_parser(
         "run-pilot",
-        help="Run the deterministic offline Day 1-2 Phase 08 pilot.",
+        help="Plan or run the safeguarded, excluded Day 1-2 pilot.",
     )
-    pilot_parser.add_argument(
+    pilot_modes = pilot_parser.add_mutually_exclusive_group()
+    pilot_modes.add_argument(
+        "--dry-run",
+        type=_parse_explicit_true,
+        metavar="true",
+        help="Validate and print the fixed plan without creating paths or clients.",
+    )
+    pilot_modes.add_argument(
         "--dummy",
         action="store_true",
         help="Use deterministic offline LLM and embedding providers.",
+    )
+    pilot_modes.add_argument(
+        "--real",
+        action="store_true",
+        help="Request the fixed paid OpenAI pilot; also requires explicit authorization.",
+    )
+    pilot_parser.add_argument(
+        "--allow-real-llm",
+        type=_parse_explicit_true,
+        metavar="true",
+        help="Second deliberate authorization signal required with --real.",
+    )
+    pilot_parser.add_argument(
+        "--max-total-tokens",
+        type=int,
+        default=None,
+        help="Mandatory positive provider-reported token ceiling for --real.",
     )
     pilot_parser.add_argument(
         "--config",
@@ -75,8 +106,8 @@ def build_parser() -> argparse.ArgumentParser:
     pilot_parser.add_argument(
         "--output-root",
         type=Path,
-        required=True,
-        help="Fresh output root for the isolated pilot run.",
+        default=None,
+        help="Fresh output root; required for dummy or real execution.",
     )
     pilot_parser.add_argument(
         "--config-dir",
@@ -93,6 +124,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--run-id",
         default=None,
         help="Fresh run ID; defaults deterministically from config and repetition.",
+    )
+    pilot_parser.add_argument(
+        "--on-conflict",
+        choices=("fail",),
+        default="fail",
+        help="Conflict policy; Phase 11 permits only fail (no reuse or resume).",
     )
     evaluate_parser = subparsers.add_parser(
         "evaluate",
@@ -124,6 +161,28 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         required=True,
         help="Explicitly authorize the single real OpenAI smoke request.",
+    )
+    review_parser = subparsers.add_parser(
+        "review-pilot",
+        help="Publish one explicit offline pilot acceptance or rejection.",
+    )
+    review_parser.add_argument(
+        "--evidence-dir",
+        type=Path,
+        required=True,
+        help="Published, immutable Phase 11 pilot evidence directory.",
+    )
+    review_parser.add_argument(
+        "--decision",
+        choices=("accepted", "rejected"),
+        required=True,
+        help="Explicit manual review decision.",
+    )
+    review_parser.add_argument(
+        "--config-dir",
+        type=Path,
+        default=DEFAULT_CONFIG_DIRECTORY,
+        help="Configuration directory used to verify an acceptance freeze.",
     )
     return parser
 
@@ -173,10 +232,62 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     if args.command == "run-pilot":
-        if not args.dummy:
+        mode = (
+            "dry-run"
+            if args.dry_run
+            else "real"
+            if args.real
+            else "dummy"
+            if args.dummy
+            else None
+        )
+        if mode is None:
             print(
-                "Pilot execution failed: Phase 08 run-pilot requires --dummy; "
-                "real provider integration is out of scope.",
+                "Pilot execution failed: run-pilot requires --dummy, --real, "
+                "or --dry-run true.",
+                file=sys.stderr,
+            )
+            return 1
+        if mode == "dry-run":
+            if (
+                args.output_root is not None
+                or args.allow_real_llm is not None
+                or args.max_total_tokens is not None
+            ):
+                print(
+                    "Pilot planning failed: dry-run does not accept output or real-call controls.",
+                    file=sys.stderr,
+                )
+                return 1
+            try:
+                from src.simulation import dry_run_pilot
+
+                plan = dry_run_pilot(
+                    retrieval_config_id=args.retrieval_config_id,
+                    repetition_index=args.repetition,
+                    config_directory=args.config_dir,
+                )
+            except Exception as exc:
+                print(
+                    f"Pilot planning failed: {type(exc).__name__}: {exc}",
+                    file=sys.stderr,
+                )
+                return 1
+            print("Pilot plan valid; no provider client or output path was created.")
+            print(f"Planned steps: {len(plan.step_ids)}")
+            print(f"Planned main turns: {plan.main_turn_count}")
+            print(
+                "Planned provider logical calls: "
+                f"{plan.call_limits.total_logical_calls}"
+            )
+            print(
+                "Maximum physical attempts: "
+                f"{plan.call_limits.total_physical_attempts}"
+            )
+            return 0
+        if args.output_root is None:
+            print(
+                "Pilot execution failed: --output-root is required for execution.",
                 file=sys.stderr,
             )
             return 1
@@ -184,37 +295,35 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"{args.retrieval_config_id}_rep{args.repetition:02d}_pilot_day01_02"
         )
         try:
-            from src.llm import DummyEmbeddingProvider
-            from src.simulation import (
-                RunController,
-                build_deterministic_dummy_llm_client,
-            )
+            from src.simulation import execute_pilot
 
-            result = RunController(
-                llm_client=build_deterministic_dummy_llm_client(),
-                embedding_provider=DummyEmbeddingProvider(),
-                config_directory=args.config_dir,
-            ).run(
+            result = execute_pilot(
+                mode=mode,
                 output_root=args.output_root,
                 experiment_id=args.experiment_id,
                 run_id=run_id,
                 retrieval_config_id=args.retrieval_config_id,
                 repetition_index=args.repetition,
-                days=args.days,
+                config_directory=args.config_dir,
+                real_authorized=args.allow_real_llm is True,
+                max_total_tokens=args.max_total_tokens,
             )
+        except KeyboardInterrupt:
+            print("Pilot execution interrupted.", file=sys.stderr)
+            return 130
         except Exception as exc:
             print(
                 f"Pilot execution failed: {type(exc).__name__}: {exc}",
                 file=sys.stderr,
             )
             return 1
-        summary = result.run_summary
+        summary = result.run_result.run_summary
         print("Pilot scope executed successfully.")
         print(f"Persisted run status: {summary.status}")
         print(f"Completed natural blocks: {summary.completed_natural_blocks}")
         print(f"Completed target events: {summary.completed_target_events}")
         print(f"Completed main turns: {summary.completed_main_turns}")
-        print(f"Run directory: {result.run_paths.run_dir}")
+        print(f"Run directory: {result.run_result.run_paths.run_dir}")
         return 0
 
     if args.command == "evaluate":
@@ -257,6 +366,29 @@ def main(argv: Sequence[str] | None = None) -> int:
             return 1
         for line in result.sanitized_lines():
             print(line)
+        return 0
+
+    if args.command == "review-pilot":
+        try:
+            from src.simulation import review_pilot
+
+            result = review_pilot(
+                evidence_dir=args.evidence_dir,
+                decision=args.decision,
+                config_directory=args.config_dir,
+            )
+        except Exception as exc:
+            print(
+                f"Pilot review failed: {type(exc).__name__}: {exc}",
+                file=sys.stderr,
+            )
+            return 1
+        print("Pilot review published successfully.")
+        print(f"Acceptance state: {result.acceptance_state}")
+        print(f"Review directory: {result.review_dir}")
+        print(f"Acceptance hash: {result.acceptance_hash}")
+        if result.freeze_hash is not None:
+            print(f"Freeze hash: {result.freeze_hash}")
         return 0
 
     print("Classroom generative-agents repository scaffold is ready.")

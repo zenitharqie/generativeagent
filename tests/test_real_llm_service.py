@@ -169,6 +169,41 @@ def test_authentication_error_is_not_retried_and_is_sanitized_in_usage() -> None
     assert sentinel not in json.dumps(service.last_attempts[0].to_dict(), sort_keys=True)
 
 
+def test_keyboard_interrupt_is_recorded_once_then_reraised_without_retry() -> None:
+    sentinel = "raw-interrupt-detail-must-not-persist"
+    request = requests_by_call_type()[LLMCallType.PLAN]
+    services: list[LLMService] = []
+    providers: list[ScriptedTextProvider] = []
+
+    for _ in range(2):
+        provider = ScriptedTextProvider(KeyboardInterrupt(sentinel))
+        service = LLMService(
+            provider,
+            sleeper=lambda _: pytest.fail("interruption must not retry"),
+        )
+
+        with pytest.raises(KeyboardInterrupt, match=sentinel):
+            service.generate(request)
+
+        providers.append(provider)
+        services.append(service)
+
+    assert [len(provider.requests) for provider in providers] == [1, 1]
+    assert [len(service.usage_records) for service in services] == [1, 1]
+    first = services[0].usage_records[0]
+    assert first == services[0].last_attempts[0]
+    assert first.logical_call_id == services[1].usage_records[0].logical_call_id
+    assert first.attempt_index == 1
+    assert first.status == "failed"
+    assert first.error_type == "KeyboardInterrupt"
+    assert first.usage.to_dict() == {
+        "input_tokens": None,
+        "output_tokens": None,
+        "total_tokens": None,
+    }
+    assert sentinel not in json.dumps(first.to_dict(), sort_keys=True)
+
+
 def test_context_limit_failure_occurs_before_provider_execution_without_truncation() -> None:
     huge_context = natural_context(observation_text="x" * 400_000)
     provider = ScriptedTextProvider(VALID_OUTPUTS[LLMCallType.PLAN])

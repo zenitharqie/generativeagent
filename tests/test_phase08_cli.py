@@ -33,7 +33,7 @@ def _read_jsonl(path: Path) -> tuple[dict[str, object], ...]:
     )
 
 
-def test_cli_help_exposes_only_the_approved_phase08_pilot_surface() -> None:
+def test_cli_help_preserves_dummy_surface_and_adds_phase11_real_safeguards() -> None:
     result = _run_cli("run-pilot", "--help")
 
     assert result.returncode == 0
@@ -42,7 +42,9 @@ def test_cli_help_exposes_only_the_approved_phase08_pilot_surface() -> None:
     assert "--repetition" in result.stdout
     assert "--days" in result.stdout
     assert "--output-root" in result.stdout
-    assert "--real" not in result.stdout
+    assert "--real" in result.stdout
+    assert "--allow-real-llm" in result.stdout
+    assert "--max-total-tokens" in result.stdout
     assert result.stderr == ""
 
 
