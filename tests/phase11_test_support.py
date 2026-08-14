@@ -69,6 +69,50 @@ class RetryFirstEmbeddingProvider(Phase11MockProvider):
         return super().create_embedding(request)
 
 
+class UsagePresentRetryProvider(Phase11MockProvider):
+    """Return invalid simulator output with usage, then recover on retry."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.invalid_output_returned = False
+
+    def generate_structured(
+        self,
+        request: StructuredTextRequest,
+    ) -> StructuredTextResponse:
+        if not self.invalid_output_returned:
+            self.invalid_output_returned = True
+            self.text_requests.append(request)
+            return StructuredTextResponse("not-json", ProviderUsage(7, 2, 9))
+        return super().generate_structured(request)
+
+
+class SentinelTextFailureProvider(Phase11MockProvider):
+    """Expose conspicuous provider text only through a mocked exception."""
+
+    def __init__(self, sentinel: str) -> None:
+        super().__init__()
+        self.sentinel = sentinel
+
+    def generate_structured(
+        self,
+        request: StructuredTextRequest,
+    ) -> StructuredTextResponse:
+        self.text_requests.append(request)
+        raise ProviderTimeoutError(self.sentinel)
+
+
+class TerminalUsagePresentInvalidOutputProvider(Phase11MockProvider):
+    """Exhaust simulator retries with auditable usage on both attempts."""
+
+    def generate_structured(
+        self,
+        request: StructuredTextRequest,
+    ) -> StructuredTextResponse:
+        self.text_requests.append(request)
+        return StructuredTextResponse("not-json", ProviderUsage(7, 2, 9))
+
+
 class TerminalEmbeddingFailureProvider(Phase11MockProvider):
     """Exhaust both approved attempts before any simulator text call."""
 

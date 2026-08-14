@@ -110,6 +110,7 @@ class RunController:
         embedding_provider: TextEmbeddingProvider,
         config_directory: str | Path = DEFAULT_CONFIG_DIRECTORY,
         retrieval_engine: Any | None = None,
+        sanitize_failure_messages: bool = False,
     ) -> None:
         if not callable(getattr(llm_client, "generate", None)):
             raise RunControllerError("llm_client must provide generate(request)")
@@ -117,10 +118,13 @@ class RunController:
             raise RunControllerError(
                 "embedding_provider must provide embed(text)"
             )
+        if not isinstance(sanitize_failure_messages, bool):
+            raise RunControllerError("sanitize_failure_messages must be boolean")
         self._llm_client = llm_client
         self._embedding_provider = embedding_provider
         self._config_directory = Path(config_directory)
         self._retrieval_engine = retrieval_engine
+        self._sanitize_failure_messages = sanitize_failure_messages
 
     def run(
         self,
@@ -455,6 +459,7 @@ class RunController:
             run_paths=run_paths,
             run_metadata=run_metadata,
             original_error=original_error,
+            sanitize_message=self._sanitize_failure_messages,
         )
         summary_error: BaseException | None = None
         try:
@@ -482,14 +487,23 @@ class RunController:
         run_paths: RunPaths,
         run_metadata: RunLogMetadata,
         original_error: BaseException,
+        sanitize_message: bool,
     ) -> BaseException | None:
+        if sanitize_message:
+            message = (
+                "Pilot run interrupted."
+                if isinstance(original_error, KeyboardInterrupt)
+                else "Pilot run failed; inspect the canonical error type and attempt records."
+            )
+        else:
+            message = str(original_error) or type(original_error).__name__
         try:
             append_jsonl(
                 run_paths.errors,
                 ErrorLogRecord(
                     run=run_metadata,
                     error_type=type(original_error).__name__,
-                    message=str(original_error) or type(original_error).__name__,
+                    message=message,
                     recoverable=False,
                     retry_count=0,
                 ),

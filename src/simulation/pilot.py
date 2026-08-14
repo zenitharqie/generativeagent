@@ -71,6 +71,7 @@ from src.simulation.safeguards import (
     PilotPaths,
     PilotPlan,
     PilotPreflightError,
+    PilotUsageError,
     build_pilot_paths,
     build_pilot_plan,
     require_openai_credential,
@@ -387,7 +388,7 @@ def build_pilot_manifest(
     experiment_id: str,
     run_id: str,
     config_directory: str | Path,
-    max_total_tokens: int | None,
+    max_total_tokens: object,
     prompt_loader: PromptLoader | None = None,
 ) -> PilotManifest:
     loader = prompt_loader or PromptLoader()
@@ -536,9 +537,21 @@ class PilotUsageSummary:
                     logical_call_count=len(logical),
                     physical_attempt_count=len(selected),
                     retry_count=len(selected) - len(logical),
-                    input_tokens=sum(item.usage.input_tokens or 0 for item in selected),
-                    output_tokens=sum(item.usage.output_tokens or 0 for item in selected),
-                    total_tokens=sum(item.usage.total_tokens or 0 for item in selected),
+                    input_tokens=sum(
+                        item.usage.input_tokens
+                        for item in selected
+                        if item.usage.input_tokens is not None
+                    ),
+                    output_tokens=sum(
+                        item.usage.output_tokens
+                        for item in selected
+                        if item.usage.output_tokens is not None
+                    ),
+                    total_tokens=sum(
+                        item.usage.total_tokens
+                        for item in selected
+                        if item.usage.total_tokens is not None
+                    ),
                     missing_total_usage_attempt_count=sum(
                         item.usage.total_tokens is None for item in selected
                     ),
@@ -549,7 +562,11 @@ class PilotUsageSummary:
                     ),
                 )
             )
-        reported = sum(item.usage.total_tokens or 0 for item in attempts)
+        reported = sum(
+            item.usage.total_tokens
+            for item in attempts
+            if item.usage.total_tokens is not None
+        )
         logical_count = len(
             {(item.service_role, item.logical_call_id) for item in attempts}
         )
@@ -640,7 +657,7 @@ class PilotReport:
             ):
                 raise PilotPersistenceError("successful pilot report is inconsistent")
         elif (
-            self.acceptance_state != "rejected"
+            self.acceptance_state != "pending"
             or self.eligible_for_manual_acceptance
             or not self.rejection_reasons
             or self.terminal_error_type is None
@@ -651,7 +668,9 @@ class PilotReport:
             or self.mra_diagnostic_mean is not None
             or self.bcr_export_record_count != 0
         ):
-            raise PilotPersistenceError("failed pilot report must be terminally rejected")
+            raise PilotPersistenceError(
+                "failed pilot report must remain pending manual review"
+            )
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -831,7 +850,7 @@ def _failed_report(
         run_id=manifest.run_id,
         mode=manifest.plan.mode,
         manifest_hash=manifest.manifest_hash,
-        acceptance_state="rejected",
+        acceptance_state="pending",
         technical_success=False,
         eligible_for_manual_acceptance=False,
         source_run_status=source_status,
@@ -950,6 +969,7 @@ def execute_pilot(
             llm_client=llm_client,
             embedding_provider=embedding_provider,
             config_directory=config_directory,
+            sanitize_failure_messages=mode == "real",
         ).run(
             output_root=paths.output_root,
             experiment_id=experiment_id,
@@ -980,11 +1000,18 @@ def execute_pilot(
             attempts,
             max_total_tokens=effective_budget,
         )
-        if mode == "real" and (
-            usage.logical_call_count != PILOT_CALL_LIMITS.total_logical_calls
-            or usage.budget_exceeded
-        ):
-            raise PilotRunValidationError("real provider usage does not match pilot plan")
+        if mode == "real":
+            if usage.missing_total_usage_attempt_count != 0:
+                raise PilotUsageError(
+                    "real pilot provider usage is incomplete for one or more attempts"
+                )
+            if (
+                usage.logical_call_count != PILOT_CALL_LIMITS.total_logical_calls
+                or usage.budget_exceeded
+            ):
+                raise PilotRunValidationError(
+                    "real provider usage does not match pilot plan"
+                )
         report = _successful_report(
             paths=paths,
             manifest=manifest,
@@ -1163,6 +1190,34 @@ def _load_attempts(path: Path) -> tuple[ProviderAttemptRecord, ...]:
         ):
             raise PilotReviewError("persisted provider calls exceed pilot limits")
     return tuple(records)
+
+
+def _reconstruct_usage_for_review(
+    *,
+    attempts: tuple[ProviderAttemptRecord, ...],
+    max_total_tokens: int | None,
+) -> dict[str, object]:
+    try:
+        return PilotUsageSummary.from_attempts(
+            attempts,
+            max_total_tokens=max_total_tokens,
+        ).to_dict()
+    except PilotPersistenceError:
+        raise PilotReviewError("pilot usage evidence is invalid") from None
+
+
+def _require_complete_provider_usage(
+    *,
+    usage: Mapping[str, object],
+    attempts: tuple[ProviderAttemptRecord, ...],
+) -> None:
+    if (
+        usage.get("missing_total_usage_attempt_count") != 0
+        or any(attempt.usage.total_tokens is None for attempt in attempts)
+    ):
+        raise PilotReviewError(
+            "pilot has provider attempts with incomplete token usage"
+        )
 
 
 def _validate_manifest_mapping(value: dict[str, Any]) -> None:
@@ -1371,10 +1426,10 @@ def review_pilot(
     )
     attempts = _load_attempts(evidence / "pilot_attempts.jsonl")
     _validate_manifest_mapping(manifest)
-    reconstructed_usage = PilotUsageSummary.from_attempts(
-        attempts,
+    reconstructed_usage = _reconstruct_usage_for_review(
+        attempts=attempts,
         max_total_tokens=manifest.get("max_total_tokens"),
-    ).to_dict()
+    )
     if (
         report.get("manifest_hash") != manifest.get("manifest_hash")
         or report.get("pilot_id") != manifest.get("pilot_id")
@@ -1430,65 +1485,98 @@ def review_pilot(
         raise PilotReviewError("pilot report identity or eligibility is invalid")
     if report.get("acceptance_state") != "pending":
         raise PilotReviewError("terminally accepted or rejected pilot evidence cannot be reused")
+    if decision == "accepted":
+        _require_complete_provider_usage(usage=usage, attempts=attempts)
     technical_success = report.get("technical_success") is True
-    if (
-        not technical_success
-        or report.get("source_run_status") != "excluded"
-        or report.get("mra_diagnostic_record_count") != 4
-        or report.get("bcr_export_record_count") != 4
-        or report.get("terminal_error_type") is not None
-        or report.get("technical_checks") != list(_SUCCESSFUL_TECHNICAL_CHECKS)
-        or report.get("rejection_reasons") != []
-    ):
-        raise PilotReviewError("only technically successful pending evidence may be reviewed")
-    if report.get("eligible_for_manual_acceptance") != (plan.get("mode") == "real"):
-        raise PilotReviewError("pilot manual-acceptance eligibility is inconsistent")
-    final_attempts: dict[tuple[str, str], ProviderAttemptRecord] = {}
-    for attempt in attempts:
-        final_attempts[(attempt.service_role, attempt.logical_call_id)] = attempt
-    if any(attempt.status != "success" for attempt in final_attempts.values()):
-        raise PilotReviewError("successful pilot contains a terminal provider failure")
-    if plan.get("mode") == "real":
-        roles = {
-            item.get("service_role"): item
-            for item in usage.get("role_usage", [])
-            if isinstance(item, dict)
-        }
+    if technical_success:
         if (
-            usage.get("logical_call_count") != PILOT_CALL_LIMITS.total_logical_calls
-            or roles.get("simulator", {}).get("logical_call_count")
-            != PILOT_CALL_LIMITS.simulator_logical_calls
-            or roles.get("embedding", {}).get("logical_call_count")
-            != PILOT_CALL_LIMITS.embedding_logical_calls
-            or roles.get("evaluator", {}).get("logical_call_count") != 0
+            report.get("source_run_status") != "excluded"
+            or report.get("mra_diagnostic_record_count") != 4
+            or report.get("bcr_export_record_count") != 4
+            or report.get("terminal_error_type") is not None
+            or report.get("technical_checks") != list(_SUCCESSFUL_TECHNICAL_CHECKS)
+            or report.get("rejection_reasons") != []
+            or report.get("eligible_for_manual_acceptance")
+            != (plan.get("mode") == "real")
         ):
-            raise PilotReviewError("real pilot provider call inventory is incomplete")
+            raise PilotReviewError("successful pending pilot evidence is inconsistent")
+        final_attempts: dict[tuple[str, str], ProviderAttemptRecord] = {}
+        for attempt in attempts:
+            final_attempts[(attempt.service_role, attempt.logical_call_id)] = attempt
+        if any(attempt.status != "success" for attempt in final_attempts.values()):
+            raise PilotReviewError("successful pilot contains a terminal provider failure")
+        if plan.get("mode") == "real":
+            roles = {
+                item.get("service_role"): item
+                for item in usage.get("role_usage", [])
+                if isinstance(item, dict)
+            }
+            if (
+                usage.get("logical_call_count")
+                != PILOT_CALL_LIMITS.total_logical_calls
+                or roles.get("simulator", {}).get("logical_call_count")
+                != PILOT_CALL_LIMITS.simulator_logical_calls
+                or roles.get("embedding", {}).get("logical_call_count")
+                != PILOT_CALL_LIMITS.embedding_logical_calls
+                or roles.get("evaluator", {}).get("logical_call_count") != 0
+            ):
+                raise PilotReviewError("real pilot provider call inventory is incomplete")
+    else:
+        rejection_reasons = report.get("rejection_reasons")
+        terminal_error_type = report.get("terminal_error_type")
+        if (
+            report.get("eligible_for_manual_acceptance") is not False
+            or not isinstance(rejection_reasons, list)
+            or not rejection_reasons
+            or any(not isinstance(item, str) or not item for item in rejection_reasons)
+            or not isinstance(terminal_error_type, str)
+            or not terminal_error_type
+            or report.get("technical_checks") != []
+            or report.get("validation") is not None
+            or report.get("diagnostic_evaluation_fingerprint") is not None
+            or report.get("mra_diagnostic_record_count") != 0
+            or report.get("mra_diagnostic_mean") is not None
+            or report.get("bcr_export_record_count") != 0
+        ):
+            raise PilotReviewError("failed pending pilot evidence is inconsistent")
+        if decision == "accepted":
+            raise PilotReviewError("technically failed pilot cannot be accepted")
     final, staging = _prepare_review_paths(evidence, run_id)
     source = evidence.parent / report.get("source_run_directory_name", "")
     evaluation = evidence.parent / report.get(
         "diagnostic_evaluation_directory_name",
         "",
     )
-    try:
-        current_validation = validate_pilot_run(source, mode=plan["mode"])
-        loaded_evaluation = load_bcr_export(evaluation)
-    except Exception:
-        raise PilotReviewError("source or diagnostic evaluation validation failed") from None
-    if (
-        current_validation.to_dict() != report.get("validation")
-        or loaded_evaluation.evaluation_mode != "diagnostic"
-        or loaded_evaluation.primary_eligible
-        or loaded_evaluation.included_in_final_research_aggregation
-        or len(loaded_evaluation.records) != 4
-        or loaded_evaluation.experiment_id != report.get("experiment_id")
-        or loaded_evaluation.run_id != run_id
-        or loaded_evaluation.retrieval_config_id != plan.get("retrieval_config_id")
-        or loaded_evaluation.repetition_index != plan.get("repetition_index")
-        or fingerprint_directory(source) != report.get("source_fingerprint")
-        or fingerprint_directory(evaluation)
-        != report.get("diagnostic_evaluation_fingerprint")
-    ):
-        raise PilotReviewError("source or evaluation evidence changed after pilot")
+    if technical_success:
+        try:
+            current_validation = validate_pilot_run(source, mode=plan["mode"])
+            loaded_evaluation = load_bcr_export(evaluation)
+        except Exception:
+            raise PilotReviewError(
+                "source or diagnostic evaluation validation failed"
+            ) from None
+        if (
+            current_validation.to_dict() != report.get("validation")
+            or loaded_evaluation.evaluation_mode != "diagnostic"
+            or loaded_evaluation.primary_eligible
+            or loaded_evaluation.included_in_final_research_aggregation
+            or len(loaded_evaluation.records) != 4
+            or loaded_evaluation.experiment_id != report.get("experiment_id")
+            or loaded_evaluation.run_id != run_id
+            or loaded_evaluation.retrieval_config_id != plan.get("retrieval_config_id")
+            or loaded_evaluation.repetition_index != plan.get("repetition_index")
+            or fingerprint_directory(source) != report.get("source_fingerprint")
+            or fingerprint_directory(evaluation)
+            != report.get("diagnostic_evaluation_fingerprint")
+        ):
+            raise PilotReviewError("source or evaluation evidence changed after pilot")
+    elif report.get("source_fingerprint") is not None:
+        try:
+            current_source_fingerprint = fingerprint_directory(source)
+        except Exception:
+            raise PilotReviewError("failed source evidence validation failed") from None
+        if current_source_fingerprint != report.get("source_fingerprint"):
+            raise PilotReviewError("failed source evidence changed after pilot")
     evidence_hash = fingerprint_directory(evidence)
     if decision == "accepted":
         if (
@@ -1504,6 +1592,7 @@ def review_pilot(
             or usage.get("budget_exceeded") is not False
         ):
             raise PilotReviewError("pilot is not eligible for manual acceptance")
+        _require_complete_provider_usage(usage=usage, attempts=attempts)
         validate_phase10_runtime(prompt_loader or PromptLoader())
         current_configs = [item.to_dict() for item in hash_config_directory(config_directory)]
         if current_configs != manifest.get("configuration_hashes"):
@@ -1522,7 +1611,7 @@ def review_pilot(
         "manual_review": True,
         "manifest_hash": manifest["manifest_hash"],
         "evidence_hash": evidence_hash,
-        "source_run_status": "excluded",
+        "source_run_status": report["source_run_status"],
         "primary_eligible": False,
         "included_in_final_research_matrix": False,
     }
@@ -1532,6 +1621,9 @@ def review_pilot(
     freeze: dict[str, object] | None = None
     freeze_hash: str | None = None
     if decision == "accepted":
+        # Recheck at the freeze creation boundary instead of relying on the
+        # preceding acceptance eligibility decision.
+        _require_complete_provider_usage(usage=usage, attempts=attempts)
         freeze_base: dict[str, object] = {
             "schema_version": PILOT_SCHEMA_VERSION,
             "freeze_state": "accepted",
@@ -1709,6 +1801,46 @@ def validate_accepted_freeze(
     _validate_manifest_mapping(manifest)
     if manifest.get("manifest_hash") != acceptance.get("manifest_hash"):
         raise PilotReviewError("accepted freeze references a different pilot manifest")
+    usage = _read_json_object(
+        evidence / "pilot_usage_summary.json",
+        error_type=PilotReviewError,
+    )
+    report = _read_json_object(
+        evidence / "pilot_report.json",
+        error_type=PilotReviewError,
+    )
+    attempts = _load_attempts(evidence / "pilot_attempts.jsonl")
+    reconstructed_usage = _reconstruct_usage_for_review(
+        attempts=attempts,
+        max_total_tokens=manifest.get("max_total_tokens"),
+    )
+    if (
+        usage != reconstructed_usage
+        or report.get("usage") != usage
+        or report.get("manifest_hash") != manifest.get("manifest_hash")
+        or report.get("pilot_id") != acceptance.get("pilot_id")
+        or report.get("experiment_id") != acceptance.get("experiment_id")
+        or report.get("run_id") != run_id
+    ):
+        raise PilotReviewError("accepted freeze usage evidence is inconsistent")
+    _require_complete_provider_usage(usage=usage, attempts=attempts)
+    if (
+        report.get("acceptance_state") != "pending"
+        or report.get("technical_success") is not True
+        or report.get("eligible_for_manual_acceptance") is not True
+        or report.get("mode") != "real"
+        or report.get("source_run_status") != "excluded"
+        or report.get("primary_eligible") is not False
+        or report.get("included_in_final_research_matrix") is not False
+        or report.get("mra_diagnostic_record_count") != 4
+        or report.get("bcr_export_record_count") != 4
+        or report.get("bcr_judgment_count") != 0
+        or report.get("terminal_error_type") is not None
+        or report.get("technical_checks") != list(_SUCCESSFUL_TECHNICAL_CHECKS)
+        or report.get("rejection_reasons") != []
+        or usage.get("budget_exceeded") is not False
+    ):
+        raise PilotReviewError("accepted freeze references ineligible pilot evidence")
     loader = prompt_loader or PromptLoader()
     try:
         validate_phase10_runtime(loader)

@@ -4,19 +4,34 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import traceback
 
 import pytest
 
+import main as main_module
+import src.simulation as simulation_module
 from phase11_test_support import (
     OvershootingEmbeddingProvider,
     Phase11MockProvider,
     RetryFirstEmbeddingProvider,
+    SentinelTextFailureProvider,
     TerminalEmbeddingFailureProvider,
+    TerminalUsagePresentInvalidOutputProvider,
+    UsagePresentRetryProvider,
     directory_bytes,
 )
 from src.config_loader import load_experiment_config
-from src.simulation.pilot import PilotExecutionError, execute_pilot, review_pilot
-from src.simulation.run_validator import fingerprint_directory
+from src.simulation.pilot import (
+    PilotExecutionError,
+    PilotReviewError,
+    execute_pilot,
+    review_pilot,
+    validate_accepted_freeze,
+)
+from src.simulation.run_validator import (
+    fingerprint_directory,
+    validate_no_secret_artifacts,
+)
 from src.simulation.safeguards import (
     PilotAuthorizationError,
     PilotScopeError,
@@ -172,23 +187,86 @@ def test_mocked_real_pilot_is_excluded_and_publishes_separate_evidence(
         )
 
 
-def test_recovered_retry_is_reported_without_automatic_rejection(
+def test_recovered_retry_with_missing_usage_is_technically_failed_and_unacceptable(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "offline-retry-key")
     provider = RetryFirstEmbeddingProvider()
 
+    with pytest.raises(PilotExecutionError) as captured:
+        execute_pilot(
+            mode="real",
+            output_root=tmp_path,
+            experiment_id="phase11_retry",
+            run_id="pilot",
+            retrieval_config_id="balanced",
+            repetition_index=1,
+            real_authorized=True,
+            max_total_tokens=3000,
+            provider=provider,
+            sleeper=lambda _: None,
+        )
+
+    error = captured.value
+    assert error.failure_type == "PilotUsageError"
+    report = json.loads(
+        (error.paths.evidence_dir / "pilot_report.json").read_text(encoding="utf-8")
+    )
+    usage = report["usage"]
+    assert report["acceptance_state"] == "pending"
+    assert report["technical_success"] is False
+    assert report["eligible_for_manual_acceptance"] is False
+    assert usage["logical_call_count"] == 260
+    assert usage["physical_attempt_count"] == 261
+    assert usage["retry_count"] == 1
+    assert usage["missing_total_usage_attempt_count"] == 1
+    attempts = [
+        json.loads(line)
+        for line in (error.paths.evidence_dir / "pilot_attempts.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
+    assert attempts[0]["logical_call_id"] == attempts[1]["logical_call_id"]
+    assert [attempts[0]["attempt_index"], attempts[1]["attempt_index"]] == [1, 2]
+    assert [attempts[0]["status"], attempts[1]["status"]] == ["failed", "success"]
+    assert attempts[0]["total_tokens"] is None
+    assert usage["reported_total_tokens"] == sum(
+        item["total_tokens"]
+        for item in attempts
+        if item["total_tokens"] is not None
+    )
+    assert error.paths.diagnostic_evaluation_dir.is_dir()
+
+    with pytest.raises(PilotReviewError, match="incomplete token usage"):
+        review_pilot(
+            evidence_dir=error.paths.evidence_dir,
+            decision="accepted",
+        )
+    reviewed = review_pilot(
+        evidence_dir=error.paths.evidence_dir,
+        decision="rejected",
+    )
+    assert reviewed.acceptance_state == "rejected"
+    assert reviewed.freeze_hash is None
+
+
+def test_recovered_retry_with_complete_usage_remains_acceptance_eligible(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "offline-complete-retry-key")
+
     result = execute_pilot(
         mode="real",
         output_root=tmp_path,
-        experiment_id="phase11_retry",
+        experiment_id="phase11_complete_retry",
         run_id="pilot",
         retrieval_config_id="balanced",
         repetition_index=1,
         real_authorized=True,
         max_total_tokens=3000,
-        provider=provider,
+        provider=UsagePresentRetryProvider(),
         sleeper=lambda _: None,
     )
 
@@ -197,16 +275,13 @@ def test_recovered_retry_is_reported_without_automatic_rejection(
     assert result.usage.logical_call_count == 260
     assert result.usage.physical_attempt_count == 261
     assert result.usage.retry_count == 1
-    assert result.usage.missing_total_usage_attempt_count == 1
-    attempts = [
-        json.loads(line)
-        for line in (result.paths.evidence_dir / "pilot_attempts.jsonl")
-        .read_text(encoding="utf-8")
-        .splitlines()
-    ]
-    assert attempts[0]["logical_call_id"] == attempts[1]["logical_call_id"]
-    assert [attempts[0]["attempt_index"], attempts[1]["attempt_index"]] == [1, 2]
-    assert [attempts[0]["status"], attempts[1]["status"]] == ["failed", "success"]
+    assert result.usage.missing_total_usage_attempt_count == 0
+    reviewed = review_pilot(
+        evidence_dir=result.paths.evidence_dir,
+        decision="accepted",
+    )
+    assert reviewed.acceptance_state == "accepted"
+    assert validate_accepted_freeze(reviewed.review_dir).pilot_id == "pilot"
 
 
 def test_terminal_provider_failure_is_rejected_with_attempt_evidence(
@@ -243,7 +318,7 @@ def test_terminal_provider_failure_is_rejected_with_attempt_evidence(
         .read_text(encoding="utf-8")
         .splitlines()
     ]
-    assert report["acceptance_state"] == "rejected"
+    assert report["acceptance_state"] == "pending"
     assert report["technical_success"] is False
     assert report["eligible_for_manual_acceptance"] is False
     assert report["included_in_final_research_matrix"] is False
@@ -254,6 +329,113 @@ def test_terminal_provider_failure_is_rejected_with_attempt_evidence(
     assert [item["attempt_index"] for item in attempts] == [1, 2]
     assert all(item["status"] == "failed" for item in attempts)
     assert all("raw" not in key for item in attempts for key in item)
+    reviewed = review_pilot(
+        evidence_dir=error.paths.evidence_dir,
+        decision="rejected",
+    )
+    assert reviewed.acceptance_state == "rejected"
+
+
+def test_complete_usage_technical_failure_cannot_be_manually_accepted(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "offline-complete-failure-key")
+    with pytest.raises(PilotExecutionError) as captured:
+        execute_pilot(
+            mode="real",
+            output_root=tmp_path,
+            experiment_id="phase11_complete_usage_failure",
+            run_id="pilot",
+            retrieval_config_id="balanced",
+            repetition_index=1,
+            real_authorized=True,
+            max_total_tokens=3000,
+            provider=TerminalUsagePresentInvalidOutputProvider(),
+            sleeper=lambda _: None,
+        )
+
+    error = captured.value
+    report = json.loads(
+        (error.paths.evidence_dir / "pilot_report.json").read_text(encoding="utf-8")
+    )
+    assert report["acceptance_state"] == "pending"
+    assert report["technical_success"] is False
+    assert report["usage"]["missing_total_usage_attempt_count"] == 0
+    with pytest.raises(PilotReviewError, match="technically failed"):
+        review_pilot(
+            evidence_dir=error.paths.evidence_dir,
+            decision="accepted",
+        )
+    assert not error.paths.review_dir.exists()
+
+
+def test_provider_error_text_is_sanitized_from_source_and_safeguard_outputs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    sentinel = "RAW_PROVIDER_SENTINEL_DO_NOT_PERSIST_7fd1b48a"
+    monkeypatch.setenv("OPENAI_API_KEY", "offline-source-sanitization-key")
+
+    with pytest.raises(PilotExecutionError) as captured:
+        execute_pilot(
+            mode="real",
+            output_root=tmp_path,
+            experiment_id="phase11_sanitized_source_failure",
+            run_id="pilot",
+            retrieval_config_id="balanced",
+            repetition_index=1,
+            real_authorized=True,
+            max_total_tokens=3000,
+            provider=SentinelTextFailureProvider(sentinel),
+            sleeper=lambda _: None,
+        )
+
+    error = captured.value
+    errors_path = error.paths.source_run_dir / "errors.jsonl"
+    errors = [
+        json.loads(line)
+        for line in errors_path.read_text(encoding="utf-8").splitlines()
+    ]
+    assert error.failure_type == "ProviderTimeoutError"
+    assert len(errors) == 1
+    assert errors[0]["error_type"] == "ProviderTimeoutError"
+    assert errors[0]["message"] == (
+        "Pilot run failed; inspect the canonical error type and attempt records."
+    )
+    assert sentinel not in str(error)
+    assert sentinel not in repr(error)
+    assert sentinel not in "".join(
+        traceback.format_exception(captured.type, captured.value, captured.tb)
+    )
+    assert sentinel.encode("utf-8") not in b"".join(
+        directory_bytes(tmp_path).values()
+    )
+    validate_no_secret_artifacts(
+        error.paths.source_run_dir,
+        secret_value=sentinel,
+    )
+
+    def raise_sanitized_pilot_error(**_kwargs):
+        raise error
+
+    monkeypatch.setattr(
+        simulation_module,
+        "execute_pilot",
+        raise_sanitized_pilot_error,
+    )
+    assert main_module.main(
+        [
+            "run-pilot",
+            "--dummy",
+            "--output-root",
+            str(tmp_path / "unused_cli_output"),
+        ]
+    ) == 1
+    captured_cli = capsys.readouterr()
+    assert sentinel not in captured_cli.out
+    assert sentinel not in captured_cli.err
 
 
 def test_keyboard_interrupt_persists_one_attempt_before_pilot_finalization(
@@ -315,7 +497,7 @@ def test_keyboard_interrupt_persists_one_attempt_before_pilot_finalization(
     assert report["usage"]["logical_call_count"] == 1
     assert report["usage"]["reported_total_tokens"] == 0
     assert report["usage"]["missing_total_usage_attempt_count"] == 1
-    assert report["acceptance_state"] == "rejected"
+    assert report["acceptance_state"] == "pending"
     assert report["technical_success"] is False
     assert report["terminal_error_type"] == "KeyboardInterrupt"
     assert source_summary["status"] == "interrupted"
@@ -387,7 +569,7 @@ def test_simulator_keyboard_interrupt_is_persisted_once_without_retry(
     assert simulator_attempts[0]["total_tokens"] is None
     assert report["usage"]["physical_attempt_count"] == len(attempts)
     assert report["usage"]["missing_total_usage_attempt_count"] == 1
-    assert report["acceptance_state"] == "rejected"
+    assert report["acceptance_state"] == "pending"
     assert report["terminal_error_type"] == "KeyboardInterrupt"
 
 
@@ -422,7 +604,7 @@ def test_post_call_token_overshoot_rejects_after_persisting_consumed_usage(
     assert attempt["total_tokens"] == 6
     assert report["usage"]["reported_total_tokens"] == 6
     assert report["usage"]["budget_exceeded"] is True
-    assert report["acceptance_state"] == "rejected"
+    assert report["acceptance_state"] == "pending"
 
 
 def test_required_api_usage_projection_failure_prevents_pilot_success(
@@ -467,7 +649,7 @@ def test_required_api_usage_projection_failure_prevents_pilot_success(
     )
     assert error.failure_type == "PilotUsageError"
     assert report["technical_success"] is False
-    assert report["acceptance_state"] == "rejected"
+    assert report["acceptance_state"] == "pending"
     assert source_summary["status"] == "failed"
     # Twelve seed embeddings and the first retrieval-query embedding precede
     # the first simulator attempt whose research-log projection is rejected.

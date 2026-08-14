@@ -285,6 +285,7 @@ def test_cognition_failure_is_terminalized_failed_without_retry(tmp_path: Path) 
     errors = _read_jsonl(raised.value.run_paths.errors)
     assert len(errors) == 1
     assert errors[0]["error_type"] == "RuntimeError"
+    assert errors[0]["message"] == "originating cognition failure"
 
 
 def test_keyboard_interrupt_is_terminalized_interrupted_and_reraised(

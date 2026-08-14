@@ -8,9 +8,15 @@ import shutil
 
 import pytest
 
-from phase11_test_support import Phase11MockProvider
-from src.llm.prompt_loader import DEFAULT_PROMPT_DIRECTORY, PromptLoader
+import src.simulation.pilot as pilot_module
+from phase11_test_support import Phase11MockProvider, RetryFirstEmbeddingProvider
+from src.llm.prompt_loader import (
+    DEFAULT_PROMPT_DIRECTORY,
+    PROMPT_VERSION,
+    PromptLoader,
+)
 from src.simulation.pilot import (
+    PilotExecutionError,
     PilotReviewError,
     execute_pilot,
     review_pilot,
@@ -193,3 +199,83 @@ def test_review_reconstructs_usage_instead_of_trusting_self_reported_counts(
         )
 
     assert not result.paths.review_dir.exists()
+
+
+def test_freeze_validation_rejects_forged_acceptance_with_missing_usage(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENAI_API_KEY", "offline-forged-freeze-key")
+    with pytest.raises(PilotExecutionError) as captured:
+        execute_pilot(
+            mode="real",
+            output_root=tmp_path,
+            experiment_id="phase11_forged_freeze",
+            run_id="pilot",
+            retrieval_config_id="balanced",
+            repetition_index=1,
+            real_authorized=True,
+            max_total_tokens=3000,
+            provider=RetryFirstEmbeddingProvider(),
+            sleeper=lambda _: None,
+        )
+
+    paths = captured.value.paths
+    manifest = json.loads(
+        (paths.evidence_dir / "pilot_manifest.json").read_text(encoding="utf-8")
+    )
+    evidence_hash = pilot_module.fingerprint_directory(paths.evidence_dir)
+    acceptance_base = {
+        "schema_version": "1.0",
+        "pilot_id": "pilot",
+        "experiment_id": "phase11_forged_freeze",
+        "run_id": "pilot",
+        "acceptance_state": "accepted",
+        "manual_review": True,
+        "manifest_hash": manifest["manifest_hash"],
+        "evidence_hash": evidence_hash,
+        "source_run_status": "excluded",
+        "primary_eligible": False,
+        "included_in_final_research_matrix": False,
+    }
+    acceptance_hash = pilot_module._content_hash(acceptance_base)
+    acceptance = dict(acceptance_base, acceptance_hash=acceptance_hash)
+    freeze_base = {
+        "schema_version": "1.0",
+        "freeze_state": "accepted",
+        "pilot_id": "pilot",
+        "experiment_id": "phase11_forged_freeze",
+        "run_id": "pilot",
+        "acceptance_hash": acceptance_hash,
+        "evidence_hash": evidence_hash,
+        "manifest_hash": manifest["manifest_hash"],
+        "prompt_version": PROMPT_VERSION,
+        "configuration_hashes": manifest["configuration_hashes"],
+        "prompts": manifest["prompts"],
+        "simulator_settings": manifest["simulator_settings"],
+        "evaluator_settings": manifest["evaluator_settings"],
+        "embedding_settings": manifest["embedding_settings"],
+        "retry_policy": manifest["retry_policy"],
+        "evaluation_schema_version": manifest["evaluation_schema_version"],
+        "research_log_schema_version": manifest["research_log_schema_version"],
+        "bcr_rubric_version": manifest["bcr_rubric_version"],
+        "primary_eligible": False,
+        "included_in_final_research_matrix": False,
+        "phase13_source_and_git_verification_required": True,
+    }
+    freeze = dict(
+        freeze_base,
+        freeze_hash=pilot_module._content_hash(freeze_base),
+    )
+    paths.review_dir.mkdir()
+    (paths.review_dir / "pilot_acceptance.json").write_text(
+        json.dumps(acceptance, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    (paths.review_dir / "freeze_manifest.json").write_text(
+        json.dumps(freeze, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(PilotReviewError, match="incomplete token usage"):
+        validate_accepted_freeze(paths.review_dir)
