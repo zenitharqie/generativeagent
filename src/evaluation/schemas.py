@@ -97,9 +97,17 @@ def _optional_text(value: object, field_name: str) -> str | None:
     return _text(value, field_name)
 
 
-def _score(value: object, field_name: str) -> int:
-    if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 5:
-        raise EvaluationSchemaError(f"{field_name} must be an integer from 1 through 5")
+def _binary_judgment(value: object, field_name: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int) or value not in {0, 1}:
+        raise EvaluationSchemaError(f"{field_name} must be exactly 0 or 1")
+    return value
+
+
+def _rubric_assessment(value: object, field_name: str) -> str:
+    if not isinstance(value, str) or value not in {"consistent", "inconsistent"}:
+        raise EvaluationSchemaError(
+            f"{field_name} must be 'consistent' or 'inconsistent'"
+        )
     return value
 
 
@@ -387,71 +395,56 @@ class BCRModelMetadata:
 
 @dataclass(frozen=True)
 class FutureBCRJudgment:
-    """Minimum judged-value contract for Phase 10; never populated by Phase 09."""
+    """Binary judged-value contract for Phase 10; never populated by Phase 09."""
 
-    communication_style_score: int
-    focus_consistency_score: int
-    temporal_consistency_score: int
-    communication_style_reason: str
-    focus_consistency_reason: str
-    temporal_consistency_reason: str
+    communication_style_assessment: str
+    focus_consistency_assessment: str
+    temporal_consistency_assessment: str
+    consistent: int
+    reason: str
 
     def __post_init__(self) -> None:
         for field_name in (
-            "communication_style_score",
-            "focus_consistency_score",
-            "temporal_consistency_score",
-        ):
-            _score(getattr(self, field_name), field_name)
-        for field_name in (
-            "communication_style_reason",
-            "focus_consistency_reason",
-            "temporal_consistency_reason",
+            "communication_style_assessment",
+            "focus_consistency_assessment",
+            "temporal_consistency_assessment",
         ):
             object.__setattr__(
                 self,
                 field_name,
-                _text(getattr(self, field_name), field_name),
+                _rubric_assessment(getattr(self, field_name), field_name),
             )
-
-    @property
-    def bcr(self) -> float:
-        return (
-            self.communication_style_score
-            + self.focus_consistency_score
-            + self.temporal_consistency_score
-        ) / 3
+        object.__setattr__(
+            self,
+            "consistent",
+            _binary_judgment(self.consistent, "consistent"),
+        )
+        object.__setattr__(self, "reason", _text(self.reason, "reason"))
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "communication_style_score": self.communication_style_score,
-            "focus_consistency_score": self.focus_consistency_score,
-            "temporal_consistency_score": self.temporal_consistency_score,
-            "communication_style_reason": self.communication_style_reason,
-            "focus_consistency_reason": self.focus_consistency_reason,
-            "temporal_consistency_reason": self.temporal_consistency_reason,
-            "bcr": self.bcr,
+            "communication_style_assessment": self.communication_style_assessment,
+            "focus_consistency_assessment": self.focus_consistency_assessment,
+            "temporal_consistency_assessment": self.temporal_consistency_assessment,
+            "consistent": self.consistent,
+            "reason": self.reason,
         }
 
 
 def future_bcr_contract_dict() -> dict[str, Any]:
-    """Return the unpopulated, frozen minimum Phase 10 judged-value contract."""
+    """Return the unpopulated, frozen binary Phase 10 judgment contract."""
     return {
         "status": "not_judged_phase_09",
-        "score_fields": [
-            "communication_style_score",
-            "focus_consistency_score",
-            "temporal_consistency_score",
+        "decision_type": "binary",
+        "allowed_final_values": [0, 1],
+        "rubric_dimensions": [
+            "communication_style",
+            "focus_consistency",
+            "temporal_consistency",
         ],
-        "score_type": "integer",
-        "score_minimum": 1,
-        "score_maximum": 5,
-        "reason_fields": [
-            "communication_style_reason",
-            "focus_consistency_reason",
-            "temporal_consistency_reason",
-        ],
-        "bcr_formula": "arithmetic_mean_of_three_dimension_scores",
+        "rubric_assessment_values": ["consistent", "inconsistent"],
+        "final_judgment_field": "consistent",
+        "final_metric": "proportion_of_consistent_responses",
     }
 
 

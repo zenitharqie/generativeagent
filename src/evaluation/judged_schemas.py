@@ -15,7 +15,6 @@ from src.evaluation.schemas import (
 )
 from src.llm.settings import (
     BCR_RUBRIC_VERSION,
-    EVALUATOR_MODEL_IDENTITY,
     EVALUATOR_PROFILE,
     SIMULATOR_MODEL_IDENTITY,
 )
@@ -68,8 +67,11 @@ class BCRJudgedRecord:
             raise BCRJudgmentError("judgment must be FutureBCRJudgment")
         if not isinstance(self.model_metadata, BCRModelMetadata):
             raise BCRJudgmentError("model_metadata must be BCRModelMetadata")
-        if self.model_metadata.evaluator_model_identity != EVALUATOR_MODEL_IDENTITY:
-            raise BCRJudgmentError("judged record must use the approved evaluator model")
+        evaluator_identity = self.model_metadata.evaluator_model_identity
+        if evaluator_identity is None:
+            raise BCRJudgmentError("judged record requires an evaluator model identity")
+        if evaluator_identity == self.model_metadata.simulator_model_identity:
+            raise BCRJudgmentError("simulator and evaluator identities must differ")
         if self.model_metadata.evaluator_prompt_version is None:
             raise BCRJudgmentError("judged record requires evaluator prompt version")
         if self.model_metadata.evaluator_rubric_version != BCR_RUBRIC_VERSION:
@@ -97,7 +99,7 @@ class BCRJudgedRecord:
             if (
                 attempt.service_role != "evaluator"
                 or attempt.call_type != "bcr_judge"
-                or attempt.model != EVALUATOR_MODEL_IDENTITY
+                or attempt.model != evaluator_identity
                 or attempt.prompt_template != self.prompt_template
                 or attempt.prompt_version != self.model_metadata.evaluator_prompt_version
                 or attempt.prompt_hash != self.prompt_hash
@@ -105,8 +107,8 @@ class BCRJudgedRecord:
                 raise BCRJudgmentError("provider attempt metadata does not match judged record")
 
     @property
-    def bcr(self) -> float:
-        return self.judgment.bcr
+    def consistent(self) -> int:
+        return self.judgment.consistent
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -131,7 +133,7 @@ class BCRJudgedRecord:
 
 @dataclass(frozen=True)
 class BCRJudgmentSummary:
-    """One run-level arithmetic mean and reproducibility audit summary."""
+    """One run-level binary BCR proportion and reproducibility audit summary."""
 
     experiment_id: str
     run_id: str
@@ -207,10 +209,18 @@ class BCRJudgmentSummary:
         return len(self.records)
 
     @property
-    def run_mean_bcr(self) -> float:
-        value = sum(record.bcr for record in self.records) / len(self.records)
-        if not isfinite(value) or not 1 <= value <= 5:
-            raise BCRJudgmentError("run-level BCR must be finite and in [1, 5]")
+    def consistent_count(self) -> int:
+        return sum(record.consistent for record in self.records)
+
+    @property
+    def inconsistent_count(self) -> int:
+        return self.judged_unit_count - self.consistent_count
+
+    @property
+    def run_bcr(self) -> float:
+        value = self.consistent_count / self.judged_unit_count
+        if not isfinite(value) or not 0 <= value <= 1:
+            raise BCRJudgmentError("run-level BCR must be finite and in [0, 1]")
         return value
 
     @property
@@ -242,9 +252,10 @@ class BCRJudgmentSummary:
             ),
             "source_bcr_export_hash": self.source_bcr_export_hash,
             "judged_unit_count": self.judged_unit_count,
-            "bcr_formula": "arithmetic_mean_of_three_dimension_scores",
-            "run_aggregation": "arithmetic_mean_of_agent_event_bcr_values",
-            "run_mean_bcr": self.run_mean_bcr,
+            "consistent_count": self.consistent_count,
+            "inconsistent_count": self.inconsistent_count,
+            "bcr_formula": "consistent_count_divided_by_judged_unit_count",
+            "run_bcr": self.run_bcr,
             "model_metadata": self.model_metadata.to_dict(),
             "prompt_identity": {
                 "prompt_template": self.prompt_template,

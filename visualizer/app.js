@@ -363,7 +363,7 @@
     const unitTurns = [];
     units.forEach((unit, index) => {
       const baseFields = ["event_id", "step_id", "turn_id", "agent_id", "logical_timestamp", "mra", "matched_count", "denominator", "expected_categories", "matched_memory_ids", "bcr_status", "source_bcr_record_sha256"];
-      const judgedFields = ["bcr", "communication_style_score", "focus_consistency_score", "temporal_consistency_score", "communication_style_reason", "focus_consistency_reason", "temporal_consistency_reason"];
+      const judgedFields = ["communication_style_assessment", "focus_consistency_assessment", "temporal_consistency_assessment", "consistent", "reason"];
       exactObject(unit, hasJudgment ? [...baseFields, ...judgedFields] : baseFields, `evaluation_overlay.units[${index}]`);
       for (const field of ["event_id", "step_id", "turn_id", "agent_id"]) identifierValue(unit[field], `evaluation_overlay.units[${index}].${field}`);
       const sourceTurn = turnIndex.get(unit.turn_id);
@@ -379,17 +379,21 @@
       if ((unit.bcr_status === "judged") !== hasJudgment) throw new Error("evaluation overlay judgment state is inconsistent");
       hashValue(unit.source_bcr_record_sha256, `evaluation_overlay.units[${index}].source_bcr_record_sha256`);
       if (hasJudgment) {
-        for (const field of ["bcr", "communication_style_score", "focus_consistency_score", "temporal_consistency_score"]) finiteValue(unit[field], `evaluation_overlay.units[${index}].${field}`, 0, 1);
-        for (const field of ["communication_style_reason", "focus_consistency_reason", "temporal_consistency_reason"]) textValue(unit[field], `evaluation_overlay.units[${index}].${field}`);
+        for (const field of ["communication_style_assessment", "focus_consistency_assessment", "temporal_consistency_assessment"]) enumValue(unit[field], new Set(["consistent", "inconsistent"]), `evaluation_overlay.units[${index}].${field}`);
+        integerValue(unit.consistent, `evaluation_overlay.units[${index}].consistent`, 0, 1);
+        textValue(unit.reason, `evaluation_overlay.units[${index}].reason`);
       }
       unitTurns.push(unit.turn_id);
     });
     unique(unitTurns, "evaluation_overlay.units");
     if (hasJudgment) {
       if (overlay.evaluation_mode !== "primary") throw new Error("diagnostic evaluation cannot contain judgment output");
-      exactObject(overlay.judgment, ["schema_version", "judged_unit_count", "run_mean_bcr", "model_metadata", "usage"], "evaluation_overlay.judgment");
+      exactObject(overlay.judgment, ["schema_version", "judged_unit_count", "consistent_count", "inconsistent_count", "run_bcr", "model_metadata", "usage"], "evaluation_overlay.judgment");
       if (overlay.judgment.schema_version !== "1.0" || overlay.judgment.judged_unit_count !== units.length) throw new Error("evaluation judgment identity is invalid");
-      finiteValue(overlay.judgment.run_mean_bcr, "evaluation_overlay.judgment.run_mean_bcr", 0, 1);
+      integerValue(overlay.judgment.consistent_count, "evaluation_overlay.judgment.consistent_count", 0, units.length);
+      integerValue(overlay.judgment.inconsistent_count, "evaluation_overlay.judgment.inconsistent_count", 0, units.length);
+      if (overlay.judgment.consistent_count + overlay.judgment.inconsistent_count !== overlay.judgment.judged_unit_count) throw new Error("evaluation judgment counts are inconsistent");
+      finiteValue(overlay.judgment.run_bcr, "evaluation_overlay.judgment.run_bcr", 0, 1);
       assertObject(overlay.judgment.model_metadata, "evaluation_overlay.judgment.model_metadata");
       assertObject(overlay.judgment.usage, "evaluation_overlay.judgment.usage");
       validateSafeJson(overlay.judgment.model_metadata, "evaluation_overlay.judgment.model_metadata");
@@ -776,7 +780,12 @@
         const card = document.createElement("div");
         card.className = "overlay-item";
         card.append(text("p", `Persisted MRA: ${unit.mra}`));
-        card.append(text("p", `BCR: ${unit.bcr_status}${unit.bcr == null ? "" : ` · ${unit.bcr}`}`, "muted"));
+        card.append(text("p", `BCR judgment: ${unit.bcr_status}${unit.consistent == null ? "" : ` · consistent=${unit.consistent}`}`, "muted"));
+        if (unit.consistent != null) {
+          card.append(text("p", `Rubric: communication=${unit.communication_style_assessment} · focus=${unit.focus_consistency_assessment} · temporal=${unit.temporal_consistency_assessment}`, "muted"));
+          card.append(text("p", `Persisted reason: ${unit.reason}`, "muted"));
+          card.append(text("p", `Persisted run BCR: ${evaluation.judgment.run_bcr}`, "muted"));
+        }
         card.append(text("p", "Evaluation overlay only — not agent-observed evidence.", "muted"));
         elements.overlay.append(card);
         rendered = true;

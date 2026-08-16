@@ -222,7 +222,19 @@ def make_diagnostic_evaluation(run_dir: Path, output: Path) -> Path:
             "mra_formula": "persisted_fixture_value_only",
             "mra_aggregates": {},
             "bcr_export_count": len(bcr_rows),
-            "bcr_judgment": {"status": "not_judged"},
+            "bcr_judgment": {
+                "status": "not_judged_phase_09",
+                "decision_type": "binary",
+                "allowed_final_values": [0, 1],
+                "rubric_dimensions": [
+                    "communication_style",
+                    "focus_consistency",
+                    "temporal_consistency",
+                ],
+                "rubric_assessment_values": ["consistent", "inconsistent"],
+                "final_judgment_field": "consistent",
+                "final_metric": "proportion_of_consistent_responses",
+            },
             "model_metadata": {"simulator_model_identity": None},
             "output_files": ["mra_records.jsonl", "bcr_export.jsonl"],
         },
@@ -236,7 +248,11 @@ def make_primary_judgment(evaluation: Path, output: Path) -> Path:
     bcr_lines = (evaluation / "bcr_export.jsonl").read_bytes().splitlines(keepends=True)
     bcr_rows = read_jsonl(evaluation / "bcr_export.jsonl")
     judged_rows: list[dict[str, Any]] = []
-    for bcr_row, line in zip(bcr_rows, bcr_lines, strict=True):
+    for index, (bcr_row, line) in enumerate(
+        zip(bcr_rows, bcr_lines, strict=True)
+    ):
+        consistent = 1 if index < 16 else 0
+        assessment = "consistent" if consistent else "inconsistent"
         judged_rows.append(
             {
                 "schema_version": "1.0",
@@ -246,13 +262,11 @@ def make_primary_judgment(evaluation: Path, output: Path) -> Path:
                 "audit_metadata": bcr_row["audit_metadata"],
                 "source_record_hash": sha256(line).hexdigest(),
                 "judgment": {
-                    "communication_style_score": 0.8,
-                    "focus_consistency_score": 0.7,
-                    "temporal_consistency_score": 0.9,
-                    "communication_style_reason": "Persisted safe fixture reason.",
-                    "focus_consistency_reason": "Persisted safe fixture reason.",
-                    "temporal_consistency_reason": "Persisted safe fixture reason.",
-                    "bcr": 0.8,
+                    "communication_style_assessment": assessment,
+                    "focus_consistency_assessment": assessment,
+                    "temporal_consistency_assessment": assessment,
+                    "consistent": consistent,
+                    "reason": "Persisted safe binary fixture reason.",
                 },
                 "model_metadata": {"evaluator_model_identity": "fixture:evaluator"},
                 "prompt_identity": {"template_id": "bcr_judge", "prompt_hash": "2" * 64},
@@ -276,9 +290,10 @@ def make_primary_judgment(evaluation: Path, output: Path) -> Path:
                 (evaluation / "bcr_export.jsonl").read_bytes()
             ).hexdigest(),
             "judged_unit_count": len(judged_rows),
-            "bcr_formula": "persisted_fixture_value_only",
-            "run_aggregation": {},
-            "run_mean_bcr": 0.8,
+            "consistent_count": 16,
+            "inconsistent_count": 4,
+            "bcr_formula": "consistent_count_divided_by_judged_unit_count",
+            "run_bcr": 0.8,
             "model_metadata": {"evaluator_model_identity": "fixture:evaluator"},
             "prompt_identity": {"template_id": "bcr_judge", "prompt_hash": "2" * 64},
             "runtime_settings": {},

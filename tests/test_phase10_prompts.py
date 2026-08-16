@@ -182,6 +182,54 @@ def test_bcr_renderer_uses_exact_phase09_neutral_judge_input() -> None:
     assert json.loads(rendered.user_data) == judge_input.to_dict()
     assert rendered.template_id == "bcr_judge"
     assert rendered.schema_name == "bcr_judgment_output"
+    assert rendered.output_schema == {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "communication_style_assessment",
+            "focus_consistency_assessment",
+            "temporal_consistency_assessment",
+            "consistent",
+            "reason",
+        ],
+        "properties": {
+            "communication_style_assessment": {
+                "type": "string",
+                "enum": ["consistent", "inconsistent"],
+            },
+            "focus_consistency_assessment": {
+                "type": "string",
+                "enum": ["consistent", "inconsistent"],
+            },
+            "temporal_consistency_assessment": {
+                "type": "string",
+                "enum": ["consistent", "inconsistent"],
+            },
+            "consistent": {"type": "integer", "enum": [0, 1]},
+            "reason": {"type": "string", "minLength": 1},
+        },
+    }
+
+
+def test_bcr_prompt_encodes_holistic_binary_methodology_without_legacy_scores() -> None:
+    prompt = PromptLoader().load("bcr_judge").content.casefold()
+
+    for required in (
+        "communication style",
+        "focus consistency",
+        "temporal consistency",
+        "consistent=1",
+        "consistent=0",
+        "holistically",
+        "substantive contradiction",
+    ):
+        assert required in prompt
+    for obsolete in (
+        "score exactly three",
+        "from 1 through 5",
+        "arithmetic mean",
+    ):
+        assert obsolete not in prompt
 
 
 def test_bcr_provider_payload_contains_no_experimental_or_mra_evidence() -> None:

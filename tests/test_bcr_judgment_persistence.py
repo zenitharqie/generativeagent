@@ -19,7 +19,11 @@ from src.evaluation.judgment_persistence import prepare_judgment_output
 from src.evaluation.judgment_reader import load_bcr_export
 from src.evaluation.judgment_service import judge_bcr_export
 from phase09_test_support import artifact_bytes
-from test_bcr_judge_phase10 import RepeatingJudgeProvider, VALID_JUDGMENT
+from test_bcr_judge_phase10 import (
+    RepeatingJudgeProvider,
+    VALID_INCONSISTENT_JUDGMENT,
+    VALID_JUDGMENT,
+)
 from src.llm.errors import ProviderRateLimitError
 from phase10_test_support import (
     directory_bytes,
@@ -62,7 +66,7 @@ def test_reader_loads_exactly_twenty_chronological_primary_units(
     )
 
 
-def test_complete_judgment_publishes_exact_two_files_and_run_macro_mean(
+def test_complete_judgment_publishes_exact_two_files_and_binary_run_bcr(
     tmp_path: Path,
     phase08_full_artifacts,
 ) -> None:
@@ -85,18 +89,23 @@ def test_complete_judgment_publishes_exact_two_files_and_run_macro_mean(
         "bcr_judgment_summary.json",
     }
     assert len(result.records) == 20
-    assert all(record.bcr == 4.0 for record in result.records)
-    assert result.summary.run_mean_bcr == 4.0
+    assert all(record.consistent == 1 for record in result.records)
+    assert result.summary.consistent_count == 20
+    assert result.summary.inconsistent_count == 0
+    assert result.summary.run_bcr == 1.0
     assert result.summary.judged_unit_count == 20
     assert result.summary.provider_attempt_count == 20
     summary = json.loads((output / "bcr_judgment_summary.json").read_text(encoding="utf-8"))
-    assert summary["run_mean_bcr"] == 4.0
+    assert summary["consistent_count"] == 20
+    assert summary["inconsistent_count"] == 0
+    assert summary["run_bcr"] == 1.0
+    assert summary["bcr_formula"] == "consistent_count_divided_by_judged_unit_count"
     assert "configuration" not in summary
     assert "currency_cost" not in summary["usage"]
     assert not (tmp_path / ".judged.staging").exists()
 
 
-def test_judged_rows_preserve_scores_reasons_arithmetic_mean_and_metadata(
+def test_judged_rows_preserve_binary_decision_assessments_reason_and_metadata(
     tmp_path: Path,
     phase08_full_artifacts,
 ) -> None:
@@ -116,18 +125,40 @@ def test_judged_rows_preserve_scores_reasons_arithmetic_mean_and_metadata(
         (output / "bcr_judged_records.jsonl").read_text(encoding="utf-8").splitlines()[0]
     )
 
-    assert row["judgment"] == {
-        **json.loads(VALID_JUDGMENT),
-        "bcr": 4.0,
-    }
+    assert row["judgment"] == json.loads(VALID_JUDGMENT)
     assert row["model_metadata"] == {
         "simulator_model_identity": "openai:gpt-5-nano-2025-08-07",
         "evaluator_model_identity": "openai:gpt-5-2025-08-07",
         "evaluator_prompt_version": "phase10_pilot_v1",
-        "evaluator_rubric_version": "phase10_bcr_rubric_v1",
+        "evaluator_rubric_version": "phase10_binary_bcr_rubric_v2",
     }
     assert row["prompt_identity"]["prompt_template"] == "bcr_judge"
     assert len(row["prompt_identity"]["prompt_hash"]) == 64
+
+
+def test_run_bcr_is_consistent_count_divided_by_twenty(
+    tmp_path: Path,
+    phase08_full_artifacts,
+) -> None:
+    evaluation = prepare_phase09_evaluation(
+        tmp_path,
+        phase08_full_artifacts[0].run_paths.run_dir,
+    )
+    provider = RepeatingJudgeProvider(
+        [VALID_JUDGMENT] * 17 + [VALID_INCONSISTENT_JUDGMENT] * 3
+    )
+
+    result = judge_bcr_export(
+        evaluation_dir=evaluation,
+        output_dir=tmp_path / "judged",
+        provider=provider,
+        sleeper=lambda _: None,
+    )
+
+    assert result.summary.judged_unit_count == 20
+    assert result.summary.consistent_count == 17
+    assert result.summary.inconsistent_count == 3
+    assert result.summary.run_bcr == 0.85
 
 
 def test_source_phase09_artifacts_remain_byte_identical_after_judgment(
@@ -403,4 +434,35 @@ def test_reader_rejects_corrupt_or_duplicate_bcr_json(
     path.write_text('{"schema_version":"1.0","schema_version":"1.0"}\n', encoding="utf-8")
 
     with pytest.raises(BCRJudgmentInputError):
+        load_bcr_export(evaluation)
+
+
+def test_reader_rejects_obsolete_one_to_five_phase09_contract(
+    tmp_path: Path,
+    phase08_full_artifacts,
+) -> None:
+    evaluation = prepare_phase09_evaluation(
+        tmp_path,
+        phase08_full_artifacts[0].run_paths.run_dir,
+    )
+    summary_path = evaluation / "evaluation_summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    summary["bcr_judgment"] = {
+        "status": "not_judged_phase_09",
+        "score_fields": [
+            "communication_style_score",
+            "focus_consistency_score",
+            "temporal_consistency_score",
+        ],
+        "score_type": "integer",
+        "score_minimum": 1,
+        "score_maximum": 5,
+        "bcr_formula": "arithmetic_mean_of_three_dimension_scores",
+    }
+    summary_path.write_text(
+        json.dumps(summary, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(BCRJudgmentInputError, match="unjudged Phase 09 contract"):
         load_bcr_export(evaluation)

@@ -15,9 +15,16 @@ from phase12_test_support import (
     make_primary_judgment,
     make_rejected_pilot_review,
     read_json,
+    read_jsonl,
     write_json,
+    write_jsonl,
 )
-from src.visualizer import ReplayInputError, ReplayOverlayError, export_visualizer_data
+from src.visualizer import (
+    ReplayInputError,
+    ReplayOverlayError,
+    ReplaySchemaError,
+    export_visualizer_data,
+)
 
 
 def test_explicit_evaluation_overlay_is_display_only(
@@ -227,10 +234,47 @@ def test_explicit_primary_judgment_overlay_displays_persisted_bcr_only(
 
     assert overlay["evaluation_mode"] == "primary"
     assert overlay["judgment"]["judged_unit_count"] == 20
-    assert {unit["bcr"] for unit in overlay["units"]} == {0.8}
+    assert overlay["judgment"]["consistent_count"] == 16
+    assert overlay["judgment"]["inconsistent_count"] == 4
+    assert overlay["judgment"]["run_bcr"] == 0.8
+    assert {unit["consistent"] for unit in overlay["units"]} == {0, 1}
+    assert all(
+        unit["communication_style_assessment"] in {"consistent", "inconsistent"}
+        for unit in overlay["units"]
+    )
     assert directory_bytes(result.run_paths.run_dir) == source_before
     assert directory_bytes(evaluation) == evaluation_before
     assert directory_bytes(judgment) == judgment_before
+
+
+def test_visualizer_rejects_obsolete_one_to_five_judgment_overlay(
+    tmp_path: Path,
+    phase08_full_artifacts,
+) -> None:
+    result, _, _ = phase08_full_artifacts
+    evaluation = make_diagnostic_evaluation(
+        result.run_paths.run_dir, tmp_path / "primary_evaluation"
+    )
+    judgment = make_primary_judgment(evaluation, tmp_path / "judgment")
+    rows = read_jsonl(judgment / "bcr_judged_records.jsonl")
+    rows[0]["judgment"] = {
+        "communication_style_score": 5,
+        "focus_consistency_score": 4,
+        "temporal_consistency_score": 3,
+        "communication_style_reason": "Obsolete fixture.",
+        "focus_consistency_reason": "Obsolete fixture.",
+        "temporal_consistency_reason": "Obsolete fixture.",
+        "bcr": 4.0,
+    }
+    write_jsonl(judgment / "bcr_judged_records.jsonl", rows)
+
+    with pytest.raises(ReplaySchemaError, match="persisted binary judgment"):
+        export_visualizer_data(
+            run_dir=result.run_paths.run_dir,
+            evaluation_dir=evaluation,
+            judgment_dir=judgment,
+            output=tmp_path / "obsolete.json",
+        )
 
 
 def test_missing_pilot_usage_remains_null_and_technical_failure_pending(

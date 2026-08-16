@@ -291,6 +291,51 @@ def test_valid_judgment_overlay_export_renders_in_static_frontend(
     assert frontend["rendered"] is True
 
 
+@pytest.mark.parametrize("mutation", ["non-binary", "obsolete-fields"])
+def test_frontend_rejects_malformed_binary_judgment_without_rendering(
+    tmp_path: Path,
+    phase08_full_artifacts,
+    mutation: str,
+) -> None:
+    result, _, _ = phase08_full_artifacts
+    evaluation = make_diagnostic_evaluation(
+        result.run_paths.run_dir,
+        tmp_path / "primary_evaluation",
+    )
+    judgment = make_primary_judgment(evaluation, tmp_path / "judgment")
+    output = tmp_path / "browser-judgment.json"
+    export_visualizer_data(
+        run_dir=result.run_paths.run_dir,
+        evaluation_dir=evaluation,
+        judgment_dir=judgment,
+        output=output,
+    )
+    value = json.loads(output.read_text(encoding="utf-8"))
+    unit = value["evaluation_overlay"]["units"][0]
+    if mutation == "non-binary":
+        unit["consistent"] = 2
+        unit["reason"] = UNSAFE_SENTINEL
+    else:
+        unit.pop("consistent")
+        unit.pop("communication_style_assessment")
+        unit.pop("focus_consistency_assessment")
+        unit.pop("temporal_consistency_assessment")
+        unit.pop("reason")
+        unit["communication_style_score"] = 5
+        unit["focus_consistency_score"] = 4
+        unit["temporal_consistency_score"] = 3
+        unit["communication_style_reason"] = UNSAFE_SENTINEL
+        unit["focus_consistency_reason"] = "Obsolete."
+        unit["temporal_consistency_reason"] = "Obsolete."
+        unit["bcr"] = 4.0
+
+    frontend = _run_frontend(value)
+
+    assert frontend["rendered"] is False
+    assert frontend["error_text"] == FIXED_FRONTEND_ERROR
+    assert UNSAFE_SENTINEL not in frontend["all_text"]
+
+
 @pytest.mark.parametrize(
     "case",
     [

@@ -24,7 +24,7 @@ TEXT_CONTEXT_WINDOW_TOKENS = 400_000
 CONTEXT_ACCOUNTING_RESERVE = 1_024
 MAX_PROVIDER_ATTEMPTS = 2
 RETRY_DELAY_SECONDS = 1
-BCR_RUBRIC_VERSION = "phase10_bcr_rubric_v1"
+BCR_RUBRIC_VERSION = "phase10_binary_bcr_rubric_v2"
 
 
 def _positive_int(value: object, field_name: str) -> int:

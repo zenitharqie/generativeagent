@@ -68,7 +68,7 @@ APPROVED_PHASE10_PROMPT_HASHES: Mapping[str, str] = MappingProxyType(
         "target_event_response": "f365ab2d2db5fa56e072a7d2f6a6565e5f745d16d7ae783565e7ba3553d818ac",
         "reflect": "56758b2bb233e5845fd25815e301a22d439f7a50df2fcaaaf16400c863d2b9e8",
         "importance_scoring": "defc1811c94a9aec9b42f1a5a6fa12f2de302edbecc90854ec4a4d273252880e",
-        "bcr_judge": "dead00fa47ae176ecbb3a34cd8d69b15e7ae71206bb9b26cf2270c279f9250a8",
+        "bcr_judge": "80d4cf1784e6be63eb7b4680bbea4a56eed5843f301ed527f972389b3e39253d",
     }
 )
 
@@ -474,7 +474,7 @@ def validate_phase10_runtime(prompt_loader: PromptLoader | None = None) -> None:
         or EMBEDDING_PROFILE.request_timeout_seconds != 30
         or MAX_PROVIDER_ATTEMPTS != 2
         or RETRY_DELAY_SECONDS != 1
-        or BCR_RUBRIC_VERSION != "phase10_bcr_rubric_v1"
+        or BCR_RUBRIC_VERSION != "phase10_binary_bcr_rubric_v2"
     ):
         raise PilotPreflightError("embedding, retry, timeout, or rubric settings drifted")
     loader = prompt_loader or PromptLoader()

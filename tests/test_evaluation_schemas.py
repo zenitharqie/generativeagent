@@ -17,6 +17,7 @@ from src.evaluation import (
     TargetEventJudgeInput,
     EvaluationSchemaError,
     EvaluationUnitIdentity,
+    future_bcr_contract_dict,
 )
 
 
@@ -171,54 +172,83 @@ def test_model_metadata_is_explicitly_unavailable_without_inference() -> None:
     }
 
 
+def binary_judgment(**changes: object) -> dict[str, object]:
+    value: dict[str, object] = {
+        "communication_style_assessment": "consistent",
+        "focus_consistency_assessment": "consistent",
+        "temporal_consistency_assessment": "inconsistent",
+        "consistent": 0,
+        "reason": "A substantive temporal contradiction outweighs the other evidence.",
+    }
+    value.update(changes)
+    return value
+
+
+@pytest.mark.parametrize("consistent", [-1, 2, 5, 0.0, 1.0, True, "1"])
+def test_future_bcr_contract_rejects_non_binary_final_values(
+    consistent: object,
+) -> None:
+    with pytest.raises(EvaluationSchemaError):
+        FutureBCRJudgment(**binary_judgment(consistent=consistent))  # type: ignore[arg-type]
+
+
 @pytest.mark.parametrize(
     "field",
     [
-        "communication_style_score",
-        "focus_consistency_score",
-        "temporal_consistency_score",
+        "communication_style_assessment",
+        "focus_consistency_assessment",
+        "temporal_consistency_assessment",
     ],
 )
-@pytest.mark.parametrize("score", [0, 6, 1.5, True])
-def test_future_bcr_contract_rejects_non_integer_or_out_of_range_scores(
+@pytest.mark.parametrize("assessment", ["", "mixed", "CONSISTENT", 1, None])
+def test_future_bcr_contract_rejects_invalid_rubric_assessments(
     field: str,
-    score: object,
+    assessment: object,
 ) -> None:
-    arguments = {
-        "communication_style_score": 5,
-        "focus_consistency_score": 4,
-        "temporal_consistency_score": 3,
-        "communication_style_reason": "Matches the persona style.",
-        "focus_consistency_reason": "Reflects the stated goal.",
-        "temporal_consistency_reason": "Does not contradict prior behavior.",
-    }
-    arguments[field] = score
-
     with pytest.raises(EvaluationSchemaError):
-        FutureBCRJudgment(**arguments)  # type: ignore[arg-type]
+        FutureBCRJudgment(**binary_judgment(**{field: assessment}))  # type: ignore[arg-type]
 
 
-def test_future_bcr_contract_uses_exact_three_dimension_mean_without_decision() -> None:
+@pytest.mark.parametrize("reason", ["", "   ", None, 1])
+def test_future_bcr_contract_requires_non_empty_reason(reason: object) -> None:
+    with pytest.raises(EvaluationSchemaError):
+        FutureBCRJudgment(**binary_judgment(reason=reason))  # type: ignore[arg-type]
+
+
+def test_future_bcr_contract_uses_holistic_binary_decision_without_majority_rule() -> None:
     judgment = FutureBCRJudgment(
-        communication_style_score=5,
-        focus_consistency_score=4,
-        temporal_consistency_score=3,
-        communication_style_reason="Matches the persona style.",
-        focus_consistency_reason="Reflects the stated goal.",
-        temporal_consistency_reason="Does not contradict prior behavior.",
+        **binary_judgment(),  # type: ignore[arg-type]
     )
 
-    assert judgment.bcr == 4.0
-    assert set(judgment.to_dict()) == {
-        "communication_style_score",
-        "focus_consistency_score",
-        "temporal_consistency_score",
-        "communication_style_reason",
-        "focus_consistency_reason",
-        "temporal_consistency_reason",
-        "bcr",
+    assert judgment.consistent == 0
+    assert judgment.to_dict() == {
+        "communication_style_assessment": "consistent",
+        "focus_consistency_assessment": "consistent",
+        "temporal_consistency_assessment": "inconsistent",
+        "consistent": 0,
+        "reason": "A substantive temporal contradiction outweighs the other evidence.",
     }
-    assert "decision" not in judgment.to_dict()
+
+
+def test_phase09_future_bcr_metadata_describes_only_binary_methodology() -> None:
+    contract = future_bcr_contract_dict()
+
+    assert contract == {
+        "status": "not_judged_phase_09",
+        "decision_type": "binary",
+        "allowed_final_values": [0, 1],
+        "rubric_dimensions": [
+            "communication_style",
+            "focus_consistency",
+            "temporal_consistency",
+        ],
+        "rubric_assessment_values": ["consistent", "inconsistent"],
+        "final_judgment_field": "consistent",
+        "final_metric": "proportion_of_consistent_responses",
+    }
+    serialized = repr(contract)
+    for obsolete in ("score_minimum", "score_maximum", "arithmetic_mean", "_score"):
+        assert obsolete not in serialized
 
 
 def test_mra_result_rejects_inconsistent_partition() -> None:

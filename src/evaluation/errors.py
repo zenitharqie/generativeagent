@@ -53,8 +53,8 @@ class BCRJudgmentFailure(BCRJudgmentError):
     """Terminal evaluator failure retaining only immutable sanitized attempt audit."""
 
     _MESSAGES = {
-        "provider_failure": "OpenAI BCR evaluator call failed",
-        "invalid_output": "OpenAI evaluator returned invalid structured output twice",
+        "provider_failure": "BCR evaluator call failed",
+        "invalid_output": "BCR evaluator returned invalid structured output twice",
     }
 
     def __init__(

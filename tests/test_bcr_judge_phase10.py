@@ -31,12 +31,22 @@ from phase10_test_support import (
 
 VALID_JUDGMENT = json.dumps(
     {
-        "communication_style_score": 5,
-        "communication_style_reason": "The response uses the persona's clear style.",
-        "focus_consistency_score": 4,
-        "focus_consistency_reason": "The response stays focused on preparation.",
-        "temporal_consistency_score": 3,
-        "temporal_consistency_reason": "The response does not contradict earlier events.",
+        "communication_style_assessment": "consistent",
+        "focus_consistency_assessment": "consistent",
+        "temporal_consistency_assessment": "consistent",
+        "consistent": 1,
+        "reason": "The response remains consistent with the persona and prior behavior.",
+    },
+    sort_keys=True,
+    separators=(",", ":"),
+)
+VALID_INCONSISTENT_JUDGMENT = json.dumps(
+    {
+        "communication_style_assessment": "consistent",
+        "focus_consistency_assessment": "consistent",
+        "temporal_consistency_assessment": "inconsistent",
+        "consistent": 0,
+        "reason": "A substantive temporal contradiction makes the response inconsistent.",
     },
     sort_keys=True,
     separators=(",", ":"),
@@ -68,7 +78,7 @@ def test_judge_service_sends_only_exact_phase09_neutral_judge_input(
 
     request = provider.requests[0]
     assert json.loads(request.user_data) == export.judge_input.to_dict()
-    assert outcome.judgment.bcr == 4.0
+    assert outcome.judgment.consistent == 1
     assert request.model == "gpt-5-2025-08-07"
     assert request.reasoning_effort == "medium"
     assert request.max_output_tokens == 700
@@ -106,21 +116,51 @@ def test_judge_provider_payload_excludes_outer_condition_and_mra_metadata(
         assert forbidden not in payload
 
 
-@pytest.mark.parametrize(
-    "invalid",
-    [
-        "",
-        "not json",
-        "{}",
-        VALID_JUDGMENT.replace('"communication_style_score":5', '"communication_style_score":6'),
-        VALID_JUDGMENT.replace('"focus_consistency_reason":"The response stays focused on preparation.",', ""),
-        VALID_JUDGMENT[:-1] + ',"overall_decision":"pass"}',
-        VALID_JUDGMENT.replace(
-            '"communication_style_score":5',
-            '"communication_style_score":5,"communication_style_score":4',
-        ),
-    ],
-)
+@pytest.mark.parametrize("raw_output", [VALID_JUDGMENT, VALID_INCONSISTENT_JUDGMENT])
+def test_judge_accepts_exact_binary_zero_and_one(
+    phase08_full_artifacts,
+    raw_output: str,
+) -> None:
+    export = build_bcr_export(
+        load_evaluation_run(phase08_full_artifacts[0].run_paths.run_dir)
+    )[0]
+
+    outcome = BCRJudgeService(
+        RepeatingJudgeProvider([raw_output]), sleeper=lambda _: None
+    ).judge(export)
+
+    assert outcome.judgment.consistent == json.loads(raw_output)["consistent"]
+
+
+def _invalid_judgments() -> list[str]:
+    base = json.loads(VALID_JUDGMENT)
+    values = ["", "not json", "{}"]
+    for invalid_consistent in (-1, 2, 5, 1.0, True, "1"):
+        changed = dict(base)
+        changed["consistent"] = invalid_consistent
+        values.append(json.dumps(changed))
+    changed = dict(base)
+    changed["communication_style_assessment"] = "mixed"
+    values.append(json.dumps(changed))
+    changed = dict(base)
+    changed.pop("focus_consistency_assessment")
+    values.append(json.dumps(changed))
+    changed = dict(base)
+    changed["reason"] = ""
+    values.append(json.dumps(changed))
+    changed = dict(base)
+    changed["overall_decision"] = "pass"
+    values.append(json.dumps(changed))
+    changed = dict(base)
+    changed["communication_style_score"] = 5
+    values.append(json.dumps(changed))
+    values.append(
+        VALID_JUDGMENT.replace('"consistent":1', '"consistent":1,"consistent":0')
+    )
+    return values
+
+
+@pytest.mark.parametrize("invalid", _invalid_judgments())
 def test_judge_rejects_malformed_or_out_of_contract_output_without_repair(
     phase08_full_artifacts,
     invalid: str,

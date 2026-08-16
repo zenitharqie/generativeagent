@@ -46,12 +46,11 @@ from src.llm.usage import ProviderAttemptRecord, ProviderUsage
 
 
 _JUDGMENT_KEYS = {
-    "communication_style_score",
-    "communication_style_reason",
-    "focus_consistency_score",
-    "focus_consistency_reason",
-    "temporal_consistency_score",
-    "temporal_consistency_reason",
+    "communication_style_assessment",
+    "focus_consistency_assessment",
+    "temporal_consistency_assessment",
+    "consistent",
+    "reason",
 }
 
 
@@ -101,7 +100,7 @@ def _parse_judgment(raw_output: str) -> FutureBCRJudgment:
     try:
         return FutureBCRJudgment(**value)
     except (TypeError, ValueError) as exc:
-        raise BCRJudgmentError("evaluator output violates the BCR score contract") from exc
+        raise BCRJudgmentError("evaluator output violates the binary BCR contract") from exc
 
 
 @dataclass(frozen=True)

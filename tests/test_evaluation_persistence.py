@@ -45,6 +45,27 @@ def test_primary_evaluation_publishes_exact_three_file_layout(
     assert summary["evaluation_mode"] == "primary"
     assert summary["primary_eligible"] is True
     assert summary["included_in_final_research_aggregation"] is True
+    assert summary["bcr_judgment"] == {
+        "status": "not_judged_phase_09",
+        "decision_type": "binary",
+        "allowed_final_values": [0, 1],
+        "rubric_dimensions": [
+            "communication_style",
+            "focus_consistency",
+            "temporal_consistency",
+        ],
+        "rubric_assessment_values": ["consistent", "inconsistent"],
+        "final_judgment_field": "consistent",
+        "final_metric": "proportion_of_consistent_responses",
+    }
+    summary_text = json.dumps(summary["bcr_judgment"], sort_keys=True)
+    for obsolete in (
+        "communication_style_score",
+        "score_minimum",
+        "score_maximum",
+        "arithmetic_mean_of_three_dimension_scores",
+    ):
+        assert obsolete not in summary_text
     for record in mra_records:
         assert record["evaluation_mode"] == summary["evaluation_mode"]
         assert record["primary_eligible"] is summary["primary_eligible"]

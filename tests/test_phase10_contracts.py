@@ -4,6 +4,7 @@ from pathlib import Path
 
 from src.llm.prompt_loader import DEFAULT_PROMPT_DIRECTORY, PROMPT_SPECS
 from src.llm.settings import (
+    BCR_RUBRIC_VERSION,
     EMBEDDING_DIMENSION,
     EMBEDDING_MODEL,
     EMBEDDING_MODEL_IDENTITY,
@@ -57,6 +58,7 @@ def test_runtime_profiles_freeze_approved_pilot_settings() -> None:
     assert EVALUATOR_PROFILE.seed is None
     assert MAX_PROVIDER_ATTEMPTS == 2
     assert RETRY_DELAY_SECONDS == 1
+    assert BCR_RUBRIC_VERSION == "phase10_binary_bcr_rubric_v2"
     assert OPENAI_API_KEY_ENVIRONMENT_VARIABLE == "OPENAI_API_KEY"
 
 
@@ -85,3 +87,4 @@ def test_exact_six_production_prompt_files_and_specs() -> None:
 def test_openai_dependency_is_declared_for_one_major_range() -> None:
     requirements = Path("requirements.txt").read_text(encoding="utf-8").splitlines()
     assert "openai>=2,<3" in requirements
+    assert not any("anthropic" in item.casefold() for item in requirements)

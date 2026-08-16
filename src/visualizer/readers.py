@@ -1184,9 +1184,10 @@ _JUDGMENT_SUMMARY_FIELDS = {
     "included_in_final_research_aggregation",
     "source_bcr_export_hash",
     "judged_unit_count",
+    "consistent_count",
+    "inconsistent_count",
     "bcr_formula",
-    "run_aggregation",
-    "run_mean_bcr",
+    "run_bcr",
     "model_metadata",
     "prompt_identity",
     "runtime_settings",
@@ -1251,7 +1252,24 @@ def attach_judgment_overlay(
         record_limit=20,
         exact_fields=_JUDGED_ROW_FIELDS,
     )
-    if len(rows) != 20 or summary["judged_unit_count"] != 20:
+    judged_count = _require_int(
+        summary["judged_unit_count"], "judged_unit_count", minimum=1
+    )
+    consistent_count = _require_int(
+        summary["consistent_count"], "consistent_count"
+    )
+    inconsistent_count = _require_int(
+        summary["inconsistent_count"], "inconsistent_count"
+    )
+    run_bcr = _require_number(summary["run_bcr"], "run_bcr")
+    if (
+        len(rows) != 20
+        or judged_count != 20
+        or consistent_count + inconsistent_count != judged_count
+        or not 0 <= run_bcr <= 1
+        or summary["bcr_formula"]
+        != "consistent_count_divided_by_judged_unit_count"
+    ):
         raise ReplayOverlayError("primary judgment must contain exactly 20 units")
     by_turn: dict[str, dict[str, Any]] = {}
     evaluation_units = {
@@ -1286,30 +1304,43 @@ def attach_judgment_overlay(
         ):
             raise ReplayOverlayError("judged BCR unit does not join the evaluation export")
         judgment = row["judgment"]
-        if not isinstance(judgment, Mapping) or "bcr" not in judgment:
-            raise ReplayOverlayError("judged row is missing its persisted BCR")
-        _require_number(judgment["bcr"], "persisted bcr")
+        if not isinstance(judgment, Mapping):
+            raise ReplayOverlayError("judged row is missing its binary judgment")
+        _require_fields(
+            judgment,
+            {
+                "communication_style_assessment",
+                "focus_consistency_assessment",
+                "temporal_consistency_assessment",
+                "consistent",
+                "reason",
+            },
+            "persisted binary judgment",
+        )
         for name in (
-            "communication_style_score",
-            "focus_consistency_score",
-            "temporal_consistency_score",
+            "communication_style_assessment",
+            "focus_consistency_assessment",
+            "temporal_consistency_assessment",
         ):
-            _require_number(judgment.get(name), f"persisted {name}")
-        for name in (
-            "communication_style_reason",
-            "focus_consistency_reason",
-            "temporal_consistency_reason",
-        ):
-            _require_text(judgment.get(name), f"persisted {name}")
+            if judgment[name] not in {"consistent", "inconsistent"}:
+                raise ReplayOverlayError(f"persisted {name} is invalid")
+        consistent = _require_int(judgment["consistent"], "persisted consistent")
+        if consistent not in {0, 1}:
+            raise ReplayOverlayError("persisted consistent must be 0 or 1")
+        _require_text(judgment["reason"], "persisted reason")
         by_turn[audit["turn_id"]] = {
             "bcr_status": "judged",
-            "bcr": judgment["bcr"],
-            "communication_style_score": judgment.get("communication_style_score"),
-            "focus_consistency_score": judgment.get("focus_consistency_score"),
-            "temporal_consistency_score": judgment.get("temporal_consistency_score"),
-            "communication_style_reason": judgment.get("communication_style_reason"),
-            "focus_consistency_reason": judgment.get("focus_consistency_reason"),
-            "temporal_consistency_reason": judgment.get("temporal_consistency_reason"),
+            "communication_style_assessment": judgment[
+                "communication_style_assessment"
+            ],
+            "focus_consistency_assessment": judgment[
+                "focus_consistency_assessment"
+            ],
+            "temporal_consistency_assessment": judgment[
+                "temporal_consistency_assessment"
+            ],
+            "consistent": consistent,
+            "reason": judgment["reason"],
         }
     value = dict(evaluation.value)
     units = []
@@ -1324,7 +1355,9 @@ def attach_judgment_overlay(
     value["judgment"] = {
         "schema_version": summary["schema_version"],
         "judged_unit_count": summary["judged_unit_count"],
-        "run_mean_bcr": summary["run_mean_bcr"],
+        "consistent_count": summary["consistent_count"],
+        "inconsistent_count": summary["inconsistent_count"],
+        "run_bcr": summary["run_bcr"],
         "model_metadata": summary["model_metadata"],
         "usage": summary["usage"],
     }

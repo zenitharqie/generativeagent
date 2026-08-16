@@ -78,7 +78,7 @@ def test_real_manifest_records_exact_phase10_candidate_identity_and_freeze(
         "openai:text-embedding-3-small"
     )
     assert freeze["embedding_settings"]["expected_dimension"] == 1536
-    assert freeze["bcr_rubric_version"] == "phase10_bcr_rubric_v1"
+    assert freeze["bcr_rubric_version"] == "phase10_binary_bcr_rubric_v2"
     assert freeze["phase13_source_and_git_verification_required"] is True
     validation = validate_accepted_freeze(reviewed.review_dir)
     assert validation.pilot_id == "pilot"
