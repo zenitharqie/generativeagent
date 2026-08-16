@@ -184,6 +184,46 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_CONFIG_DIRECTORY,
         help="Configuration directory used to verify an acceptance freeze.",
     )
+    replay_parser = subparsers.add_parser(
+        "export-visualizer-data",
+        help="Export a deterministic read-only replay JSON from persisted artifacts.",
+    )
+    replay_parser.add_argument(
+        "--run-dir",
+        type=Path,
+        required=True,
+        help="Canonical completed, excluded, failed, or interrupted source run directory.",
+    )
+    replay_parser.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+        help="Fresh .json output path outside the source and overlay directories.",
+    )
+    replay_parser.add_argument(
+        "--evaluation-dir",
+        type=Path,
+        default=None,
+        help="Optional explicit Phase 09 persisted evaluation overlay directory.",
+    )
+    replay_parser.add_argument(
+        "--judgment-dir",
+        type=Path,
+        default=None,
+        help="Optional explicit Phase 10 persisted judgment overlay directory.",
+    )
+    replay_parser.add_argument(
+        "--pilot-evidence-dir",
+        type=Path,
+        default=None,
+        help="Optional explicit Phase 11 pilot evidence overlay directory.",
+    )
+    replay_parser.add_argument(
+        "--pilot-review-dir",
+        type=Path,
+        default=None,
+        help="Optional explicit Phase 11 manual review/freeze overlay directory.",
+    )
     return parser
 
 
@@ -389,6 +429,50 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Acceptance hash: {result.acceptance_hash}")
         if result.freeze_hash is not None:
             print(f"Freeze hash: {result.freeze_hash}")
+        return 0
+
+    if args.command == "export-visualizer-data":
+        try:
+            from src.visualizer import VisualizerError, export_visualizer_data
+        except Exception as exc:
+            print(
+                f"Visualizer export failed: {type(exc).__name__}",
+                file=sys.stderr,
+            )
+            return 1
+
+        try:
+            result = export_visualizer_data(
+                run_dir=args.run_dir,
+                output=args.output,
+                evaluation_dir=args.evaluation_dir,
+                judgment_dir=args.judgment_dir,
+                pilot_evidence_dir=args.pilot_evidence_dir,
+                pilot_review_dir=args.pilot_review_dir,
+            )
+        except KeyboardInterrupt:
+            print(
+                "Visualizer export interrupted; no source artifact was changed.",
+                file=sys.stderr,
+            )
+            return 130
+        except VisualizerError as exc:
+            print(
+                f"Visualizer export failed: {type(exc).__name__}",
+                file=sys.stderr,
+            )
+            return 1
+        except Exception as exc:
+            print(
+                f"Visualizer export failed: {type(exc).__name__}",
+                file=sys.stderr,
+            )
+            return 1
+        print("Visualizer replay exported successfully.")
+        print("Output published to the requested fresh path.")
+        print(f"SHA-256: {result.output_sha256}")
+        print(f"Bytes: {result.output_bytes}")
+        print(f"Source status: {result.document.run.source_status}")
         return 0
 
     print("Classroom generative-agents repository scaffold is ready.")
