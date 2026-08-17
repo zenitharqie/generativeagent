@@ -224,6 +224,48 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional explicit Phase 11 manual review/freeze overlay directory.",
     )
+    annotation_package_parser = subparsers.add_parser(
+        "generate-ground-truth-annotation-package",
+        help="Publish the deterministic 20-unit manual annotation package.",
+    )
+    annotation_package_parser.add_argument(
+        "--output", type=Path, required=True, help="Fresh annotation-package JSON path."
+    )
+    annotation_package_parser.add_argument(
+        "--config-dir", type=Path, default=DEFAULT_CONFIG_DIRECTORY
+    )
+    embedding_input_parser = subparsers.add_parser(
+        "prepare-ground-truth-embedding-input",
+        help="Validate three manual submissions and publish candidate embedding input.",
+    )
+    embedding_input_parser.add_argument("--package", type=Path, required=True)
+    embedding_input_parser.add_argument("--annotations-dir", type=Path, required=True)
+    embedding_input_parser.add_argument("--output", type=Path, required=True)
+    embedding_input_parser.add_argument(
+        "--config-dir", type=Path, default=DEFAULT_CONFIG_DIRECTORY
+    )
+    finalization_parser = subparsers.add_parser(
+        "finalize-ground-truth",
+        help="Finalize Ground Truth from manual annotations and persisted embeddings.",
+    )
+    finalization_parser.add_argument("--package", type=Path, required=True)
+    finalization_parser.add_argument("--annotations-dir", type=Path, required=True)
+    finalization_parser.add_argument("--embedding-evidence", type=Path, required=True)
+    finalization_parser.add_argument("--output-dir", type=Path, required=True)
+    finalization_parser.add_argument(
+        "--config-dir", type=Path, default=DEFAULT_CONFIG_DIRECTORY
+    )
+    embedding_evidence_parser = subparsers.add_parser(
+        "generate-ground-truth-embedding-evidence",
+        help="Acquire only approved text-embedding-3-small vectors for Ground Truth consolidation.",
+    )
+    embedding_modes = embedding_evidence_parser.add_mutually_exclusive_group(required=True)
+    embedding_modes.add_argument("--real", action="store_true")
+    embedding_modes.add_argument("--dummy", action="store_true")
+    embedding_evidence_parser.add_argument("--input", type=Path, required=True)
+    embedding_evidence_parser.add_argument("--output", type=Path, required=True)
+    embedding_evidence_parser.add_argument("--allow-real-embedding", type=_parse_explicit_true, metavar="true")
+    embedding_evidence_parser.add_argument("--confirm-ground-truth-embedding", default=None)
     experiment_parser = subparsers.add_parser(
         "run-full-experiment",
         help="Plan or execute the fail-fast Phase 13 4x3 experiment.",
@@ -267,6 +309,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         help="Current manually accepted Phase 11 review/freeze directory for real mode.",
+    )
+    experiment_parser.add_argument(
+        "--ground-truth-finalization-dir",
+        type=Path,
+        default=None,
+        help="Explicit evidence directory authenticating the installed final Ground Truth.",
     )
     experiment_parser.add_argument(
         "--experiment-id",
@@ -542,6 +590,99 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"Source status: {result.document.run.source_status}")
         return 0
 
+    if args.command == "generate-ground-truth-annotation-package":
+        try:
+            from src.evaluation.ground_truth import generate_annotation_package
+
+            package = generate_annotation_package(
+                output=args.output,
+                config_directory=args.config_dir,
+            )
+        except KeyboardInterrupt:
+            print("Ground Truth package generation interrupted.", file=sys.stderr)
+            return 130
+        except Exception as exc:
+            print(
+                f"Ground Truth package generation failed: {type(exc).__name__}",
+                file=sys.stderr,
+            )
+            return 1
+        print("Ground Truth annotation package published successfully.")
+        print("Annotation units: 20")
+        print(f"Package SHA-256: {package.package_sha256}")
+        return 0
+
+    if args.command == "prepare-ground-truth-embedding-input":
+        try:
+            from src.evaluation.ground_truth import prepare_embedding_input
+
+            value = prepare_embedding_input(
+                package_path=args.package,
+                annotations_directory=args.annotations_dir,
+                output=args.output,
+                config_directory=args.config_dir,
+            )
+        except KeyboardInterrupt:
+            print("Ground Truth embedding-input preparation interrupted.", file=sys.stderr)
+            return 130
+        except Exception as exc:
+            print(
+                f"Ground Truth embedding-input preparation failed: {type(exc).__name__}",
+                file=sys.stderr,
+            )
+            return 1
+        print("Ground Truth embedding input published successfully.")
+        print(f"Candidate phrases: {value['candidate_count']}")
+        print(f"Candidate-set SHA-256: {value['candidate_set_sha256']}")
+        return 0
+
+    if args.command == "generate-ground-truth-embedding-evidence":
+        try:
+            from src.evaluation.ground_truth.embedding_service import generate_embedding_evidence
+
+            evidence = generate_embedding_evidence(
+                input_path=args.input,
+                output_path=args.output,
+                mode="real" if args.real else "dummy",
+                confirmation=args.confirm_ground_truth_embedding,
+                real_authorized=args.allow_real_embedding is True,
+            )
+        except KeyboardInterrupt:
+            print("Ground Truth embedding acquisition interrupted.", file=sys.stderr)
+            return 130
+        except Exception as exc:
+            print(f"Ground Truth embedding acquisition failed: {type(exc).__name__}", file=sys.stderr)
+            return 1
+        print("Ground Truth embedding evidence published successfully.")
+        print(f"Candidate vectors: {len(evidence['embeddings'])}")
+        print(f"Acquisition mode: {evidence['acquisition_mode']}")
+        return 0
+
+    if args.command == "finalize-ground-truth":
+        try:
+            from src.evaluation.ground_truth import finalize_ground_truth
+
+            bundle = finalize_ground_truth(
+                package_path=args.package,
+                annotations_directory=args.annotations_dir,
+                embedding_evidence_path=args.embedding_evidence,
+                output_directory=args.output_dir,
+                config_directory=args.config_dir,
+            )
+        except KeyboardInterrupt:
+            print("Ground Truth finalization interrupted.", file=sys.stderr)
+            return 130
+        except Exception as exc:
+            print(
+                f"Ground Truth finalization failed: {type(exc).__name__}",
+                file=sys.stderr,
+            )
+            return 1
+        print("Ground Truth finalized successfully from complete methodology evidence.")
+        print("Final units: 20")
+        print(f"Ground Truth fingerprint: {bundle.fingerprint_sha256}")
+        return 0
+
     if args.command == "run-full-experiment":
         mode = (
             "dry-run"
@@ -567,6 +708,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     args.allow_real_llm,
                     args.max_total_tokens,
                     args.accepted_pilot_review_dir,
+                    args.ground_truth_finalization_dir,
                     args.confirm_full_experiment,
                 )
             ):
@@ -628,6 +770,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 real_authorized=args.allow_real_llm is True,
                 max_total_tokens=args.max_total_tokens,
                 accepted_pilot_review_dir=args.accepted_pilot_review_dir,
+                ground_truth_finalization_dir=args.ground_truth_finalization_dir,
                 on_conflict=args.on_conflict,
             )
         except KeyboardInterrupt:

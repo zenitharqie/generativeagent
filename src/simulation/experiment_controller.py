@@ -163,8 +163,9 @@ def validate_execution_authorization(
 
 def validate_ground_truth_methodological_finalization(
     config_directory: str | Path,
+    evidence_directory: str | Path | None = None,
 ) -> None:
-    """Fail closed because the project defines no approved final GT state yet."""
+    """Require the evidence-bound Ground Truth lifecycle contract before real mode."""
     config = load_experiment_config(config_directory)
     status = config.ground_truth.get("status")
     freeze_required = config.ground_truth.get(
@@ -174,11 +175,24 @@ def validate_ground_truth_methodological_finalization(
         raise ExperimentPreflightError(
             "real experiment requires methodological ground-truth finalization"
         )
-    # No canonical final status or transition mechanism exists in Phase 01-12.
-    # Phase 13 must not invent or infer one from arbitrary configuration text.
-    raise ExperimentPreflightError(
-        "no approved methodological ground-truth final state is defined"
-    )
+    if status == "final" and evidence_directory is None:
+        raise ExperimentPreflightError(
+            "real experiment requires an explicit Ground Truth evidence directory"
+        )
+    try:
+        from src.evaluation.ground_truth import (
+            GroundTruthInputError,
+            validate_final_ground_truth_identity,
+        )
+
+        validate_final_ground_truth_identity(
+            config.ground_truth,
+            evidence_directory=None if evidence_directory is None else str(evidence_directory),
+        )
+    except GroundTruthInputError as exc:
+        raise ExperimentPreflightError(
+            "real experiment requires validated methodological ground-truth evidence"
+        ) from exc
 
 
 def _run_git(*arguments: str) -> str:
@@ -768,6 +782,7 @@ def execute_full_experiment(
     real_authorized: bool = False,
     max_total_tokens: int | None = None,
     accepted_pilot_review_dir: str | Path | None = None,
+    ground_truth_finalization_dir: str | Path | None = None,
     on_conflict: str = "fail",
     sleeper: Callable[[float], None] | None = None,
     provider_factory: Callable[[], object] | None = None,
@@ -809,7 +824,13 @@ def execute_full_experiment(
             )
         except Exception:
             raise ExperimentPreflightError("accepted Phase 11 freeze is invalid") from None
-        validate_ground_truth_methodological_finalization(config_path)
+        if ground_truth_finalization_dir is None:
+            raise ExperimentPreflightError(
+                "real experiment requires methodological ground-truth finalization evidence via --ground-truth-finalization-dir"
+            )
+        validate_ground_truth_methodological_finalization(
+            config_path, ground_truth_finalization_dir
+        )
         source_identity = capture_git_source_identity(require_clean=True, require_tag=True)
         validate_phase10_runtime()
         validate_operational_disk_space(paths.output_root)
@@ -817,7 +838,11 @@ def execute_full_experiment(
         require_openai_credential()
         active_provider = (provider_factory or _default_provider_factory)()
     else:
-        if accepted_pilot_review_dir is not None or provider_factory is not None:
+        if (
+            accepted_pilot_review_dir is not None
+            or ground_truth_finalization_dir is not None
+            or provider_factory is not None
+        ):
             raise ExperimentPreflightError(
                 "dummy experiment must not receive real freeze/provider controls"
             )
