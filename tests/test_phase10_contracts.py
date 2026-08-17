@@ -31,11 +31,11 @@ EXPECTED_PROMPT_FILES = {
 }
 
 
-def test_openai_model_and_embedding_contracts_are_exact() -> None:
+def test_provider_model_and_embedding_contracts_are_exact() -> None:
     assert SIMULATOR_MODEL == "gpt-5-nano-2025-08-07"
     assert SIMULATOR_MODEL_IDENTITY == "openai:gpt-5-nano-2025-08-07"
-    assert EVALUATOR_MODEL == "gpt-5-2025-08-07"
-    assert EVALUATOR_MODEL_IDENTITY == "openai:gpt-5-2025-08-07"
+    assert EVALUATOR_MODEL == "claude-sonnet-4-6"
+    assert EVALUATOR_MODEL_IDENTITY == "anthropic:claude-sonnet-4-6"
     assert SIMULATOR_MODEL_IDENTITY != EVALUATOR_MODEL_IDENTITY
     assert EMBEDDING_MODEL == "text-embedding-3-small"
     assert EMBEDDING_MODEL_IDENTITY == "openai:text-embedding-3-small"
@@ -84,7 +84,7 @@ def test_exact_six_production_prompt_files_and_specs() -> None:
     assert len(PROMPT_SPECS) == 6
 
 
-def test_openai_dependency_is_declared_for_one_major_range() -> None:
+def test_provider_dependencies_are_declared_for_bounded_ranges() -> None:
     requirements = Path("requirements.txt").read_text(encoding="utf-8").splitlines()
     assert "openai>=2,<3" in requirements
-    assert not any("anthropic" in item.casefold() for item in requirements)
+    assert "anthropic>=0.104,<0.121" in requirements

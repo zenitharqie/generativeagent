@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 from collections.abc import Sequence
 from pathlib import Path
+import shutil
 import sys
 
 from src.config_loader import (
@@ -255,6 +256,20 @@ def build_parser() -> argparse.ArgumentParser:
     finalization_parser.add_argument(
         "--config-dir", type=Path, default=DEFAULT_CONFIG_DIRECTORY
     )
+    judge_parser = subparsers.add_parser(
+        "judge-bcr",
+        help="Judge one Phase 09 BCR export with the independently authorized evaluator.",
+    )
+    judge_parser.add_argument("--evaluation-dir", type=Path, required=True)
+    judge_parser.add_argument("--output-dir", type=Path, required=True)
+    judge_parser.add_argument("--real", action="store_true", required=True)
+    judge_parser.add_argument(
+        "--allow-real-evaluator",
+        type=_parse_explicit_true,
+        metavar="true",
+        required=True,
+    )
+    judge_parser.add_argument("--confirm-bcr-judgment", required=True)
     embedding_evidence_parser = subparsers.add_parser(
         "generate-ground-truth-embedding-evidence",
         help="Acquire only approved text-embedding-3-small vectors for Ground Truth consolidation.",
@@ -681,6 +696,45 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("Ground Truth finalized successfully from complete methodology evidence.")
         print("Final units: 20")
         print(f"Ground Truth fingerprint: {bundle.fingerprint_sha256}")
+        return 0
+
+    if args.command == "judge-bcr":
+        if args.confirm_bcr_judgment != "JUDGE_BCR_WITH_CLAUDE":
+            print("BCR judgment failed: invalid confirmation token", file=sys.stderr)
+            return 1
+        try:
+            from src.evaluation.judgment_persistence import prepare_judgment_output
+            from src.evaluation.judgment_reader import load_bcr_export
+
+            source = load_bcr_export(args.evaluation_dir)
+            if source.evaluation_mode == "primary" and len(source.records) != 20:
+                raise ValueError("primary BCR judgment requires exactly 20 export rows")
+            prepare_judgment_output(
+                args.output_dir, source_directory=source.source_directory
+            )
+            if shutil.disk_usage(Path(args.output_dir).parent).free <= 0:
+                raise OSError("insufficient filesystem space for judgment publication")
+            from src.llm.anthropic_client import AnthropicProviderAdapter
+            from src.llm.settings import EVALUATOR_PROFILE
+            from src.evaluation.judgment_service import judge_bcr_export
+
+            provider = AnthropicProviderAdapter.from_environment(
+                timeout_seconds=EVALUATOR_PROFILE.request_timeout_seconds
+            )
+            result = judge_bcr_export(
+                evaluation_dir=args.evaluation_dir,
+                output_dir=args.output_dir,
+                provider=provider,
+            )
+        except KeyboardInterrupt:
+            print("BCR judgment interrupted; no successful bundle was published.", file=sys.stderr)
+            return 130
+        except Exception as exc:
+            print(f"BCR judgment failed: {type(exc).__name__}", file=sys.stderr)
+            return 1
+        print("BCR judgment completed successfully.")
+        print(f"Judged units: {len(result.records)}")
+        print(f"Judgment directory: {result.output_directory}")
         return 0
 
     if args.command == "run-full-experiment":

@@ -1,4 +1,4 @@
-"""Immutable OpenAI-only Phase 10 pilot runtime settings."""
+"""Immutable provider-qualified runtime settings for simulator and evaluator roles."""
 
 from __future__ import annotations
 
@@ -11,11 +11,13 @@ from src.llm.errors import RuntimeSettingsError
 
 OPENAI_PROVIDER = "openai"
 OPENAI_API_KEY_ENVIRONMENT_VARIABLE = "OPENAI_API_KEY"
+ANTHROPIC_PROVIDER = "anthropic"
+ANTHROPIC_API_KEY_ENVIRONMENT_VARIABLE = "ANTHROPIC_API_KEY"
 
 SIMULATOR_MODEL = "gpt-5-nano-2025-08-07"
 SIMULATOR_MODEL_IDENTITY = f"{OPENAI_PROVIDER}:{SIMULATOR_MODEL}"
-EVALUATOR_MODEL = "gpt-5-2025-08-07"
-EVALUATOR_MODEL_IDENTITY = f"{OPENAI_PROVIDER}:{EVALUATOR_MODEL}"
+EVALUATOR_MODEL = "claude-sonnet-4-6"
+EVALUATOR_MODEL_IDENTITY = f"{ANTHROPIC_PROVIDER}:{EVALUATOR_MODEL}"
 EMBEDDING_MODEL = "text-embedding-3-small"
 EMBEDDING_MODEL_IDENTITY = f"{OPENAI_PROVIDER}:{EMBEDDING_MODEL}"
 EMBEDDING_DIMENSION = 1536
@@ -54,8 +56,8 @@ class GenerationProfile:
     def __post_init__(self) -> None:
         if self.service_role not in {"simulator", "evaluator"}:
             raise RuntimeSettingsError("unsupported text-generation service_role")
-        if self.provider != OPENAI_PROVIDER:
-            raise RuntimeSettingsError("Phase 10 supports only the OpenAI provider")
+        if self.provider not in {OPENAI_PROVIDER, ANTHROPIC_PROVIDER}:
+            raise RuntimeSettingsError("unsupported text-generation provider")
         if self.model_identity != f"{self.provider}:{self.model}":
             raise RuntimeSettingsError("model_identity must be provider-qualified")
         if self.reasoning_effort not in {"minimal", "medium"}:
@@ -151,7 +153,7 @@ SIMULATOR_PROFILE = GenerationProfile(
 
 EVALUATOR_PROFILE = GenerationProfile(
     service_role="evaluator",
-    provider=OPENAI_PROVIDER,
+    provider=ANTHROPIC_PROVIDER,
     model=EVALUATOR_MODEL,
     model_identity=EVALUATOR_MODEL_IDENTITY,
     reasoning_effort="medium",
@@ -172,6 +174,8 @@ EMBEDDING_PROFILE = EmbeddingProfile(
 
 __all__ = [
     "BCR_RUBRIC_VERSION",
+    "ANTHROPIC_API_KEY_ENVIRONMENT_VARIABLE",
+    "ANTHROPIC_PROVIDER",
     "CONTEXT_ACCOUNTING_RESERVE",
     "EMBEDDING_DIMENSION",
     "EMBEDDING_MODEL",

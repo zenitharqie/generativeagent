@@ -15,6 +15,7 @@ from src.llm import LLMCallType, LLMClient, LLMRequest, TextEmbeddingProvider
 from src.llm.prompt_loader import PROMPT_VERSION, PromptLoader
 from src.llm.settings import (
     BCR_RUBRIC_VERSION,
+    ANTHROPIC_PROVIDER,
     EMBEDDING_DIMENSION,
     EMBEDDING_MODEL_IDENTITY,
     EMBEDDING_PROFILE,
@@ -416,7 +417,7 @@ def validate_phase10_runtime(prompt_loader: PromptLoader | None = None) -> None:
     """Verify the exact approved pilot models, settings, and prompt bytes."""
     if (
         SIMULATOR_MODEL_IDENTITY != "openai:gpt-5-nano-2025-08-07"
-        or EVALUATOR_MODEL_IDENTITY != "openai:gpt-5-2025-08-07"
+        or EVALUATOR_MODEL_IDENTITY != "anthropic:claude-sonnet-4-6"
         or EMBEDDING_MODEL_IDENTITY != "openai:text-embedding-3-small"
         or EMBEDDING_DIMENSION != 1536
     ):
@@ -450,7 +451,7 @@ def validate_phase10_runtime(prompt_loader: PromptLoader | None = None) -> None:
     ):
         raise PilotPreflightError("simulator runtime profile has drifted")
     if (
-        EVALUATOR_PROFILE.provider != OPENAI_PROVIDER
+        EVALUATOR_PROFILE.provider != ANTHROPIC_PROVIDER
         or EVALUATOR_PROFILE.model_identity != EVALUATOR_MODEL_IDENTITY
         or EVALUATOR_PROFILE.reasoning_effort != "medium"
         or EVALUATOR_PROFILE.request_timeout_seconds != 60

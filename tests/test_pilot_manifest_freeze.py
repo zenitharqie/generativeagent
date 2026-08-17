@@ -72,7 +72,7 @@ def test_real_manifest_records_exact_phase10_candidate_identity_and_freeze(
         "openai:gpt-5-nano-2025-08-07"
     )
     assert freeze["evaluator_settings"]["model_identity"] == (
-        "openai:gpt-5-2025-08-07"
+        "anthropic:claude-sonnet-4-6"
     )
     assert freeze["embedding_settings"]["model_identity"] == (
         "openai:text-embedding-3-small"

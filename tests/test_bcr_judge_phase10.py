@@ -79,7 +79,7 @@ def test_judge_service_sends_only_exact_phase09_neutral_judge_input(
     request = provider.requests[0]
     assert json.loads(request.user_data) == export.judge_input.to_dict()
     assert outcome.judgment.consistent == 1
-    assert request.model == "gpt-5-2025-08-07"
+    assert request.model == "claude-sonnet-4-6"
     assert request.reasoning_effort == "medium"
     assert request.max_output_tokens == 700
     assert request.timeout_seconds == 60
@@ -273,7 +273,7 @@ def test_primary_independence_preflight_requires_explicit_approved_distinct_mode
 
     with pytest.raises(BCRJudgmentIndependenceError, match="explicit simulator"):
         validate_evaluator_independence(load_bcr_export(missing_dir))
-    with pytest.raises(BCRJudgmentIndependenceError, match="must differ"):
+    with pytest.raises(BCRJudgmentIndependenceError, match="approved simulator"):
         validate_evaluator_independence(load_bcr_export(equal_dir))
 
 

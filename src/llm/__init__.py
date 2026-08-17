@@ -58,6 +58,7 @@ from src.llm.errors import (
     UsageMetadataError,
 )
 from src.llm.openai_client import OpenAIProviderAdapter
+from src.llm.anthropic_client import AnthropicProviderAdapter
 from src.llm.prompt_loader import (
     DEFAULT_PROMPT_DIRECTORY,
     PROMPT_SPECS,
@@ -77,6 +78,8 @@ from src.llm.provider import (
 from src.llm.service import LLMService
 from src.llm.settings import (
     BCR_RUBRIC_VERSION,
+    ANTHROPIC_API_KEY_ENVIRONMENT_VARIABLE,
+    ANTHROPIC_PROVIDER,
     EMBEDDING_DIMENSION,
     EMBEDDING_MODEL,
     EMBEDDING_MODEL_IDENTITY,
@@ -104,6 +107,9 @@ from src.llm.usage import (
 
 __all__ = [
     "ActionOutput",
+    "AnthropicProviderAdapter",
+    "ANTHROPIC_API_KEY_ENVIRONMENT_VARIABLE",
+    "ANTHROPIC_PROVIDER",
     "BCR_RUBRIC_VERSION",
     "ContextLimitError",
     "CredentialError",
