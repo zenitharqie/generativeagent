@@ -44,7 +44,7 @@ from src.simulation.turn_policy import TurnPolicyManager
 from src.storage import RunConflictError, validate_identifier
 
 
-PILOT_SCHEMA_VERSION = "1.0"
+PILOT_SCHEMA_VERSION = "2.0"
 PILOT_MODES = frozenset({"dry-run", "dummy", "real"})
 PILOT_ACCEPTANCE_STATES = frozenset({"pending", "accepted", "rejected"})
 PILOT_RETRIEVAL_CONFIG_ID = "balanced"

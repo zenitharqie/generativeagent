@@ -9,7 +9,11 @@ import shutil
 import pytest
 
 import src.simulation.pilot as pilot_module
-from phase11_test_support import Phase11MockProvider, RetryFirstEmbeddingProvider
+from phase11_test_support import (
+    Phase11MockProvider,
+    RetryFirstEmbeddingProvider,
+    install_phase11_v2_test_contract,
+)
 from src.llm.prompt_loader import (
     DEFAULT_PROMPT_DIRECTORY,
     PROMPT_VERSION,
@@ -30,6 +34,7 @@ def test_real_manifest_records_exact_phase10_candidate_identity_and_freeze(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "phase11-offline-review-key")
+    gt_dir = install_phase11_v2_test_contract(monkeypatch, tmp_path)
     result = execute_pilot(
         mode="real",
         output_root=tmp_path,
@@ -57,6 +62,7 @@ def test_real_manifest_records_exact_phase10_candidate_identity_and_freeze(
     reviewed = review_pilot(
         evidence_dir=result.paths.evidence_dir,
         decision="accepted",
+        ground_truth_finalization_dir=gt_dir,
     )
 
     assert reviewed.acceptance_state == "accepted"
@@ -80,7 +86,14 @@ def test_real_manifest_records_exact_phase10_candidate_identity_and_freeze(
     assert freeze["embedding_settings"]["expected_dimension"] == 1536
     assert freeze["bcr_rubric_version"] == "phase10_binary_bcr_rubric_v2"
     assert freeze["phase13_source_and_git_verification_required"] is True
-    validation = validate_accepted_freeze(reviewed.review_dir)
+    assert freeze["schema_version"] == "2.0"
+    assert freeze["source_identity"]["clean"] is True
+    assert freeze["ground_truth_finalization"]["embedding_model"] == (
+        "openai:text-embedding-3-small"
+    )
+    validation = validate_accepted_freeze(
+        reviewed.review_dir, ground_truth_finalization_dir=gt_dir
+    )
     assert validation.pilot_id == "pilot"
     assert validation.prompt_version == "phase10_pilot_v1"
 
@@ -96,6 +109,7 @@ def test_prompt_content_change_invalidates_an_accepted_freeze(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "phase11-offline-freeze-drift-key")
+    gt_dir = install_phase11_v2_test_contract(monkeypatch, tmp_path)
     result = execute_pilot(
         mode="real",
         output_root=tmp_path,
@@ -111,6 +125,7 @@ def test_prompt_content_change_invalidates_an_accepted_freeze(
     reviewed = review_pilot(
         evidence_dir=result.paths.evidence_dir,
         decision="accepted",
+        ground_truth_finalization_dir=gt_dir,
     )
     changed_prompts = tmp_path / "changed_prompts"
     shutil.copytree(DEFAULT_PROMPT_DIRECTORY, changed_prompts)
@@ -124,6 +139,7 @@ def test_prompt_content_change_invalidates_an_accepted_freeze(
         validate_accepted_freeze(
             reviewed.review_dir,
             prompt_loader=PromptLoader(changed_prompts),
+            ground_truth_finalization_dir=gt_dir,
         )
 
 
@@ -277,5 +293,5 @@ def test_freeze_validation_rejects_forged_acceptance_with_missing_usage(
         encoding="utf-8",
     )
 
-    with pytest.raises(PilotReviewError, match="incomplete token usage"):
+    with pytest.raises(PilotReviewError, match="accepted review content hash is invalid"):
         validate_accepted_freeze(paths.review_dir)

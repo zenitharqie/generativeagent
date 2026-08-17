@@ -41,6 +41,8 @@ from .schemas import (
     SEMANTIC_CONSOLIDATION_MODEL_IDENTITY,
     SEMANTIC_CONSOLIDATION_THRESHOLD,
     validate_final_ground_truth_identity,
+    GroundTruthFinalizationIdentity,
+    authenticated_ground_truth_identity,
 )
 from .service import (
     finalize_ground_truth,
@@ -85,4 +87,6 @@ __all__ = [
     "prepare_embedding_input",
     "validate_annotation_package",
     "validate_final_ground_truth_identity",
+    "GroundTruthFinalizationIdentity",
+    "authenticated_ground_truth_identity",
 ]

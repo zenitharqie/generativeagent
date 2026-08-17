@@ -24,6 +24,7 @@ from src.evaluation import (
     evaluate_run,
     load_bcr_export,
 )
+from src.evaluation.ground_truth import authenticated_ground_truth_identity
 from src.llm import (
     DummyEmbeddingProvider,
     LLMService,
@@ -80,6 +81,42 @@ from src.simulation.safeguards import (
     validate_real_authorization,
 )
 from src.storage import InvalidIdentifierError, validate_identifier
+
+
+def _capture_pilot_source_identity(*, require_clean: bool) -> dict[str, object]:
+    """Reuse Phase 13's canonical Git identity capture without duplicating it."""
+    try:
+        from src.simulation.experiment_controller import capture_git_source_identity
+
+        return capture_git_source_identity(
+            require_clean=require_clean, require_tag=True
+        ).to_dict()
+    except Exception:
+        raise PilotPreflightError("could not capture pilot source identity") from None
+
+
+def _validate_pilot_source_identity(value: object, *, require_clean: bool) -> None:
+    if not isinstance(value, Mapping) or set(value) != {
+        "commit", "branch", "tags", "clean"
+    }:
+        raise PilotReviewError("pilot source identity is invalid")
+    commit = value["commit"]
+    branch = value["branch"]
+    tags = value["tags"]
+    clean = value["clean"]
+    if (
+        not isinstance(commit, str)
+        or len(commit) != 40
+        or any(character not in "0123456789abcdef" for character in commit)
+        or not isinstance(branch, str)
+        or not branch
+        or not isinstance(tags, list)
+        or any(not isinstance(tag, str) or not tag for tag in tags)
+        or tags != sorted(set(tags))
+        or not isinstance(clean, bool)
+        or require_clean and clean is not True
+    ):
+        raise PilotReviewError("pilot source identity is not a clean tagged source")
 
 
 PILOT_EVIDENCE_FILENAMES = (
@@ -312,6 +349,7 @@ class PilotManifest:
     max_total_tokens: int | None
     configuration_hashes: tuple[ArtifactHash, ...]
     prompts: tuple[PromptFreezeIdentity, ...]
+    source_identity: Mapping[str, object] | None = None
     manifest_hash: str = field(init=False)
 
     def __post_init__(self) -> None:
@@ -347,6 +385,10 @@ class PilotManifest:
                 raise PilotPreflightError("real manifest requires a positive token ceiling")
         elif self.max_total_tokens is not None:
             raise PilotPreflightError("non-real manifest must not claim a token ceiling")
+        if self.plan.mode == "real":
+            _validate_pilot_source_identity(self.source_identity, require_clean=False)
+        elif self.source_identity is not None:
+            raise PilotPreflightError("dummy manifest must not claim source identity")
         object.__setattr__(self, "manifest_hash", _content_hash(self._base_dict()))
 
     def _base_dict(self) -> dict[str, object]:
@@ -363,6 +405,7 @@ class PilotManifest:
             "max_total_tokens": self.max_total_tokens,
             "configuration_hashes": [item.to_dict() for item in self.configuration_hashes],
             "prompts": [item.to_dict() for item in self.prompts],
+            "source_identity": self.source_identity,
             "simulator_settings": SIMULATOR_PROFILE.reproducibility_metadata(),
             "evaluator_settings": EVALUATOR_PROFILE.reproducibility_metadata(),
             "embedding_settings": EMBEDDING_PROFILE.reproducibility_metadata(),
@@ -389,6 +432,7 @@ def build_pilot_manifest(
     run_id: str,
     config_directory: str | Path,
     max_total_tokens: object,
+    source_identity: Mapping[str, object] | None = None,
     prompt_loader: PromptLoader | None = None,
 ) -> PilotManifest:
     loader = prompt_loader or PromptLoader()
@@ -401,6 +445,7 @@ def build_pilot_manifest(
         max_total_tokens=max_total_tokens,
         configuration_hashes=hash_config_directory(config_directory),
         prompts=prompt_identities(loader),
+        source_identity=source_identity,
     )
 
 
@@ -903,6 +948,9 @@ def execute_pilot(
     )
     validate_fresh_pilot_paths(paths)
     validate_phase10_runtime()
+    source_identity = (
+        _capture_pilot_source_identity(require_clean=False) if mode == "real" else None
+    )
     effective_budget: int | None = None
     secret_value: str | None = None
     if mode == "real":
@@ -920,6 +968,7 @@ def execute_pilot(
         run_id=run_id,
         config_directory=config_directory,
         max_total_tokens=effective_budget,
+        source_identity=source_identity,
     )
     evidence = PilotEvidenceWriter(paths, manifest)
     recorder: PilotAttemptRecorder | None = None
@@ -1239,6 +1288,7 @@ def _validate_manifest_mapping(value: dict[str, Any]) -> None:
         "max_total_tokens",
         "configuration_hashes",
         "prompts",
+        "source_identity",
         "simulator_settings",
         "evaluator_settings",
         "embedding_settings",
@@ -1258,6 +1308,11 @@ def _validate_manifest_mapping(value: dict[str, Any]) -> None:
         or value.get("expected_source_run_status") != "excluded"
     ):
         raise PilotReviewError("pilot manifest eligibility contract mismatch")
+    if mode := value.get("plan", {}).get("mode") if isinstance(value.get("plan"), dict) else None:
+        if mode == "real":
+            _validate_pilot_source_identity(value.get("source_identity"), require_clean=False)
+        elif value.get("source_identity") is not None:
+            raise PilotReviewError("dummy pilot manifest must not claim source identity")
     prompts = value.get("prompts")
     if not isinstance(prompts, list) or len(prompts) != 6:
         raise PilotReviewError("pilot manifest prompt inventory is invalid")
@@ -1393,6 +1448,7 @@ def review_pilot(
     decision: str,
     config_directory: str | Path = DEFAULT_CONFIG_DIRECTORY,
     prompt_loader: PromptLoader | None = None,
+    ground_truth_finalization_dir: str | Path | None = None,
 ) -> PilotReviewResult:
     """Publish one manual accepted/rejected decision without provider calls."""
     if decision not in {"accepted", "rejected"}:
@@ -1593,6 +1649,23 @@ def review_pilot(
         ):
             raise PilotReviewError("pilot is not eligible for manual acceptance")
         _require_complete_provider_usage(usage=usage, attempts=attempts)
+        _validate_pilot_source_identity(manifest.get("source_identity"), require_clean=True)
+        if manifest.get("source_identity") != _capture_pilot_source_identity(require_clean=True):
+            raise PilotReviewError("current Git/source identity differs from pilot")
+        if ground_truth_finalization_dir is None:
+            raise PilotReviewError(
+                "accepted review requires explicit Ground Truth finalization evidence"
+            )
+        try:
+            current_config = load_experiment_config(config_directory)
+            ground_truth_identity = authenticated_ground_truth_identity(
+                current_config.ground_truth,
+                evidence_directory=str(ground_truth_finalization_dir),
+            )
+        except Exception:
+            raise PilotReviewError(
+                "Ground Truth finalization evidence is invalid"
+            ) from None
         validate_phase10_runtime(prompt_loader or PromptLoader())
         current_configs = [item.to_dict() for item in hash_config_directory(config_directory)]
         if current_configs != manifest.get("configuration_hashes"):
@@ -1646,6 +1719,8 @@ def review_pilot(
             "primary_eligible": False,
             "included_in_final_research_matrix": False,
             "phase13_source_and_git_verification_required": True,
+            "source_identity": manifest["source_identity"],
+            "ground_truth_finalization": ground_truth_identity.to_dict(),
         }
         freeze_hash = _content_hash(freeze_base)
         freeze = dict(freeze_base)
@@ -1691,6 +1766,7 @@ def validate_accepted_freeze(
     *,
     config_directory: str | Path = DEFAULT_CONFIG_DIRECTORY,
     prompt_loader: PromptLoader | None = None,
+    ground_truth_finalization_dir: str | Path | None = None,
 ) -> PilotFreezeValidation:
     """Verify an accepted freeze still matches exact current prompt/settings bytes."""
     requested_review = Path(review_dir)
@@ -1761,6 +1837,8 @@ def validate_accepted_freeze(
             "primary_eligible",
             "included_in_final_research_matrix",
             "phase13_source_and_git_verification_required",
+            "source_identity",
+            "ground_truth_finalization",
             "freeze_hash",
         }
         or _content_hash(acceptance_base) != acceptance_hash
@@ -1788,6 +1866,19 @@ def validate_accepted_freeze(
         or freeze.get("phase13_source_and_git_verification_required") is not True
     ):
         raise PilotReviewError("accepted freeze identity or eligibility is invalid")
+    if ground_truth_finalization_dir is None:
+        raise PilotReviewError("schema 2.0 freeze requires Ground Truth evidence")
+    _validate_pilot_source_identity(freeze.get("source_identity"), require_clean=True)
+    try:
+        current_config = load_experiment_config(config_directory)
+        current_gt_identity = authenticated_ground_truth_identity(
+            current_config.ground_truth,
+            evidence_directory=str(ground_truth_finalization_dir),
+        )
+    except Exception:
+        raise PilotReviewError("Ground Truth finalization evidence is invalid") from None
+    if freeze.get("ground_truth_finalization") != current_gt_identity.to_dict():
+        raise PilotReviewError("Ground Truth finalization identity drifted")
     run_id = acceptance.get("run_id")
     if not isinstance(run_id, str) or review.name != f"{run_id}_pilot_review":
         raise PilotReviewError("accepted freeze path identity is invalid")
@@ -1801,6 +1892,10 @@ def validate_accepted_freeze(
     _validate_manifest_mapping(manifest)
     if manifest.get("manifest_hash") != acceptance.get("manifest_hash"):
         raise PilotReviewError("accepted freeze references a different pilot manifest")
+    if freeze.get("source_identity") != manifest.get("source_identity"):
+        raise PilotReviewError("pilot source identity differs from freeze")
+    if freeze.get("source_identity") != _capture_pilot_source_identity(require_clean=True):
+        raise PilotReviewError("current Git/source identity differs from freeze")
     usage = _read_json_object(
         evidence / "pilot_usage_summary.json",
         error_type=PilotReviewError,

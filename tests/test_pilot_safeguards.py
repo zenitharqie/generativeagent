@@ -19,6 +19,7 @@ from phase11_test_support import (
     TerminalUsagePresentInvalidOutputProvider,
     UsagePresentRetryProvider,
     directory_bytes,
+    install_phase11_v2_test_contract,
 )
 from src.config_loader import load_experiment_config
 from src.simulation.pilot import (
@@ -256,6 +257,7 @@ def test_recovered_retry_with_complete_usage_remains_acceptance_eligible(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "offline-complete-retry-key")
+    gt_dir = install_phase11_v2_test_contract(monkeypatch, tmp_path)
 
     result = execute_pilot(
         mode="real",
@@ -279,9 +281,15 @@ def test_recovered_retry_with_complete_usage_remains_acceptance_eligible(
     reviewed = review_pilot(
         evidence_dir=result.paths.evidence_dir,
         decision="accepted",
+        ground_truth_finalization_dir=gt_dir,
     )
     assert reviewed.acceptance_state == "accepted"
-    assert validate_accepted_freeze(reviewed.review_dir).pilot_id == "pilot"
+    assert (
+        validate_accepted_freeze(
+            reviewed.review_dir, ground_truth_finalization_dir=gt_dir
+        ).pilot_id
+        == "pilot"
+    )
 
 
 def test_terminal_provider_failure_is_rejected_with_attempt_evidence(
@@ -662,6 +670,7 @@ def test_identical_mocked_real_inputs_produce_byte_identical_pilot_artifacts(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "offline-determinism-key")
+    gt_dir = install_phase11_v2_test_contract(monkeypatch, tmp_path)
     results = []
     for root_name in ("first", "second"):
         results.append(
@@ -692,10 +701,12 @@ def test_identical_mocked_real_inputs_produce_byte_identical_pilot_artifacts(
     first_review = review_pilot(
         evidence_dir=first.paths.evidence_dir,
         decision="accepted",
+        ground_truth_finalization_dir=gt_dir,
     )
     second_review = review_pilot(
         evidence_dir=second.paths.evidence_dir,
         decision="accepted",
+        ground_truth_finalization_dir=gt_dir,
     )
     assert directory_bytes(first_review.review_dir) == directory_bytes(
         second_review.review_dir

@@ -8,6 +8,7 @@ import json
 from math import isfinite
 from pathlib import Path
 import re
+from types import MappingProxyType
 import unicodedata
 from typing import Any, Mapping
 
@@ -295,6 +296,95 @@ def validate_final_ground_truth_identity(
 
 
 @dataclass(frozen=True)
+class GroundTruthFinalizationIdentity:
+    """Authenticated, portable identity consumed by Phase 11 freeze validation."""
+
+    ground_truth_sha256: str
+    finalization_fingerprint: str
+    evidence_hashes: Mapping[str, str]
+    annotation_package_sha256: str
+    annotators: tuple[str, ...]
+    embedding_model: str
+    embedding_dimension: int
+    cosine_threshold: float
+    representative_policy: str
+    majority_rule: str
+    reliability_evidence_sha256: str
+    workflow_schema_version: str
+    finalization_version: str
+
+    def __post_init__(self) -> None:
+        require_hash(self.ground_truth_sha256, "Ground Truth content hash")
+        require_hash(self.finalization_fingerprint, "Ground Truth finalization fingerprint")
+        require_hash(self.annotation_package_sha256, "annotation package hash")
+        require_hash(self.reliability_evidence_sha256, "reliability evidence hash")
+        if not isinstance(self.evidence_hashes, Mapping):
+            raise GroundTruthInputError("Ground Truth evidence hashes must be a mapping")
+        object.__setattr__(self, "evidence_hashes", MappingProxyType(dict(self.evidence_hashes)))
+        if self.annotators != tuple(ANNOTATOR_MODELS):
+            raise GroundTruthInputError("Ground Truth annotator identity is invalid")
+        if self.embedding_model != SEMANTIC_CONSOLIDATION_MODEL_IDENTITY:
+            raise GroundTruthInputError("Ground Truth embedding model identity is invalid")
+        if self.embedding_dimension != EMBEDDING_DIMENSION:
+            raise GroundTruthInputError("Ground Truth embedding dimension is invalid")
+        if self.cosine_threshold != SEMANTIC_CONSOLIDATION_THRESHOLD:
+            raise GroundTruthInputError("Ground Truth cosine threshold is invalid")
+        if self.representative_policy != CANONICAL_REPRESENTATIVE_POLICY:
+            raise GroundTruthInputError("Ground Truth representative policy is invalid")
+        if self.majority_rule != "positive_annotator_count_greater_than_or_equal_to_2_of_3":
+            raise GroundTruthInputError("Ground Truth majority rule is invalid")
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "ground_truth_sha256": self.ground_truth_sha256,
+            "finalization_fingerprint": self.finalization_fingerprint,
+            "evidence_hashes": dict(self.evidence_hashes),
+            "annotation_package_sha256": self.annotation_package_sha256,
+            "annotators": list(self.annotators),
+            "embedding_model": self.embedding_model,
+            "embedding_dimension": self.embedding_dimension,
+            "cosine_threshold": self.cosine_threshold,
+            "representative_policy": self.representative_policy,
+            "majority_rule": self.majority_rule,
+            "reliability_evidence_sha256": self.reliability_evidence_sha256,
+            "workflow_schema_version": self.workflow_schema_version,
+            "finalization_version": self.finalization_version,
+        }
+
+
+def authenticated_ground_truth_identity(
+    value: object, *, evidence_directory: str | Path
+) -> GroundTruthFinalizationIdentity:
+    """Validate the complete evidence bundle and return its immutable identity."""
+    if not isinstance(evidence_directory, (str, Path)) or not str(evidence_directory):
+        raise GroundTruthInputError("authenticated Ground Truth identity requires evidence")
+    fingerprint = validate_final_ground_truth_identity(
+        value, evidence_directory=str(evidence_directory)
+    )
+    if not isinstance(value, Mapping):  # defensive; validator already checked this
+        raise GroundTruthInputError("final Ground Truth must be an object")
+    metadata = value["methodological_finalization"]
+    assert isinstance(metadata, Mapping)
+    evidence_hashes = metadata["evidence_hashes"]
+    assert isinstance(evidence_hashes, Mapping)
+    return GroundTruthFinalizationIdentity(
+        ground_truth_sha256=sha256_hex(canonical_json_bytes(value, pretty=True)),
+        finalization_fingerprint=fingerprint,
+        evidence_hashes={str(k): str(v) for k, v in evidence_hashes.items()},
+        annotation_package_sha256=str(metadata["annotation_package_sha256"]),
+        annotators=tuple(ANNOTATOR_MODELS),
+        embedding_model=str(metadata["embedding_model_identity"]),
+        embedding_dimension=EMBEDDING_DIMENSION,
+        cosine_threshold=float(metadata["cosine_similarity_threshold"]),
+        representative_policy=str(metadata["canonical_representative_policy"]),
+        majority_rule=str(metadata["majority_rule"]),
+        reliability_evidence_sha256=str(evidence_hashes["reliability.json"]),
+        workflow_schema_version=str(metadata["schema_version"]),
+        finalization_version=str(metadata["methodology_id"]),
+    )
+
+
+@dataclass(frozen=True)
 class AnnotationCategory:
     category: str
     relevant: int
@@ -411,6 +501,7 @@ __all__ = [
     "AnnotationCategory",
     "AnnotationResult",
     "AnnotatorSubmission",
+    "GroundTruthFinalizationIdentity",
     "EXPECTED_ANNOTATION_COUNT",
     "EXPECTED_UNIT_COUNT",
     "FINAL_GROUND_TRUTH_STATUS",
@@ -424,6 +515,7 @@ __all__ = [
     "SEMANTIC_CONSOLIDATION_MODEL_IDENTITY",
     "SEMANTIC_CONSOLIDATION_THRESHOLD",
     "canonical_json_bytes",
+    "authenticated_ground_truth_identity",
     "category_key",
     "content_hash",
     "require_category",

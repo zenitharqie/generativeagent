@@ -821,6 +821,7 @@ def execute_full_experiment(
             freeze = validate_accepted_freeze(
                 accepted_pilot_review_dir,
                 config_directory=config_path,
+                ground_truth_finalization_dir=ground_truth_finalization_dir,
             )
         except Exception:
             raise ExperimentPreflightError("accepted Phase 11 freeze is invalid") from None
@@ -859,6 +860,7 @@ def execute_full_experiment(
             current_freeze = validate_accepted_freeze(
                 accepted_pilot_review_dir,
                 config_directory=config_path,
+                ground_truth_finalization_dir=ground_truth_finalization_dir,
             )
         except Exception:
             raise ExperimentPreflightError(

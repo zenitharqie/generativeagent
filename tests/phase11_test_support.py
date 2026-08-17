@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.evaluation.ground_truth.schemas import GroundTruthFinalizationIdentity
+
 from src.llm.provider import (
     EmbeddingRequest,
     EmbeddingResponse,
@@ -15,6 +17,48 @@ from src.llm.usage import ProviderUsage
 
 
 VECTOR = (1.0,) + (0.0,) * 1535
+
+
+def install_phase11_v2_test_contract(monkeypatch, tmp_path: Path) -> Path:
+    """Supply deterministic authenticated identities for offline freeze tests."""
+    import src.simulation.pilot as pilot_module
+
+    evidence = tmp_path / "ground_truth_finalization"
+    evidence.mkdir(exist_ok=True)
+    identity = GroundTruthFinalizationIdentity(
+        ground_truth_sha256="0" * 64,
+        finalization_fingerprint="1" * 64,
+        evidence_hashes={"reliability.json": "2" * 64},
+        annotation_package_sha256="3" * 64,
+        annotators=("gpt5", "claude_sonnet_4_6", "gemini_1_5_pro"),
+        embedding_model="openai:text-embedding-3-small",
+        embedding_dimension=1536,
+        cosine_threshold=0.85,
+        representative_policy=(
+            "greatest_distinct_annotator_support_then_casefolded_lexical_order"
+        ),
+        majority_rule="positive_annotator_count_greater_than_or_equal_to_2_of_3",
+        reliability_evidence_sha256="2" * 64,
+        workflow_schema_version="1.0",
+        finalization_version="manual_three_annotator_v1",
+    )
+    source_identity = {
+        "commit": "a" * 40,
+        "branch": "main",
+        "tags": ["v1.4-claude-bcr-evaluator"],
+        "clean": True,
+    }
+    monkeypatch.setattr(
+        pilot_module,
+        "authenticated_ground_truth_identity",
+        lambda value, evidence_directory: identity,
+    )
+    monkeypatch.setattr(
+        pilot_module,
+        "_capture_pilot_source_identity",
+        lambda require_clean: source_identity,
+    )
+    return evidence
 
 
 class Phase11MockProvider:

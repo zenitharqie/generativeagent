@@ -185,6 +185,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_CONFIG_DIRECTORY,
         help="Configuration directory used to verify an acceptance freeze.",
     )
+    review_parser.add_argument(
+        "--ground-truth-finalization-dir",
+        type=Path,
+        default=None,
+        help="Explicit authenticated final Ground Truth evidence directory for acceptance.",
+    )
     replay_parser = subparsers.add_parser(
         "export-visualizer-data",
         help="Export a deterministic read-only replay JSON from persisted artifacts.",
@@ -546,6 +552,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 evidence_dir=args.evidence_dir,
                 decision=args.decision,
                 config_directory=args.config_dir,
+                ground_truth_finalization_dir=args.ground_truth_finalization_dir,
             )
         except Exception as exc:
             print(
