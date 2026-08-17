@@ -224,6 +224,73 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Optional explicit Phase 11 manual review/freeze overlay directory.",
     )
+    experiment_parser = subparsers.add_parser(
+        "run-full-experiment",
+        help="Plan or execute the fail-fast Phase 13 4x3 experiment.",
+    )
+    experiment_modes = experiment_parser.add_mutually_exclusive_group()
+    experiment_modes.add_argument(
+        "--dry-run",
+        type=_parse_explicit_true,
+        metavar="true",
+        help="Print the deterministic 12-run plan without writing or executing.",
+    )
+    experiment_modes.add_argument(
+        "--dummy",
+        action="store_true",
+        help="Execute all 12 source/evaluation chains with offline providers.",
+    )
+    experiment_modes.add_argument(
+        "--real",
+        action="store_true",
+        help="Request explicitly authorized paid Phase 13 execution.",
+    )
+    experiment_parser.add_argument(
+        "--allow-real-llm",
+        type=_parse_explicit_true,
+        metavar="true",
+        help="Second explicit real-provider authorization signal.",
+    )
+    experiment_parser.add_argument(
+        "--confirm-full-experiment",
+        default=None,
+        help="Exact confirmation token required for dummy or real execution.",
+    )
+    experiment_parser.add_argument(
+        "--max-total-tokens",
+        type=int,
+        default=None,
+        help="Positive global simulator/embedding token ceiling required for real mode.",
+    )
+    experiment_parser.add_argument(
+        "--accepted-pilot-review-dir",
+        type=Path,
+        default=None,
+        help="Current manually accepted Phase 11 review/freeze directory for real mode.",
+    )
+    experiment_parser.add_argument(
+        "--experiment-id",
+        default="phase13_full_experiment",
+        help="Fresh safe experiment identity.",
+    )
+    experiment_parser.add_argument(
+        "--output-root",
+        type=Path,
+        default=None,
+        help="Fresh output root required for dummy or real execution.",
+    )
+    experiment_parser.add_argument(
+        "--config-dir",
+        type=Path,
+        default=DEFAULT_CONFIG_DIRECTORY,
+        help="Configuration directory (default: repository config directory).",
+    )
+    experiment_parser.add_argument(
+        "--on-conflict",
+        choices=("fail",),
+        default="fail",
+        help="Only fail is supported; Phase 13 never resumes or overwrites.",
+    )
     return parser
 
 
@@ -473,6 +540,112 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"SHA-256: {result.output_sha256}")
         print(f"Bytes: {result.output_bytes}")
         print(f"Source status: {result.document.run.source_status}")
+        return 0
+
+    if args.command == "run-full-experiment":
+        mode = (
+            "dry-run"
+            if args.dry_run
+            else "real"
+            if args.real
+            else "dummy"
+            if args.dummy
+            else None
+        )
+        if mode is None:
+            print(
+                "Full experiment failed: run-full-experiment requires --dry-run true, "
+                "--dummy, or --real.",
+                file=sys.stderr,
+            )
+            return 1
+        if mode == "dry-run":
+            if any(
+                value is not None
+                for value in (
+                    args.output_root,
+                    args.allow_real_llm,
+                    args.max_total_tokens,
+                    args.accepted_pilot_review_dir,
+                    args.confirm_full_experiment,
+                )
+            ):
+                print(
+                    "Full experiment planning failed: dry-run accepts no output or "
+                    "authorization controls.",
+                    file=sys.stderr,
+                )
+                return 1
+            try:
+                from src.simulation import dry_run_full_experiment
+
+                plan = dry_run_full_experiment(
+                    experiment_id=args.experiment_id,
+                    config_directory=args.config_dir,
+                )
+            except Exception as exc:
+                print(
+                    f"Full experiment planning failed: {type(exc).__name__}: {exc}",
+                    file=sys.stderr,
+                )
+                return 1
+            print("Full experiment plan valid; no output, credential, or provider was used.")
+            print(f"Planned runs: {len(plan.runs)}")
+            for run in plan.runs:
+                print(
+                    f"{run.run_id}: {run.retrieval_config_id} "
+                    f"repetition {run.repetition_index}"
+                )
+            print(f"Main turns per run: {plan.run_scope.main_turn_count}")
+            print(f"Total main turns: {plan.total_main_turns}")
+            print(
+                "Simulator logical calls: "
+                f"{plan.total_simulator_logical_calls}"
+            )
+            print(
+                "Embedding logical calls: "
+                f"{plan.total_embedding_logical_calls}"
+            )
+            print(f"Evaluator logical calls: {plan.total_evaluator_logical_calls}")
+            print(f"Total logical calls: {plan.total_logical_calls}")
+            print(f"Maximum physical attempts: {plan.maximum_physical_attempts}")
+            return 0
+        if args.output_root is None:
+            print(
+                "Full experiment failed: --output-root is required for execution.",
+                file=sys.stderr,
+            )
+            return 1
+        try:
+            from src.simulation import execute_full_experiment
+
+            result = execute_full_experiment(
+                mode=mode,
+                output_root=args.output_root,
+                experiment_id=args.experiment_id,
+                confirmation=args.confirm_full_experiment,
+                config_directory=args.config_dir,
+                real_authorized=args.allow_real_llm is True,
+                max_total_tokens=args.max_total_tokens,
+                accepted_pilot_review_dir=args.accepted_pilot_review_dir,
+                on_conflict=args.on_conflict,
+            )
+        except KeyboardInterrupt:
+            print("Full experiment interrupted; safe partial evidence was retained.", file=sys.stderr)
+            return 130
+        except Exception as exc:
+            print(
+                f"Full experiment failed: {type(exc).__name__}: {exc}",
+                file=sys.stderr,
+            )
+            return 1
+        print("Full experiment completed successfully.")
+        print(f"Eligible source runs: {len(result.run_chains)}")
+        print(f"Phase 09 evaluations: {len(result.run_chains)}")
+        print("MRA records: 240")
+        print("BCR export records: 240")
+        print("BCR judgments: 0")
+        print(f"Experiment directory: {result.paths.experiment_dir}")
         return 0
 
     print("Classroom generative-agents repository scaffold is ready.")
