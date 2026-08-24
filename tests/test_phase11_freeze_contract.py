@@ -27,5 +27,5 @@ def test_authenticated_ground_truth_identity_is_complete_and_deterministic(tmp_p
     assert first.embedding_model == "openai:text-embedding-3-small"
     assert first.embedding_dimension == 1536
     assert first.cosine_threshold == 0.85
-    assert first.annotators == ("gpt5", "claude_sonnet_4_6", "gemini_1_5_pro")
+    assert first.annotators == ("gpt5", "claude_sonnet_5", "gemini_1_5_pro")
     assert first.to_dict() == second.to_dict()

@@ -128,7 +128,7 @@ def test_judged_rows_preserve_binary_decision_assessments_reason_and_metadata(
     assert row["judgment"] == json.loads(VALID_JUDGMENT)
     assert row["model_metadata"] == {
         "simulator_model_identity": "openai:gpt-5-nano-2025-08-07",
-        "evaluator_model_identity": "anthropic:claude-sonnet-4-6",
+        "evaluator_model_identity": "anthropic:claude-sonnet-5",
         "evaluator_prompt_version": "phase10_pilot_v1",
         "evaluator_rubric_version": "phase10_binary_bcr_rubric_v2",
     }

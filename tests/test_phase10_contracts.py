@@ -34,8 +34,8 @@ EXPECTED_PROMPT_FILES = {
 def test_provider_model_and_embedding_contracts_are_exact() -> None:
     assert SIMULATOR_MODEL == "gpt-5-nano-2025-08-07"
     assert SIMULATOR_MODEL_IDENTITY == "openai:gpt-5-nano-2025-08-07"
-    assert EVALUATOR_MODEL == "claude-sonnet-4-6"
-    assert EVALUATOR_MODEL_IDENTITY == "anthropic:claude-sonnet-4-6"
+    assert EVALUATOR_MODEL == "claude-sonnet-5"
+    assert EVALUATOR_MODEL_IDENTITY == "anthropic:claude-sonnet-5"
     assert SIMULATOR_MODEL_IDENTITY != EVALUATOR_MODEL_IDENTITY
     assert EMBEDDING_MODEL == "text-embedding-3-small"
     assert EMBEDDING_MODEL_IDENTITY == "openai:text-embedding-3-small"

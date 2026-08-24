@@ -35,7 +35,7 @@ MAX_CATEGORIES_PER_UNIT = 16
 
 ANNOTATOR_MODELS: Mapping[str, str] = {
     "gpt5": "GPT-5",
-    "claude_sonnet_4_6": "Claude Sonnet 4.6",
+    "claude_sonnet_5": "Claude Sonnet 5",
     "gemini_1_5_pro": "Gemini 1.5 Pro",
 }
 

@@ -42,7 +42,7 @@ class _Client:
 
 def _request() -> StructuredTextRequest:
     return StructuredTextRequest(
-        model="claude-sonnet-4-6",
+        model="claude-sonnet-5",
         instructions="system",
         user_data='{"input":true}',
         schema_name="test_schema",
@@ -57,7 +57,7 @@ def test_anthropic_adapter_translates_native_structured_request_and_usage() -> N
     client = _Client()
     result = AnthropicProviderAdapter(client).generate_structured(_request())
     call = client.messages.calls[0]
-    assert call["model"] == "claude-sonnet-4-6"
+    assert call["model"] == "claude-sonnet-5"
     assert call["system"] == "system"
     assert call["messages"] == [{"role": "user", "content": '{"input":true}'}]
     assert call["output_config"]["format"]["type"] == "json_schema"

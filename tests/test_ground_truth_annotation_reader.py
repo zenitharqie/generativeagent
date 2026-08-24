@@ -23,7 +23,7 @@ from ground_truth_test_support import submission_value, write_json
 def _setup(tmp_path):
     package = build_annotation_package().value
     root = tmp_path / "annotations"
-    for annotator_id in ("gpt5", "claude_sonnet_4_6", "gemini_1_5_pro"):
+    for annotator_id in ("gpt5", "claude_sonnet_5", "gemini_1_5_pro"):
         write_json(root / f"{annotator_id}.json", submission_value(package, annotator_id))
     return package, root
 
@@ -62,7 +62,7 @@ def test_missing_or_unknown_annotator_file_is_rejected(tmp_path) -> None:
 
 def test_duplicate_annotator_identity_and_unknown_agent_event_are_rejected(tmp_path) -> None:
     package, root = _setup(tmp_path)
-    claude = root / "claude_sonnet_4_6.json"
+    claude = root / "claude_sonnet_5.json"
     value = json.loads(claude.read_text())
     value["annotator_id"] = "gpt5"
     value["provider_model_label"] = "GPT-5"
@@ -103,6 +103,6 @@ def test_stale_package_hash_is_rejected(tmp_path) -> None:
     with pytest.raises(GroundTruthInputError):
         load_complete_annotations(root, package=package)
     path.unlink()
-    path.symlink_to(root / "claude_sonnet_4_6.json")
+    path.symlink_to(root / "claude_sonnet_5.json")
     with pytest.raises(GroundTruthInputError):
         load_complete_annotations(root, package=package)

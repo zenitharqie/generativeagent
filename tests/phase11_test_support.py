@@ -30,7 +30,7 @@ def install_phase11_v2_test_contract(monkeypatch, tmp_path: Path) -> Path:
         finalization_fingerprint="1" * 64,
         evidence_hashes={"reliability.json": "2" * 64},
         annotation_package_sha256="3" * 64,
-        annotators=("gpt5", "claude_sonnet_4_6", "gemini_1_5_pro"),
+        annotators=("gpt5", "claude_sonnet_5", "gemini_1_5_pro"),
         embedding_model="openai:text-embedding-3-small",
         embedding_dimension=1536,
         cosine_threshold=0.85,

@@ -79,7 +79,7 @@ def test_judge_service_sends_only_exact_phase09_neutral_judge_input(
     request = provider.requests[0]
     assert json.loads(request.user_data) == export.judge_input.to_dict()
     assert outcome.judgment.consistent == 1
-    assert request.model == "claude-sonnet-4-6"
+    assert request.model == "claude-sonnet-5"
     assert request.reasoning_effort == "medium"
     assert request.max_output_tokens == 700
     assert request.timeout_seconds == 60
