@@ -251,7 +251,7 @@ def test_three_of_three_is_included(tmp_path) -> None:
 def test_incomplete_or_directly_edited_evidence_cannot_finalize(tmp_path) -> None:
     package = build_annotation_package().value
     package_path, annotations, embeddings = complete_evidence(tmp_path, package)
-    (annotations / "gemini_1_5_pro.json").unlink()
+    (annotations / "qwen3_8.json").unlink()
     with pytest.raises(Exception):
         build_finalization_bundle(
             package_path=package_path,

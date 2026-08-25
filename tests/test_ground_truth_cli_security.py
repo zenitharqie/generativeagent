@@ -56,7 +56,7 @@ def test_cli_suppresses_untrusted_annotation_text(tmp_path, capsys) -> None:
     package = build_annotation_package().value
     package_path, annotations, embeddings = complete_evidence(tmp_path, package)
     sentinel = "RAW_PROVIDER_SENTINEL should never persist"
-    path = annotations / "gpt5.json"
+    path = annotations / "gpt5_6_sol.json"
     value = json.loads(path.read_text())
     value["results"][0]["categories"][0]["category"] = sentinel + "\n\x1b[31m"
     path.write_text(json.dumps(value))

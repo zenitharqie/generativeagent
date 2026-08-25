@@ -34,9 +34,9 @@ MAX_REASON_LENGTH = 500
 MAX_CATEGORIES_PER_UNIT = 16
 
 ANNOTATOR_MODELS: Mapping[str, str] = {
-    "gpt5": "GPT-5",
+    "gpt5_6_sol": "GPT-5.6-SOL",
     "claude_sonnet_5": "Claude Sonnet 5",
-    "gemini_1_5_pro": "Gemini 1.5 Pro",
+    "qwen3_8": "Qwen3.8",
 }
 
 if SEMANTIC_CONSOLIDATION_MODEL_IDENTITY != EMBEDDING_MODEL_IDENTITY:

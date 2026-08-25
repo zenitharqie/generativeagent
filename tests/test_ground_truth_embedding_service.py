@@ -16,7 +16,7 @@ def _input(tmp_path):
     package = build_annotation_package().value
     values = tuple(
         submission_value(package, annotator_id)
-        for annotator_id in ("gpt5", "claude_sonnet_5", "gemini_1_5_pro")
+        for annotator_id in ("gpt5_6_sol", "claude_sonnet_5", "qwen3_8")
     )
     from src.evaluation.ground_truth.readers import parse_submission
 
