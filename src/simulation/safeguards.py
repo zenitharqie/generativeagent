@@ -416,7 +416,7 @@ def validate_fresh_pilot_paths(paths: PilotPaths) -> None:
 def validate_phase10_runtime(prompt_loader: PromptLoader | None = None) -> None:
     """Verify the exact approved pilot models, settings, and prompt bytes."""
     if (
-        SIMULATOR_MODEL_IDENTITY != "openai:gpt-5-nano-2025-08-07"
+        SIMULATOR_MODEL_IDENTITY != "openai:gpt-5.6-luna"
         or EVALUATOR_MODEL_IDENTITY != "anthropic:claude-sonnet-5"
         or EMBEDDING_MODEL_IDENTITY != "openai:text-embedding-3-small"
         or EMBEDDING_DIMENSION != 1536

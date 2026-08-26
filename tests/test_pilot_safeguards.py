@@ -173,7 +173,7 @@ def test_mocked_real_pilot_is_excluded_and_publishes_separate_evidence(
     assert all(item["service_role"] != "evaluator" for item in attempts)
     assert len(api_usage) == 152
     assert {item["model"] for item in api_usage} == {
-        "openai:gpt-5-nano-2025-08-07"
+        "openai:gpt-5.6-luna"
     }
     assert result.report.source_fingerprint == fingerprint_directory(
         result.paths.source_run_dir

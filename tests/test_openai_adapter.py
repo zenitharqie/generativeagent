@@ -39,7 +39,7 @@ def fake_client(*, text_outcome: object, embedding_outcome: object) -> SimpleNam
 
 def text_request() -> StructuredTextRequest:
     return StructuredTextRequest(
-        model="gpt-5-nano-2025-08-07",
+        model="gpt-5.6-luna",
         instructions="Trusted instructions.",
         user_data='{"value":"untrusted data"}',
         schema_name="plan_output",
@@ -79,7 +79,7 @@ def test_responses_api_request_is_strict_non_streaming_and_complete() -> None:
     }
     call = client.responses.calls[0]
     assert call == {
-        "model": "gpt-5-nano-2025-08-07",
+        "model": "gpt-5.6-luna",
         "instructions": "Trusted instructions.",
         "input": '{"value":"untrusted data"}',
         "max_output_tokens": 300,

@@ -75,7 +75,7 @@ def test_real_manifest_records_exact_phase10_candidate_identity_and_freeze(
     assert len(freeze["configuration_hashes"]) == 6
     assert len(freeze["prompts"]) == 6
     assert freeze["simulator_settings"]["model_identity"] == (
-        "openai:gpt-5-nano-2025-08-07"
+        "openai:gpt-5.6-luna"
     )
     assert freeze["evaluator_settings"]["model_identity"] == (
         "anthropic:claude-sonnet-5"

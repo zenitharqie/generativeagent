@@ -98,7 +98,7 @@ def test_real_service_preserves_llm_contract_and_call_specific_settings(
     assert isinstance(service, LLMClient)
     assert service.generate(requests_by_call_type()[call_type]) == VALID_OUTPUTS[call_type]
     provider_request = provider.requests[0]
-    assert provider_request.model == "gpt-5-nano-2025-08-07"
+    assert provider_request.model == "gpt-5.6-luna"
     assert provider_request.reasoning_effort == "minimal"
     assert provider_request.max_output_tokens == expected_limit
     assert provider_request.timeout_seconds == 60
@@ -230,7 +230,7 @@ def test_attempt_metadata_is_deterministic_across_fresh_services() -> None:
     assert first.usage_records == second.usage_records
     payload = first.usage_records[0].to_dict()
     assert payload["service_role"] == "simulator"
-    assert payload["model"] == "openai:gpt-5-nano-2025-08-07"
+    assert payload["model"] == "openai:gpt-5.6-luna"
     assert payload["prompt_template"] == "plan"
     assert payload["prompt_version"] == "phase10_pilot_v1"
     assert len(payload["prompt_hash"]) == 64

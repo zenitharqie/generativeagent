@@ -34,7 +34,7 @@ def test_smoke_helper_makes_one_minimal_call_and_discards_content() -> None:
     assert len(provider.requests) == 1
     assert result == LLMSmokeTestResult(
         provider="openai",
-        model_identity="openai:gpt-5-nano-2025-08-07",
+        model_identity="openai:gpt-5.6-luna",
         attempt_count=1,
         input_tokens=8,
         output_tokens=4,
@@ -51,7 +51,7 @@ def test_smoke_cli_success_prints_only_sanitized_status_and_usage(
     monkeypatch.setenv("OPENAI_API_KEY", secret)
     result = LLMSmokeTestResult(
         provider="openai",
-        model_identity="openai:gpt-5-nano-2025-08-07",
+        model_identity="openai:gpt-5.6-luna",
         attempt_count=1,
         input_tokens=8,
         output_tokens=4,

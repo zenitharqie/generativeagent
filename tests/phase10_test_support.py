@@ -94,7 +94,7 @@ def prepare_phase09_evaluation(
     run_dir: Path,
     *,
     diagnostic: bool = False,
-    simulator_model_identity: str | None = "openai:gpt-5-nano-2025-08-07",
+    simulator_model_identity: str | None = "openai:gpt-5.6-luna",
 ) -> Path:
     """Create a real-model-shaped Phase 09 export without changing its schema."""
     output = root / "phase09_evaluation"
