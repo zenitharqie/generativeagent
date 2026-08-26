@@ -48,7 +48,7 @@ def text_request() -> StructuredTextRequest:
             '"required":["plan"],"type":"object"}'
         ),
         max_output_tokens=300,
-        reasoning_effort="minimal",
+        reasoning_effort="low",
         timeout_seconds=60,
     )
 
@@ -83,7 +83,7 @@ def test_responses_api_request_is_strict_non_streaming_and_complete() -> None:
         "instructions": "Trusted instructions.",
         "input": '{"value":"untrusted data"}',
         "max_output_tokens": 300,
-        "reasoning": {"effort": "minimal"},
+        "reasoning": {"effort": "low"},
         "text": {
             "format": {
                 "type": "json_schema",

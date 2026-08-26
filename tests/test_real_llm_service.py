@@ -99,7 +99,7 @@ def test_real_service_preserves_llm_contract_and_call_specific_settings(
     assert service.generate(requests_by_call_type()[call_type]) == VALID_OUTPUTS[call_type]
     provider_request = provider.requests[0]
     assert provider_request.model == "gpt-5.6-luna"
-    assert provider_request.reasoning_effort == "minimal"
+    assert provider_request.reasoning_effort == "low"
     assert provider_request.max_output_tokens == expected_limit
     assert provider_request.timeout_seconds == 60
     assert provider_request.stream is False

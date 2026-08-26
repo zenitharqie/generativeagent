@@ -427,7 +427,7 @@ def validate_phase10_runtime(prompt_loader: PromptLoader | None = None) -> None:
     if (
         SIMULATOR_PROFILE.provider != OPENAI_PROVIDER
         or SIMULATOR_PROFILE.model_identity != SIMULATOR_MODEL_IDENTITY
-        or SIMULATOR_PROFILE.reasoning_effort != "minimal"
+        or SIMULATOR_PROFILE.reasoning_effort != "low"
         or SIMULATOR_PROFILE.request_timeout_seconds != 60
         or SIMULATOR_PROFILE.context_window_tokens != 400_000
         or SIMULATOR_PROFILE.stream is not False

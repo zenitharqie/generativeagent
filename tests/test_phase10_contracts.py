@@ -43,7 +43,7 @@ def test_provider_model_and_embedding_contracts_are_exact() -> None:
 
 
 def test_runtime_profiles_freeze_approved_pilot_settings() -> None:
-    assert SIMULATOR_PROFILE.reasoning_effort == "minimal"
+    assert SIMULATOR_PROFILE.reasoning_effort == "low"
     assert EVALUATOR_PROFILE.reasoning_effort == "medium"
     assert SIMULATOR_PROFILE.request_timeout_seconds == 60
     assert EVALUATOR_PROFILE.request_timeout_seconds == 60

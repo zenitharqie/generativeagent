@@ -60,7 +60,7 @@ class GenerationProfile:
             raise RuntimeSettingsError("unsupported text-generation provider")
         if self.model_identity != f"{self.provider}:{self.model}":
             raise RuntimeSettingsError("model_identity must be provider-qualified")
-        if self.reasoning_effort not in {"minimal", "medium"}:
+        if self.reasoning_effort not in {"minimal", "low", "medium"}:
             raise RuntimeSettingsError("unsupported reasoning_effort")
         _positive_int(self.request_timeout_seconds, "request_timeout_seconds")
         _positive_int(self.context_window_tokens, "context_window_tokens")
@@ -139,7 +139,7 @@ SIMULATOR_PROFILE = GenerationProfile(
     provider=OPENAI_PROVIDER,
     model=SIMULATOR_MODEL,
     model_identity=SIMULATOR_MODEL_IDENTITY,
-    reasoning_effort="minimal",
+    reasoning_effort="low",
     request_timeout_seconds=60,
     context_window_tokens=TEXT_CONTEXT_WINDOW_TOKENS,
     output_token_limits={
