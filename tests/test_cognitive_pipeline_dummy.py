@@ -306,11 +306,11 @@ def test_invalid_generated_embedding_leaves_memory_stream_unchanged(
     assert stream.list_memories() == before
 
 
-def test_exact_duplicate_or_excessive_response_is_rejected_before_mutation() -> None:
+def test_exact_duplicate_response_is_tolerated_and_hinted_to_model() -> None:
     duplicate = "This response was already used."
     stream = build_stream()
-    before = stream.list_memories()
-    pipeline, _, _ = make_pipeline(
+    before_len = len(stream.list_memories())
+    pipeline, client, _ = make_pipeline(
         scripted_responses={
             LLMCallType.NATURAL_RESPONSE: (
                 '{"response":"'
@@ -321,11 +321,14 @@ def test_exact_duplicate_or_excessive_response_is_rejected_before_mutation() -> 
         }
     )
 
-    with pytest.raises(LLMOutputValidationError):
-        pipeline.run_turn(
-            turn_input(stream, previous_same_agent_response=duplicate)
-        )
-    assert stream.list_memories() == before
+    result = pipeline.run_turn(
+        turn_input(stream, previous_same_agent_response=duplicate)
+    )
+
+    assert result.response == duplicate
+    assert len(stream.list_memories()) == before_len + 1
+    action_request = client.invocations[1].request
+    assert action_request.previous_same_agent_response == duplicate
 
 
 def test_excessive_response_is_trimmed_to_configured_limit() -> None:

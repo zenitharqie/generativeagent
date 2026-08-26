@@ -163,6 +163,7 @@ class LLMRequest:
     memory_text: str | None = None
     memory_kind: str | None = None
     response_limit: int | None = None
+    previous_same_agent_response: str | None = None
 
     def __post_init__(self) -> None:
         try:

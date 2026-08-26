@@ -7,7 +7,6 @@ import re
 from src.llm.base import LLMCallType, LLMClient, LLMContext, LLMRequest
 from src.llm.output_parsers import (
     ActionOutput,
-    LLMOutputValidationError,
     PlanOutput,
     parse_action_output,
 )
@@ -51,6 +50,7 @@ class Actor:
             context=context,
             plan=plan.plan,
             response_limit=response_limit,
+            previous_same_agent_response=previous_same_agent_response,
         )
         output = parse_action_output(self._llm_client.generate(request))
 
@@ -59,12 +59,8 @@ class Actor:
                 not isinstance(previous_same_agent_response, str)
                 or not previous_same_agent_response.strip()
             ):
-                raise LLMOutputValidationError(
+                raise TypeError(
                     "previous_same_agent_response must be non-empty or None"
-                )
-            if output.response == previous_same_agent_response.strip():
-                raise LLMOutputValidationError(
-                    "action response exactly duplicates the supplied previous response"
                 )
 
         actual_length = (

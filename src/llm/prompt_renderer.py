@@ -187,6 +187,13 @@ def render_simulator_prompt(
     if request.call_type in {LLMCallType.NATURAL_RESPONSE, LLMCallType.TARGET_EVENT_RESPONSE}:
         data["plan"] = request.plan
         data["response_limit_sentences"] = request.response_limit
+        if request.previous_same_agent_response:
+            data["style_continuity"] = {
+                "your_previous_response": request.previous_same_agent_response,
+                "instruction": (
+                    "respond with fresh wording; never repeat your previous response verbatim"
+                ),
+            }
     elif request.call_type is LLMCallType.REFLECTION:
         data["plan"] = request.plan
         data["response"] = request.response
