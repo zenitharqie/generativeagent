@@ -73,12 +73,18 @@ class Actor:
             else _sentence_count(output.response)
         )
         if actual_length > response_limit:
-            unit = (
-                "paragraphs"
-                if call_type is LLMCallType.TARGET_EVENT_RESPONSE
-                else "sentences"
-            )
-            raise LLMOutputValidationError(
-                f"action response exceeds configured limit of {response_limit} {unit}"
+            if call_type is LLMCallType.TARGET_EVENT_RESPONSE:
+                trimmed_response = output.response.split("\n\n", 1)[0].strip()
+            else:
+                parts = [
+                    part
+                    for part in re.split(r"(?<=[.!?])\s+", output.response.strip())
+                    if part
+                ]
+                trimmed_response = " ".join(parts[:response_limit])
+            output = ActionOutput(
+                response=trimmed_response,
+                memory_to_store=output.memory_to_store,
+                category=output.category,
             )
         return output

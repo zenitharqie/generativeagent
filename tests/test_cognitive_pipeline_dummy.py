@@ -308,28 +308,44 @@ def test_invalid_generated_embedding_leaves_memory_stream_unchanged(
 
 def test_exact_duplicate_or_excessive_response_is_rejected_before_mutation() -> None:
     duplicate = "This response was already used."
-    for response, previous in (
-        (duplicate, duplicate),
-        ("First sentence. Second sentence. Third sentence.", None),
-    ):
-        stream = build_stream()
-        before = stream.list_memories()
-        pipeline, _, _ = make_pipeline(
-            scripted_responses={
-                LLMCallType.NATURAL_RESPONSE: (
-                    '{"response":"'
-                    + response
-                    + '","memory_to_store":"A valid action memory.",'
-                    '"category":"classroom_norms"}'
-                )
-            }
-        )
-
-        with pytest.raises(LLMOutputValidationError):
-            pipeline.run_turn(
-                turn_input(stream, previous_same_agent_response=previous)
+    stream = build_stream()
+    before = stream.list_memories()
+    pipeline, _, _ = make_pipeline(
+        scripted_responses={
+            LLMCallType.NATURAL_RESPONSE: (
+                '{"response":"'
+                + duplicate
+                + '","memory_to_store":"A valid action memory.",'
+                '"category":"classroom_norms"}'
             )
-        assert stream.list_memories() == before
+        }
+    )
+
+    with pytest.raises(LLMOutputValidationError):
+        pipeline.run_turn(
+            turn_input(stream, previous_same_agent_response=duplicate)
+        )
+    assert stream.list_memories() == before
+
+
+def test_excessive_response_is_trimmed_to_configured_limit() -> None:
+    stream = build_stream()
+    pipeline, _, _ = make_pipeline(
+        scripted_responses={
+            LLMCallType.NATURAL_RESPONSE: (
+                '{"response":"First sentence. Second sentence. Third sentence.",'
+                '"memory_to_store":"A valid action memory.",'
+                '"category":"classroom_norms"}'
+            )
+        }
+    )
+
+    before_len = len(stream.list_memories())
+    result = pipeline.run_turn(turn_input(stream, previous_same_agent_response=None))
+
+    assert result.response == "First sentence. Second sentence."
+    assert result.action.response == "First sentence. Second sentence."
+    assert len(stream.list_memories()) == before_len + 1
 
 
 def test_empty_and_fewer_than_top_k_streams_complete_without_fallbacks() -> None:

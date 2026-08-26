@@ -43,16 +43,14 @@ class Reflector:
             response_limit=sentence_limit,
         )
         output = parse_reflection_output(self._llm_client.generate(request))
-        sentence_count = len(
-            [
-                part
-                for part in re.split(r"(?<=[.!?])\s+", output.reflection.strip())
-                if part
-            ]
-        )
-        if sentence_count > sentence_limit:
-            raise LLMOutputValidationError(
-                "reflection exceeds configured limit of "
-                f"{sentence_limit} sentences"
+        parts = [
+            part
+            for part in re.split(r"(?<=[.!?])\s+", output.reflection.strip())
+            if part
+        ]
+        if len(parts) > sentence_limit:
+            output = ReflectionOutput(
+                reflection=" ".join(parts[:sentence_limit]),
+                category=output.category,
             )
         return output
