@@ -206,8 +206,8 @@ def test_current_ground_truth_blocks_real_after_synthetic_current_freeze(
     assert not tuple(tmp_path.iterdir())
 
 
-def test_ground_truth_gate_does_not_invent_a_final_state() -> None:
-    with pytest.raises(ExperimentPreflightError, match="ground-truth finalization"):
+def test_ground_truth_gate_requires_evidence_after_finalization() -> None:
+    with pytest.raises(ExperimentPreflightError, match="Ground Truth evidence"):
         validate_ground_truth_methodological_finalization(Path("config"))
 
 

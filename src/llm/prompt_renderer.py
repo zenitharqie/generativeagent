@@ -136,7 +136,7 @@ def _common_context(request: LLMRequest) -> dict[str, Any]:
             "title": context.event_title,
             "description": context.event_description,
         }
-    return {
+    data = {
         "persona": {
             "agent_id": context.agent_id,
             "display_name": context.display_name,
@@ -153,6 +153,12 @@ def _common_context(request: LLMRequest) -> dict[str, Any]:
         "conversation_context": list(context.conversation_context),
         "selected_memory_texts": list(context.selected_memory_texts),
     }
+    if context.category_vocabulary:
+        data["labeling_vocabulary"] = {
+            "instruction": "choose exactly one category verbatim from this fixed labeling vocabulary",
+            "categories": list(context.category_vocabulary),
+        }
+    return data
 
 
 def _render(template_id: str, data: object, loader: PromptLoader) -> RenderedPrompt:

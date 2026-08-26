@@ -65,9 +65,9 @@ PILOT_TARGET_EVALUATION_UNITS = 4
 APPROVED_PHASE10_PROMPT_HASHES: Mapping[str, str] = MappingProxyType(
     {
         "plan": "3280e43625f91500cf8f2695db5dae9bcd7ce2accac671638b7c44d0d993e95f",
-        "natural_interaction": "4d4bdae8817eb7c0f6b48c8e20d7d5dfefc6b941e99b00c36006425c61e847f8",
-        "target_event_response": "f365ab2d2db5fa56e072a7d2f6a6565e5f745d16d7ae783565e7ba3553d818ac",
-        "reflect": "56758b2bb233e5845fd25815e301a22d439f7a50df2fcaaaf16400c863d2b9e8",
+        "natural_interaction": "67a431a68bd12974c0c80c0c87d9f7b6a046f669ea50918a4879ca334e95ffbc",
+        "target_event_response": "5946a503f61c2f10235a7031f21db7dd4d394c8cccc79e92000fe6ad2b9443a1",
+        "reflect": "9d143c44c425be8daa6f996a48db2e461df3a49dc513c15812aa6f6b6b42ca57",
         "importance_scoring": "defc1811c94a9aec9b42f1a5a6fa12f2de302edbecc90854ec4a4d273252880e",
         "bcr_judge": "80d4cf1784e6be63eb7b4680bbea4a56eed5843f301ed527f972389b3e39253d",
     }

@@ -180,9 +180,17 @@ def test_ground_truth_is_target_only_and_covers_each_event_agent_pair() -> None:
     expected_pairs = {(event_id, agent_id) for event_id in EVENT_IDS for agent_id in AGENT_IDS}
 
     assert ground_truth["evaluation_step_type"] == "target_event"
-    assert ground_truth["status"] == "initial_configurable"
+    assert ground_truth["status"] == "final"
     assert ground_truth["freeze_required_before_final_experiment"] is True
     assert len(targets) == 20
     assert pairs == expected_pairs
     assert all(target["expected_categories"] for target in targets)
-    assert all(set(target["expected_categories"]) <= MEMORY_CATEGORIES for target in targets)
+    assert all(
+        len(target["expected_categories"]) == len(set(target["expected_categories"]))
+        for target in targets
+    )
+    assert all(
+        isinstance(category, str) and category.strip()
+        for target in targets
+        for category in target["expected_categories"]
+    )

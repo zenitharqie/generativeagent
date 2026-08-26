@@ -80,6 +80,7 @@ class LLMContext:
     observation_text: str
     conversation_context: tuple[str, ...]
     selected_memory_texts: tuple[str, ...]
+    category_vocabulary: tuple[str, ...] = ()
     event_id: str | None = None
     event_title: str | None = None
     event_description: str | None = None
@@ -128,6 +129,11 @@ class LLMContext:
             self,
             "selected_memory_texts",
             _normalize_text_tuple(self.selected_memory_texts, "selected_memory_texts"),
+        )
+        object.__setattr__(
+            self,
+            "category_vocabulary",
+            tuple(dict.fromkeys(_normalize_text_tuple(self.category_vocabulary, "category_vocabulary"))),
         )
 
         event_values = (self.event_id, self.event_title, self.event_description)

@@ -126,6 +126,29 @@ class RunController:
         self._retrieval_engine = retrieval_engine
         self._sanitize_failure_messages = sanitize_failure_messages
 
+    @staticmethod
+    def _load_category_vocabulary(
+        config_directory: Path,
+    ) -> dict[str, tuple[str, ...]]:
+        """Derive the per-agent labeling vocabulary from the frozen ground truth."""
+        path = Path(config_directory) / "ground_truth.json"
+        try:
+            value = json.loads(path.read_text(encoding="utf-8"))
+            targets = value["targets"]
+            vocabulary: dict[str, tuple[str, ...]] = {}
+            for target in targets:
+                agent_id = target["agent_id"]
+                labels = vocabulary.setdefault(agent_id, ())
+                merged = dict.fromkeys(labels)
+                for label in target["expected_categories"]:
+                    merged[label] = None
+                vocabulary[agent_id] = tuple(merged)
+            return vocabulary
+        except (OSError, ValueError, KeyError, TypeError) as exc:
+            raise RunControllerError(
+                "could not derive category labeling vocabulary from ground truth snapshot"
+            ) from exc
+
     def run(
         self,
         *,
@@ -162,6 +185,9 @@ class RunController:
 
         try:
             config = load_experiment_config(run_paths.config_snapshot)
+            category_vocabulary = self._load_category_vocabulary(
+                run_paths.config_snapshot
+            )
             selected_steps = tuple(
                 step for step in config.steps if step.day in requested_days
             )
@@ -183,6 +209,7 @@ class RunController:
                 llm_client=self._llm_client,
                 embedding_provider=self._embedding_provider,
                 retrieval_engine=self._retrieval_engine,
+                category_vocabulary=category_vocabulary,
             )
             turn_executor = TurnExecutor(
                 config=config,

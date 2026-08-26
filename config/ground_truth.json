@@ -1,108 +1,211 @@
 {
   "evaluation_step_type": "target_event",
-  "status": "initial_configurable",
   "freeze_required_before_final_experiment": true,
-  "notes": "These initial category sets apply only to target-event MRA. They require methodological review and evaluation freeze before the final experiment.",
+  "methodological_finalization": {
+    "annotation_package_sha256": "c7b16d742d6f4544ea60cdd39ad02cc1bdbfb82f6d1c92ca2361084c6cc265af",
+    "annotation_result_count": 60,
+    "canonical_representative_policy": "greatest_distinct_annotator_support_then_casefolded_lexical_order",
+    "cosine_similarity_threshold": 0.85,
+    "embedding_model_identity": "openai:text-embedding-3-small",
+    "evidence_hashes": {
+      "annotation_matrix.json": "d864766257c8a1898a34770a988a709c506ccd4a1b2af5e00a9885a978170cbd",
+      "annotation_package.json": "ca0b82fb7956245ddf1f4d7392a92bd4517f596fd5960c1a3e1dbfe682d441a4",
+      "annotations/claude_sonnet_5.json": "14835a1ac5c8eae12609c63c5672da495b985482fdda2c442c738d1735f364e5",
+      "annotations/gpt5_6_sol.json": "0d824d1f4107134f51774579de663f7f35483b5a888cac57cda639e5abccab7c",
+      "annotations/qwen3_8.json": "a8262d957dcf256e2d1d580522e9461037cd1764ec3579e6d0110ba993a4972c",
+      "consolidation_evidence.json": "02d1ceace1362445b77201573f5760786a2c2330d0ccc149f0d127112d67b0ad",
+      "embedding_evidence.json": "7b007ee8dac343c7840cebbf01752f2895d6c29f74eeece9369872ef93208e02",
+      "embedding_input.json": "0c3a83b645513659d7dd1423d179411ff552bfa94731a2de420056556b5ee5d7",
+      "master_candidate_list.json": "a04fb9019779b22144f45ea28c1c1cd28fe9cad1220113267cb045071701bf69",
+      "reliability.json": "0d2971bc1ddbec7b3666f2ba2b85db57b09017e0487313aa6897ce489a994e76"
+    },
+    "fingerprint_sha256": "c6e310cc4dfac1082c00f2675ac32c79b983fb803f85340d4a78efa57b9c7c1b",
+    "majority_rule": "positive_annotator_count_greater_than_or_equal_to_2_of_3",
+    "methodology_id": "manual_three_annotator_v1",
+    "schema_version": "1.0"
+  },
+  "notes": "Finalized from three independent manual annotations before the full experiment. A new Phase 11 pilot and accepted freeze remain required.",
+  "status": "final",
   "targets": [
     {
+      "agent_id": "teacher",
       "event_id": "event_01",
-      "agent_id": "teacher",
-      "expected_categories": ["teacher_guidance", "classroom_norms"]
+      "expected_categories": [
+        "Clear and structured guidance for test preparation",
+        "Clear communication of test logistics and expectations",
+        "Student understanding of classroom material"
+      ]
     },
     {
+      "agent_id": "active_student",
       "event_id": "event_01",
-      "agent_id": "active_student",
-      "expected_categories": ["exam_concern", "question_asking", "study_strategy"]
+      "expected_categories": [
+        "Eager discussion of test preparation material",
+        "Preference for discussing and reviewing material with classmates to prepare",
+        "Tendency to ask clarifying questions about test expectations"
+      ]
     },
     {
+      "agent_id": "quiet_student",
       "event_id": "event_01",
-      "agent_id": "quiet_student",
-      "expected_categories": ["exam_concern", "quiet_style", "study_strategy"]
+      "expected_categories": [
+        "Cautious preparation for upcoming written test",
+        "Desire for clarity about expectations and test material coverage",
+        "Emphasis on thorough preparation ahead of an announced assessment"
+      ]
     },
     {
+      "agent_id": "academic_student",
       "event_id": "event_01",
-      "agent_id": "academic_student",
-      "expected_categories": ["exam_concern", "academic_focus", "study_strategy"]
+      "expected_categories": [
+        "Academic preparation and mastery of classroom material",
+        "Emphasis on accurate mastery of material rather than surface-level review",
+        "Organized study of material for an upcoming test",
+        "Preference for an organized, structured study routine when preparing for assessments"
+      ]
     },
     {
-      "event_id": "event_02",
       "agent_id": "teacher",
-      "expected_categories": ["teacher_guidance", "classroom_norms"]
-    },
-    {
       "event_id": "event_02",
-      "agent_id": "active_student",
-      "expected_categories": ["classroom_norms", "question_asking", "social_learning"]
+      "expected_categories": [
+        "Balanced and respectful student participation",
+        "Clearly explaining new classroom participation procedures",
+        "Consistent and clear classroom speaking expectations"
+      ]
     },
     {
+      "agent_id": "active_student",
       "event_id": "event_02",
-      "agent_id": "quiet_student",
-      "expected_categories": ["classroom_norms", "quiet_style"]
+      "expected_categories": [
+        "Active participation in classroom discussion",
+        "Adapting an energetic, speak-first style to a new raise-hand participation rule",
+        "Energetic participation within structured discussion rules"
+      ]
     },
     {
+      "agent_id": "quiet_student",
       "event_id": "event_02",
-      "agent_id": "academic_student",
-      "expected_categories": ["classroom_norms", "academic_focus"]
+      "expected_categories": [
+        "Comfort with structured turn-taking rules like raising a hand before speaking",
+        "Respectful adherence to hand-raising discussion norms",
+        "Valuing a respectful, orderly classroom atmosphere reinforced by clear participation rules"
+      ]
     },
     {
-      "event_id": "event_03",
+      "agent_id": "academic_student",
+      "event_id": "event_02",
+      "expected_categories": [
+        "Composed contribution to structured class discussion",
+        "Contributing accurate input within a structured, turn-based discussion format",
+        "Structured and precise participation in class discussion"
+      ]
+    },
+    {
       "agent_id": "teacher",
-      "expected_categories": ["teacher_guidance", "classroom_norms", "social_learning"]
+      "event_id": "event_03",
+      "expected_categories": [
+        "Balanced student participation in group discussion",
+        "Clear guidance supporting shared understanding",
+        "Guiding students toward accurate, shared understanding of the lesson"
+      ]
     },
     {
-      "event_id": "event_03",
       "agent_id": "active_student",
-      "expected_categories": ["social_learning", "question_asking"]
+      "event_id": "event_03",
+      "expected_categories": [
+        "Active contribution to group learning",
+        "Collaborative discussion for shared understanding",
+        "Encouraging classmates to contribute during group discussion"
+      ]
     },
     {
-      "event_id": "event_03",
       "agent_id": "quiet_student",
-      "expected_categories": ["quiet_style", "social_learning", "classroom_norms"]
-    },
-    {
       "event_id": "event_03",
-      "agent_id": "academic_student",
-      "expected_categories": ["academic_focus", "study_strategy", "social_learning"]
+      "expected_categories": [
+        "Deliberate contribution to group lesson explanation",
+        "Preference for measured, low-attention participation within a group setting",
+        "Prepared and concise contribution to group discussion"
+      ]
     },
     {
-      "event_id": "event_04",
+      "agent_id": "academic_student",
+      "event_id": "event_03",
+      "expected_categories": [
+        "Accurate and structured contribution to group discussion",
+        "Contributing accurate, mastery-based content to the group's shared explanation",
+        "Preferring a structured, organized approach to participating in open-ended group discussion"
+      ]
+    },
+    {
       "agent_id": "teacher",
-      "expected_categories": ["teacher_guidance", "classroom_norms"]
+      "event_id": "event_04",
+      "expected_categories": [
+        "Encouraging balanced participation so multiple students contribute to the nomination discussion",
+        "Facilitation of fair and balanced class leader nomination",
+        "Maintaining fairness and clear expectations when students evaluate a peer for a leadership role"
+      ]
     },
     {
-      "event_id": "event_04",
       "agent_id": "active_student",
-      "expected_categories": ["social_learning", "classroom_norms"]
+      "event_id": "event_04",
+      "expected_categories": [
+        "Eagerness to speak up first and share opinions during peer discussion",
+        "Encouraging classmates to weigh in during the nomination discussion",
+        "Energetic discussion and nomination of class leader"
+      ]
     },
     {
-      "event_id": "event_04",
       "agent_id": "quiet_student",
-      "expected_categories": ["quiet_style", "classroom_norms", "social_learning"]
-    },
-    {
       "event_id": "event_04",
-      "agent_id": "academic_student",
-      "expected_categories": ["academic_focus", "classroom_norms", "social_learning"]
+      "expected_categories": [
+        "Preferring a brief, thoughtful contribution rather than extended debate when discussing classmates",
+        "Valuing a respectful tone when the discussion involves evaluating peers"
+      ]
     },
     {
-      "event_id": "event_05",
+      "agent_id": "academic_student",
+      "event_id": "event_04",
+      "expected_categories": [
+        "Analytical evaluation of class leader responsibilities",
+        "Applying a precise, composed approach when evaluating and discussing a classmate for leadership"
+      ]
+    },
+    {
       "agent_id": "teacher",
-      "expected_categories": ["teacher_guidance", "classroom_norms"]
+      "event_id": "event_05",
+      "expected_categories": [
+        "Clear and calm administration of written test",
+        "Clear and fair assessment of student understanding",
+        "Maintaining consistent, fair test administration expectations",
+        "Student understanding of classroom material"
+      ]
     },
     {
-      "event_id": "event_05",
       "agent_id": "active_student",
-      "expected_categories": ["exam_concern", "study_strategy", "social_learning"]
+      "event_id": "event_05",
+      "expected_categories": [
+        "Direct and confident response to written test questions",
+        "Seeking clarification about test instructions before individual work begins",
+        "Understanding lesson material"
+      ]
     },
     {
-      "event_id": "event_05",
       "agent_id": "quiet_student",
-      "expected_categories": ["exam_concern", "quiet_style", "study_strategy"]
+      "event_id": "event_05",
+      "expected_categories": [
+        "Careful and deliberate response to written test",
+        "Comfort with quiet, individual task formats free from public participation pressure",
+        "Prepared and clear responses during assessment"
+      ]
     },
     {
-      "event_id": "event_05",
       "agent_id": "academic_student",
-      "expected_categories": ["exam_concern", "academic_focus", "study_strategy"]
+      "event_id": "event_05",
+      "expected_categories": [
+        "Demonstrating mastery and precise understanding through individual test responses",
+        "Precise and structured execution of written test",
+        "Relying on organized preparation and study routine when producing test answers"
+      ]
     }
   ]
 }

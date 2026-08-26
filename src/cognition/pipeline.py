@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 import re
 from typing import Any
@@ -586,6 +586,7 @@ class CognitivePipeline:
         llm_client: LLMClient,
         embedding_provider: TextEmbeddingProvider,
         retrieval_engine: Any | None = None,
+        category_vocabulary: Mapping[str, tuple[str, ...]] | None = None,
     ) -> None:
         if not isinstance(config, ExperimentConfig):
             raise CognitiveInputError("config must be an ExperimentConfig")
@@ -607,6 +608,23 @@ class CognitivePipeline:
         self._embedding_provider = embedding_provider
         self._retrieval_engine = engine
         self._agents = {agent.agent_id: agent for agent in config.agents}
+        self._category_vocabulary: dict[str, tuple[str, ...]] = {}
+        if category_vocabulary is not None:
+            if not isinstance(category_vocabulary, Mapping):
+                raise CognitiveInputError("category_vocabulary must be a mapping")
+            for agent_id, labels in category_vocabulary.items():
+                if agent_id not in self._agents:
+                    raise CognitiveInputError(
+                        f"category_vocabulary references unknown agent_id: {agent_id!r}"
+                    )
+                normalized = tuple(dict.fromkeys(labels))
+                if not normalized or not all(
+                    isinstance(label, str) and label.strip() for label in normalized
+                ):
+                    raise CognitiveInputError(
+                        f"category_vocabulary for {agent_id!r} must contain non-empty strings"
+                    )
+                self._category_vocabulary[agent_id] = normalized
         self._steps = {step.step_id: step for step in config.steps}
         self._events = {event.event_id: event for event in config.target_events}
         self._retrieval_configs = {
@@ -1145,8 +1163,8 @@ class CognitivePipeline:
                 "RetrievalResult contains memory data not present in the input stream"
             )
 
-    @staticmethod
     def _build_llm_context(
+        self,
         perception: Perception,
         selected_memories: tuple[MemoryEntry, ...],
     ) -> LLMContext:
@@ -1170,6 +1188,9 @@ class CognitivePipeline:
             observation_text=perception.observation_text,
             conversation_context=perception.conversation_context,
             selected_memory_texts=tuple(memory.text for memory in selected_memories),
+            category_vocabulary=self._category_vocabulary.get(
+                perception.agent_id, ()
+            ),
             event_id=perception.event_id,
             event_title=perception.event_title,
             event_description=perception.event_description,
