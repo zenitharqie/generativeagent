@@ -82,6 +82,7 @@ from src.simulation.full_experiment import (
     EXPECTED_RUN_COUNT,
     EXPERIMENT_SCHEMA_VERSION,
     FULL_EXPERIMENT_CONFIRMATION,
+    MAX_MISSING_USAGE_ATTEMPTS,
     ExperimentAttempt,
     ExperimentAuthorizationError,
     ExperimentBudgetError,

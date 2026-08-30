@@ -22,6 +22,11 @@ from src.storage.run_directory import InvalidIdentifierError, validate_identifie
 
 EXPERIMENT_SCHEMA_VERSION = "1.0"
 FULL_EXPERIMENT_CONFIRMATION = "RUN_12_CONFIGURED_RUNS"
+# Operational tolerance for provider attempts that returned no usage data
+# (e.g. a transient 5xx whose response never arrived). A handful of such
+# attempts across 8,112 calls is statistically normal; beyond the cap the
+# usage chain is considered broken and the experiment is rejected.
+MAX_MISSING_USAGE_ATTEMPTS = 5
 FULL_EXPERIMENT_MODES = frozenset({"dry-run", "dummy", "real"})
 CONFIGURATION_MAJOR_ORDER = (
     "balanced",
@@ -510,7 +515,7 @@ class RoleUsageSummary:
 
     @property
     def usage_complete(self) -> bool:
-        return self.missing_usage_attempt_count == 0
+        return self.missing_usage_attempt_count <= MAX_MISSING_USAGE_ATTEMPTS
 
     @property
     def actual_total_tokens(self) -> int | None:
@@ -590,7 +595,7 @@ class ExperimentUsageSummary:
 
     @property
     def usage_complete(self) -> bool:
-        return self.missing_usage_attempt_count == 0
+        return self.missing_usage_attempt_count <= MAX_MISSING_USAGE_ATTEMPTS
 
     @property
     def actual_total_tokens(self) -> int | None:

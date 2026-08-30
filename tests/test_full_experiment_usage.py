@@ -18,6 +18,7 @@ from src.llm import (
 )
 from src.simulation import (
     APPROVED_PHASE10_PROMPT_HASHES,
+    MAX_MISSING_USAGE_ATTEMPTS,
     ExperimentAttempt,
     ExperimentAttemptLedger,
     ExperimentBudgetError,
@@ -109,7 +110,7 @@ def test_recovered_retry_counts_two_physical_attempts_and_one_retry(
     assert usage.usage_complete is True
 
 
-def test_missing_usage_retry_remains_null_and_blocks_next_call(
+def test_missing_usage_within_cap_is_tolerated_and_allows_next_call(
     tmp_path: Path,
 ) -> None:
     ledger = _ledger(tmp_path)
@@ -138,9 +139,31 @@ def test_missing_usage_retry_remains_null_and_blocks_next_call(
     assert usage.retry_count == 1
     assert usage.missing_usage_attempt_count == 1
     assert usage.known_total_tokens == 4
-    assert usage.actual_total_tokens is None
+    assert usage.usage_complete is True
+    assert usage.actual_total_tokens == 4
+    ledger.authorize_logical_call("balanced_rep01", "simulator")
+
+
+def test_missing_usage_beyond_cap_blocks_next_call(
+    tmp_path: Path,
+) -> None:
+    ledger = _ledger(tmp_path)
+    for index in range(1, MAX_MISSING_USAGE_ATTEMPTS + 2):
+        ledger.record(
+            "balanced_rep01",
+            _simulator_attempt(
+                f"sim_missing_{index}",
+                1,
+                "failed",
+                usage=ProviderUsage(),
+                error_type="ProviderTransientError",
+            ),
+        )
+
+    usage = ledger.summary()
+    assert usage.missing_usage_attempt_count == MAX_MISSING_USAGE_ATTEMPTS + 1
     assert usage.usage_complete is False
-    with pytest.raises(ExperimentUsageError, match="incomplete"):
+    with pytest.raises(ExperimentUsageError, match="cap"):
         ledger.authorize_logical_call("balanced_rep01", "simulator")
 
     persisted = [

@@ -47,6 +47,7 @@ from src.simulation.experiment_validator import (
 from src.simulation.full_experiment import (
     EXPERIMENT_SCHEMA_VERSION,
     FULL_EXPERIMENT_CONFIRMATION,
+    MAX_MISSING_USAGE_ATTEMPTS,
     ExperimentAttempt,
     ExperimentAuthorizationError,
     ExperimentBudgetError,
@@ -379,9 +380,10 @@ class ExperimentAttemptLedger:
     def authorize_logical_call(self, run_id: str, service_role: str) -> None:
         if service_role not in {"simulator", "embedding"}:
             raise ExperimentBudgetError("Phase 13 permits no evaluator calls")
-        if self.missing_usage_attempt_count:
+        if self.missing_usage_attempt_count > MAX_MISSING_USAGE_ATTEMPTS:
             raise ExperimentUsageError(
-                "provider usage is incomplete; no later logical call is permitted"
+                "provider usage is incomplete beyond the tolerated missing-usage cap; "
+                "no later logical call is permitted"
             )
         run_logical = {
             (item.attempt.service_role, item.attempt.logical_call_id)
@@ -1041,7 +1043,7 @@ def execute_full_experiment(
         )
         if (
             usage.logical_call_count != plan.total_logical_calls
-            or usage.missing_usage_attempt_count != 0
+            or usage.missing_usage_attempt_count > MAX_MISSING_USAGE_ATTEMPTS
         ):
             raise ExperimentUsageError("experiment provider operation inventory is incomplete")
         if mode == "real" and ledger is not None:

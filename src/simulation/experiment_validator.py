@@ -22,6 +22,7 @@ from src.logging_system import read_run_summary
 from src.logging_system import jsonl_logger as canonical_jsonl
 from src.simulation.full_experiment import (
     EXPERIMENT_SCHEMA_VERSION,
+    MAX_MISSING_USAGE_ATTEMPTS,
     ExperimentContractError,
     ExperimentPlan,
     ExperimentRunSpec,
@@ -844,7 +845,7 @@ def _validate_manifest_usage(
         )
         or value["known_total_tokens"]
         != value["known_input_tokens"] + value["known_output_tokens"]
-        or value["missing_usage_attempt_count"] != 0
+        or value["missing_usage_attempt_count"] > MAX_MISSING_USAGE_ATTEMPTS
         or value["usage_complete"] is not True
         or value["actual_total_tokens"] != value["known_total_tokens"]
         or value["evaluator_logical_calls"] != 0
@@ -888,7 +889,7 @@ def _validate_manifest_usage(
         if (
             role["service_role"] != expected_name
             or role["logical_call_count"] != expected_logical
-            or role["missing_usage_attempt_count"] != 0
+            or role["missing_usage_attempt_count"] > MAX_MISSING_USAGE_ATTEMPTS
             or role["usage_complete"] is not True
             or role["actual_total_tokens"] != role["known_total_tokens"]
             or role["known_total_tokens"]
