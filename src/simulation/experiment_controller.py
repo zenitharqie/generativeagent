@@ -471,10 +471,13 @@ class ExperimentAttemptLedger:
         final: dict[tuple[str, str], ProviderAttemptRecord] = {}
         for item in records:
             final[(item.attempt.service_role, item.attempt.logical_call_id)] = item.attempt
+        missing_usage = sum(
+            item.attempt.usage.total_tokens is None for item in records
+        )
         if (
             role_counts.simulator != self.plan.per_run_call_limits.simulator_logical_calls
             or role_counts.embedding != self.plan.per_run_call_limits.embedding_logical_calls
-            or any(item.attempt.usage.total_tokens is None for item in records)
+            or missing_usage > MAX_MISSING_USAGE_ATTEMPTS
             or any(attempt.status != "success" for attempt in final.values())
         ):
             raise ExperimentUsageError("completed real run has incomplete provider accounting")

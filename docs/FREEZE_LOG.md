@@ -63,3 +63,14 @@ Setiap perubahan setelah titik freeze wajib dicatat di sini (Doc 02 §24.2).
 - **bug_or_design_change**: design_change (operasional infrastruktur; bukan semantik evaluasi)
 - **impact_on_experiment**: Tidak menyentuh GT/bobot/evaluasi. Gerbang tetap melindungi dari disk habis di tengah run (toleransi turun dari 5 ke 3,5 GiB — peneliti wajib tetap memantau ruang).
 - **approval_status**: diminta peneliti, disetujui sesi analisis
+
+---
+
+## change_005 — v1.9.2: Apply missing-usage cap to per-run completion validation (amends change_002)
+
+- **date**: 2026-08-27
+- **changed_files**: `src/simulation/experiment_controller.py` (`validate_completed_run`)
+- **reason**: change_002 melewatkan satu titik penegakan: validasi penyelesaian per-run masih menuntut `setiap attempt` ber-usage. Akibatnya full_experiment_v6 gugur di balanced_rep03 (run selesai 104 turn, 1 attempt timeout tanpa usage → ditolak saat validasi akhir run).
+- **bug_or_design_change**: bug_fix (melengkapi change_002 — cap kini konsisten di SEMUA titik penegakan)
+- **impact_on_experiment**: Sama dengan change_002 — audit chain tetap ketat (final attempt harus success, jumlah logical persis, missing > 5 ditolak).
+- **approval_status**: disetujui peneliti
