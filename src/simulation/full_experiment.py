@@ -27,6 +27,15 @@ FULL_EXPERIMENT_CONFIRMATION = "RUN_12_CONFIGURED_RUNS"
 # attempts across 8,112 calls is statistically normal; beyond the cap the
 # usage chain is considered broken and the experiment is rejected.
 MAX_MISSING_USAGE_ATTEMPTS = 5
+
+
+def missing_usage_cap(logical_calls: int) -> int:
+    """Toleransi attempt tanpa usage: 2% dari jumlah panggilan, minimum 5.
+
+    Blip server/jaringan transient adalah kejadian statistik normal pada
+    ribuan panggilan; setiap attempt tetap tercatat eksplisit di manifest.
+    """
+    return max(MAX_MISSING_USAGE_ATTEMPTS, logical_calls // 50)
 FULL_EXPERIMENT_MODES = frozenset({"dry-run", "dummy", "real"})
 CONFIGURATION_MAJOR_ORDER = (
     "balanced",

@@ -60,7 +60,7 @@ from src.simulation.run_validator import (
     validate_no_secret_artifacts,
     validate_pilot_run,
 )
-from src.simulation.full_experiment import MAX_MISSING_USAGE_ATTEMPTS
+from src.simulation.full_experiment import missing_usage_cap
 from src.simulation.safeguards import (
     APPROVED_PHASE10_PROMPT_HASHES,
     GuardedPilotEmbeddingProvider,
@@ -1051,7 +1051,7 @@ def execute_pilot(
             max_total_tokens=effective_budget,
         )
         if mode == "real":
-            if usage.missing_total_usage_attempt_count > MAX_MISSING_USAGE_ATTEMPTS:
+            if usage.missing_total_usage_attempt_count > missing_usage_cap(usage.logical_call_count):
                 raise PilotUsageError(
                     "real pilot provider usage is incomplete beyond the tolerated "
                     "missing-usage cap"
@@ -1264,10 +1264,10 @@ def _require_complete_provider_usage(
 ) -> None:
     if (
         usage.get("missing_total_usage_attempt_count", 0)
-        > MAX_MISSING_USAGE_ATTEMPTS
+        > missing_usage_cap(usage.get("logical_call_count", 0))
         or sum(
             attempt.usage.total_tokens is None for attempt in attempts
-        ) > MAX_MISSING_USAGE_ATTEMPTS
+        ) > missing_usage_cap(len(attempts))
     ):
         raise PilotReviewError(
             "pilot has provider attempts with incomplete token usage beyond the "

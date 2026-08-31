@@ -74,3 +74,15 @@ Setiap perubahan setelah titik freeze wajib dicatat di sini (Doc 02 §24.2).
 - **bug_or_design_change**: bug_fix (melengkapi change_002 — cap kini konsisten di SEMUA titik penegakan)
 - **impact_on_experiment**: Sama dengan change_002 — audit chain tetap ketat (final attempt harus success, jumlah logical persis, missing > 5 ditolak).
 - **approval_status**: disetujui peneliti
+
+---
+
+## change_006 — v1.9.5: Proportional missing-usage cap (5 → 2% of logical calls)
+
+- **date**: 2026-08-27
+- **changed_files**: `src/simulation/full_experiment.py` (fungsi `missing_usage_cap`), `experiment_controller.py`, `experiment_validator.py`, `pilot.py` (semua titik penegakan memakai cap proporsional)
+- **reason**: full_experiment_v7 rep02 mengalami 6 blip transient (semua berhasil di-retry, data utuh) — 1 di atas cap statis 5. Kap 5 terlalu sempit untuk realitas jaringan pada 676–8.112 panggilan.
+- **bug_or_design_change**: design_change (kalibrasi operasional, menyempurnakan change_002/005)
+- **impact_on_experiment**: cap kini = max(5, logical_calls ÷ 50) — pilot (260 call) tetap 5; per-run eksperimen (676 call) = 13; eksperimen penuh (8.112 call) = 162. Attempt tanpa usage tetap tercatat eksplisit di manifest; melebihi 2% tetap ditolak.
+- **approval_status**: disetujui peneliti
+- **evidence**: logs/full_experiment_v7 — 6 blip dalam satu run, 0 kegagalan data

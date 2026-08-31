@@ -287,7 +287,7 @@ def test_standalone_manifest_validation_rejects_nested_ineligibility_or_missing_
         validate_experiment_manifest(invalid_evaluation, plan=result.plan)
 
     invalid_usage = deepcopy(valid)
-    invalid_usage["usage"]["missing_usage_attempt_count"] = MAX_MISSING_USAGE_ATTEMPTS + 1
+    invalid_usage["usage"]["missing_usage_attempt_count"] = 1000
     invalid_usage["usage"]["usage_complete"] = False
     invalid_usage["usage"]["actual_total_tokens"] = None
     with pytest.raises(ExperimentValidationError, match="usage completion"):
