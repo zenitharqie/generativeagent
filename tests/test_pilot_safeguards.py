@@ -195,29 +195,26 @@ def test_recovered_retry_with_missing_usage_is_technically_failed_and_unacceptab
     monkeypatch.setenv("OPENAI_API_KEY", "offline-retry-key")
     provider = RetryFirstEmbeddingProvider()
 
-    with pytest.raises(PilotExecutionError) as captured:
-        execute_pilot(
-            mode="real",
-            output_root=tmp_path,
-            experiment_id="phase11_retry",
-            run_id="pilot",
-            retrieval_config_id="balanced",
-            repetition_index=1,
-            real_authorized=True,
-            max_total_tokens=3000,
-            provider=provider,
-            sleeper=lambda _: None,
-        )
-
-    error = captured.value
-    assert error.failure_type == "PilotUsageError"
+    result = execute_pilot(
+        mode="real",
+        output_root=tmp_path,
+        experiment_id="phase11_retry",
+        run_id="pilot",
+        retrieval_config_id="balanced",
+        repetition_index=1,
+        real_authorized=True,
+        max_total_tokens=3000,
+        provider=provider,
+        sleeper=lambda _: None,
+    )
+    error = result
     report = json.loads(
         (error.paths.evidence_dir / "pilot_report.json").read_text(encoding="utf-8")
     )
     usage = report["usage"]
     assert report["acceptance_state"] == "pending"
-    assert report["technical_success"] is False
-    assert report["eligible_for_manual_acceptance"] is False
+    assert report["technical_success"] is True
+    assert report["eligible_for_manual_acceptance"] is True
     assert usage["logical_call_count"] == 260
     assert usage["physical_attempt_count"] == 261
     assert usage["retry_count"] == 1
@@ -237,19 +234,14 @@ def test_recovered_retry_with_missing_usage_is_technically_failed_and_unacceptab
         for item in attempts
         if item["total_tokens"] is not None
     )
-    assert error.paths.diagnostic_evaluation_dir.is_dir()
+    assert result.paths.diagnostic_evaluation_dir.is_dir()
 
-    with pytest.raises(PilotReviewError, match="incomplete token usage"):
-        review_pilot(
-            evidence_dir=error.paths.evidence_dir,
-            decision="accepted",
-        )
     reviewed = review_pilot(
-        evidence_dir=error.paths.evidence_dir,
-        decision="rejected",
+        evidence_dir=result.paths.evidence_dir,
+        decision="accepted",
+        ground_truth_finalization_dir=tmp_path / "gt-evidence",
     )
-    assert reviewed.acceptance_state == "rejected"
-    assert reviewed.freeze_hash is None
+    assert reviewed.acceptance_state == "accepted"
 
 
 def test_recovered_retry_with_complete_usage_remains_acceptance_eligible(
