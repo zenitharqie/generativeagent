@@ -52,3 +52,14 @@ Setiap perubahan setelah titik freeze wajib dicatat di sini (Doc 02 §24.2).
 - **impact_on_experiment**: GT beku (c6e310cc), bobot, Top-K, formula, judge tidak disentuh; perubahan identik untuk 4 konfigurasi.
 - **approval_status**: disetujui peneliti (framing: eksperimen hipotesis-tes untuk perbandingan v5 vs v6)
 - **evidence**: analisis theme-crowding — komposisi 240 slot Top-5 event_02 di v5: TEST/PREP 50%, PARTICIPATION 36%; recency_heavy event_02 = 0.017
+
+---
+
+## change_004 — v1.9.1: Lower operational disk-space threshold (5 GiB → 3.5 GiB)
+
+- **date**: 2026-08-27
+- **changed_files**: `src/simulation/experiment_controller.py` (konstanta `OPERATIONAL_MINIMUM_FREE_BYTES`)
+- **reason**: Ambang 5 GiB terbukti terlalu konservatif — 12 run aktual hanya menulis ±150 MB artefak, sementara disk peneliti kronis sempit sehingga gerbang berulang kali memblokir run yang valid. 3,5 GiB tetap memberi margin aman bagi artefak + ruang napas sistem.
+- **bug_or_design_change**: design_change (operasional infrastruktur; bukan semantik evaluasi)
+- **impact_on_experiment**: Tidak menyentuh GT/bobot/evaluasi. Gerbang tetap melindungi dari disk habis di tengah run (toleransi turun dari 5 ke 3,5 GiB — peneliti wajib tetap memantau ruang).
+- **approval_status**: diminta peneliti, disetujui sesi analisis
