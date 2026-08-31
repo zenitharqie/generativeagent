@@ -33,3 +33,22 @@ Setiap perubahan setelah titik freeze wajib dicatat di sini (Doc 02 §24.2).
 - **impact_on_experiment**: MRA/BCR, bobot, Top-K, GT tidak tersentuh. Attempt tanpa usage tetap tercatat eksplisit di manifest (`missing_usage_attempt_count`) — transparan dan dibatasi cap 5 (≈0,06% dari 8.112 call). Melebihi cap tetap ditolak.
 - **approval_status**: disetujui peneliti (sesi analisis v1.8.1)
 - **evidence**: `logs/full_experiment_v2` (rep02), `logs/full_experiment_v4` (relevance_rep01) — masing-masing gugur oleh missing_usage=1
+
+---
+
+## change_003 — v1.9.0: Proportional theme calibration (theme-crowding hypothesis test)
+
+- **date**: 2026-08-27
+- **changed_files**:
+  - `config/simulation_steps.json` (hanya 3 deskripsi blok natural: day_02_natural_03 muatan ujian dikembalikan netral; day_03_natural_04 fokus norma/raise-hand + persiapan sekolah; day_06_natural_07 diarahkan ke eksekusi ujian)
+- **hypothesis (H2-theme crowding)**: Pemanjatan tema ujian pada blok day-2/3 di v1.8.0 menggeser distribusi label stream sehingga event_02 kehilangan stok partisipasi/norma (MRA 0.625→0.217). Kalibrasi proporsional diprediksi memulihkan event_02 tanpa mengorbankan event_01.
+- **pre-registered predictions (dideklarasikan sebelum run)**:
+  - event_02: 0.217 → 0.40–0.55
+  - event_05: 0.138 → 0.20–0.30
+  - event_01: boleh turun ke 0.6–0.7 (trade-off diakui)
+  - event_04: bertahan ≥0.40
+  - recency_heavy di event_02 diprediksi pulih paling besar (indikator mekanisme crowding)
+- **bug_or_design_change**: design_change (konteks blok natural; bukan GT/bobot/evaluasi)
+- **impact_on_experiment**: GT beku (c6e310cc), bobot, Top-K, formula, judge tidak disentuh; perubahan identik untuk 4 konfigurasi.
+- **approval_status**: disetujui peneliti (framing: eksperimen hipotesis-tes untuk perbandingan v5 vs v6)
+- **evidence**: analisis theme-crowding — komposisi 240 slot Top-5 event_02 di v5: TEST/PREP 50%, PARTICIPATION 36%; recency_heavy event_02 = 0.017

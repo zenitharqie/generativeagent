@@ -46,7 +46,7 @@
       "period": "morning",
       "step_type": "natural_interaction_block",
       "title": "Reviewing Recent Material",
-      "description": "The class reviews recent material and discusses how students handle unclear topics. The class also discusses how reviewing the material will help them prepare for the announced end-of-week written test.",
+      "description": "The class reviews recent material and discusses how students handle unclear topics.",
       "participants": [
         "teacher",
         "active_student",
@@ -83,7 +83,7 @@
       "period": "morning",
       "step_type": "natural_interaction_block",
       "title": "Participation and Preparation",
-      "description": "The class discusses preparation routines and respectful participation during lessons.",
+      "description": "The class discusses how the new raise-hand procedure is working in practice for each student, including how they adapt their speaking style to it, and reviews their preparation routines for upcoming school assessments.",
       "participants": [
         "teacher",
         "active_student",
@@ -194,7 +194,7 @@
       "period": "morning",
       "step_type": "natural_interaction_block",
       "title": "Final Review and Study Reflection",
-      "description": "The class reviews the week's learning and discusses general approaches to checking understanding. Students compare their preparation strategies right before the scheduled written test begins.",
+      "description": "The class reviews the week's learning and discusses general approaches to checking understanding. Students also describe how they approach answering test questions calmly and accurately during the test itself.",
       "participants": [
         "teacher",
         "active_student",
