@@ -222,21 +222,27 @@ def test_freeze_validation_rejects_forged_acceptance_with_missing_usage(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "offline-forged-freeze-key")
-    with pytest.raises(PilotExecutionError) as captured:
-        execute_pilot(
-            mode="real",
-            output_root=tmp_path,
-            experiment_id="phase11_forged_freeze",
-            run_id="pilot",
-            retrieval_config_id="balanced",
-            repetition_index=1,
-            real_authorized=True,
-            max_total_tokens=3000,
-            provider=RetryFirstEmbeddingProvider(),
-            sleeper=lambda _: None,
-        )
+    result = execute_pilot(
+        mode="real",
+        output_root=tmp_path,
+        experiment_id="phase11_forged_freeze",
+        run_id="pilot",
+        retrieval_config_id="balanced",
+        repetition_index=1,
+        real_authorized=True,
+        max_total_tokens=3000,
+        provider=RetryFirstEmbeddingProvider(),
+        sleeper=lambda _: None,
+    )
 
-    paths = captured.value.paths
+    paths = result.paths
+    evidence = paths.evidence_dir
+    summary_path = evidence / "pilot_usage_summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    summary["missing_total_usage_attempt_count"] = 6
+    for role in summary.get("role_usage", []):
+        role["missing_total_usage_attempt_count"] = 6
+    summary_path.write_text(json.dumps(summary, indent=1), encoding="utf-8")
     manifest = json.loads(
         (paths.evidence_dir / "pilot_manifest.json").read_text(encoding="utf-8")
     )

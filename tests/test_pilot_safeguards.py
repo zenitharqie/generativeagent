@@ -188,11 +188,12 @@ def test_mocked_real_pilot_is_excluded_and_publishes_separate_evidence(
         )
 
 
-def test_recovered_retry_with_missing_usage_is_technically_failed_and_unacceptable(
+def test_recovered_retry_with_missing_usage_remains_acceptable_within_cap(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     monkeypatch.setenv("OPENAI_API_KEY", "offline-retry-key")
+    gt_dir = install_phase11_v2_test_contract(monkeypatch, tmp_path)
     provider = RetryFirstEmbeddingProvider()
 
     result = execute_pilot(
@@ -207,9 +208,8 @@ def test_recovered_retry_with_missing_usage_is_technically_failed_and_unacceptab
         provider=provider,
         sleeper=lambda _: None,
     )
-    error = result
     report = json.loads(
-        (error.paths.evidence_dir / "pilot_report.json").read_text(encoding="utf-8")
+        (result.paths.evidence_dir / "pilot_report.json").read_text(encoding="utf-8")
     )
     usage = report["usage"]
     assert report["acceptance_state"] == "pending"
@@ -221,7 +221,7 @@ def test_recovered_retry_with_missing_usage_is_technically_failed_and_unacceptab
     assert usage["missing_total_usage_attempt_count"] == 1
     attempts = [
         json.loads(line)
-        for line in (error.paths.evidence_dir / "pilot_attempts.jsonl")
+        for line in (result.paths.evidence_dir / "pilot_attempts.jsonl")
         .read_text(encoding="utf-8")
         .splitlines()
     ]
@@ -239,7 +239,7 @@ def test_recovered_retry_with_missing_usage_is_technically_failed_and_unacceptab
     reviewed = review_pilot(
         evidence_dir=result.paths.evidence_dir,
         decision="accepted",
-        ground_truth_finalization_dir=tmp_path / "gt-evidence",
+        ground_truth_finalization_dir=gt_dir,
     )
     assert reviewed.acceptance_state == "accepted"
 
