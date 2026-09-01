@@ -168,11 +168,11 @@ def test_judge_rejects_malformed_or_out_of_contract_output_without_repair(
     export = build_bcr_export(
         load_evaluation_run(phase08_full_artifacts[0].run_paths.run_dir)
     )[0]
-    provider = RepeatingJudgeProvider([invalid, invalid])
+    provider = RepeatingJudgeProvider([invalid, invalid, invalid, invalid])
 
     with pytest.raises(BCRJudgmentError, match="invalid structured output twice"):
         BCRJudgeService(provider, sleeper=lambda _: None).judge(export)
-    assert len(provider.requests) == 2
+    assert len(provider.requests) == 4
 
 
 def test_judge_retries_one_transient_failure_with_same_logical_identity(
@@ -203,6 +203,8 @@ def test_terminal_provider_failure_exposes_every_sanitized_attempt(
         [
             ProviderRateLimitError(sentinel),
             ProviderRateLimitError(sentinel),
+            ProviderRateLimitError(sentinel),
+            ProviderRateLimitError(sentinel),
         ]
     )
 
@@ -210,9 +212,9 @@ def test_terminal_provider_failure_exposes_every_sanitized_attempt(
         BCRJudgeService(provider, sleeper=lambda _: None).judge(export)
 
     attempts = caught.value.provider_attempts
-    assert len(provider.requests) == 2
-    assert tuple(item.status for item in attempts) == ("failed", "failed")
-    assert tuple(item.attempt_index for item in attempts) == (1, 2)
+    assert len(provider.requests) == 4
+    assert tuple(item.status for item in attempts) == ("failed", "failed", "failed", "failed")
+    assert tuple(item.attempt_index for item in attempts) == (1, 2, 3, 4)
     assert len({item.logical_call_id for item in attempts}) == 1
     assert all(item.error_type == "ProviderRateLimitError" for item in attempts)
     serialized = json.dumps([item.to_dict() for item in attempts], sort_keys=True)
@@ -233,18 +235,20 @@ def test_terminal_invalid_output_exposes_every_sanitized_attempt(
         load_evaluation_run(phase08_full_artifacts[0].run_paths.run_dir)
     )[0]
     sentinel = "phase10-terminal-invalid-output-secret"
-    provider = RepeatingJudgeProvider([sentinel, sentinel])
+    provider = RepeatingJudgeProvider([sentinel, sentinel, sentinel, sentinel])
 
     with pytest.raises(BCRJudgmentFailure, match="invalid structured output twice") as caught:
         BCRJudgeService(provider, sleeper=lambda _: None).judge(export)
 
     attempts = caught.value.provider_attempts
-    assert len(provider.requests) == 2
+    assert len(provider.requests) == 4
     assert tuple(item.status for item in attempts) == (
         "invalid_output",
         "invalid_output",
+        "invalid_output",
+        "invalid_output",
     )
-    assert tuple(item.attempt_index for item in attempts) == (1, 2)
+    assert tuple(item.attempt_index for item in attempts) == (1, 2, 3, 4)
     assert len({item.logical_call_id for item in attempts}) == 1
     assert all(item.error_type == "BCRJudgmentError" for item in attempts)
     serialized = json.dumps([item.to_dict() for item in attempts], sort_keys=True)

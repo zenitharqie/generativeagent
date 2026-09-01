@@ -69,7 +69,7 @@ def test_fixed_plan_derives_exact_day_one_to_two_scope_and_call_limits() -> None
         plan.call_limits.embedding_logical_calls,
         plan.call_limits.total_logical_calls,
         plan.call_limits.total_physical_attempts,
-    ) == (152, 108, 260, 520)
+    ) == (152, 108, 260, 1040)
 
 
 @pytest.mark.parametrize(
@@ -322,11 +322,11 @@ def test_terminal_provider_failure_is_rejected_with_attempt_evidence(
     assert report["technical_success"] is False
     assert report["eligible_for_manual_acceptance"] is False
     assert report["included_in_final_research_matrix"] is False
-    assert len(attempts) == 2
+    assert len(attempts) == 4
     assert {item["logical_call_id"] for item in attempts} == {
         attempts[0]["logical_call_id"]
     }
-    assert [item["attempt_index"] for item in attempts] == [1, 2]
+    assert [item["attempt_index"] for item in attempts] == [1, 2, 3, 4]
     assert all(item["status"] == "failed" for item in attempts)
     assert all("raw" not in key for item in attempts for key in item)
     reviewed = review_pilot(

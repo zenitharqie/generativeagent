@@ -33,11 +33,12 @@ VALID_OUTPUTS = {
 class ScriptedTextProvider:
     def __init__(self, *outcomes: object) -> None:
         self.outcomes = deque(outcomes)
+        self.outcomes_default = None
         self.requests: list[StructuredTextRequest] = []
 
     def generate_structured(self, request: StructuredTextRequest) -> StructuredTextResponse:
         self.requests.append(request)
-        outcome = self.outcomes.popleft()
+        outcome = self.outcomes.popleft() if self.outcomes else self.outcomes_default
         if isinstance(outcome, BaseException):
             raise outcome
         return StructuredTextResponse(
@@ -129,7 +130,7 @@ def test_extra_structured_output_field_is_invalid_without_semantic_repair() -> N
 
     with pytest.raises(LLMClientError, match="invalid structured output twice"):
         service.generate(requests_by_call_type()[LLMCallType.PLAN])
-    assert len(provider.requests) == 2
+    assert len(provider.requests) == 4
 
 
 def test_duplicate_structured_output_key_is_rejected() -> None:
@@ -175,7 +176,7 @@ def test_keyboard_interrupt_is_recorded_once_then_reraised_without_retry() -> No
     services: list[LLMService] = []
     providers: list[ScriptedTextProvider] = []
 
-    for _ in range(2):
+    for _ in range(4):
         provider = ScriptedTextProvider(KeyboardInterrupt(sentinel))
         service = LLMService(
             provider,
@@ -188,8 +189,8 @@ def test_keyboard_interrupt_is_recorded_once_then_reraised_without_retry() -> No
         providers.append(provider)
         services.append(service)
 
-    assert [len(provider.requests) for provider in providers] == [1, 1]
-    assert [len(service.usage_records) for service in services] == [1, 1]
+    assert [len(provider.requests) for provider in providers] == [1, 1, 1, 1]
+    assert [len(service.usage_records) for service in services] == [1, 1, 1, 1]
     first = services[0].usage_records[0]
     assert first == services[0].last_attempts[0]
     assert first.logical_call_id == services[1].usage_records[0].logical_call_id

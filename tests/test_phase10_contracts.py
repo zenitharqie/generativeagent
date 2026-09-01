@@ -56,7 +56,7 @@ def test_runtime_profiles_freeze_approved_pilot_settings() -> None:
     assert EVALUATOR_PROFILE.temperature is None
     assert EVALUATOR_PROFILE.top_p is None
     assert EVALUATOR_PROFILE.seed is None
-    assert MAX_PROVIDER_ATTEMPTS == 2
+    assert MAX_PROVIDER_ATTEMPTS == 4
     assert RETRY_DELAY_SECONDS == 1
     assert BCR_RUBRIC_VERSION == "phase10_binary_bcr_rubric_v2"
     assert OPENAI_API_KEY_ENVIRONMENT_VARIABLE == "OPENAI_API_KEY"

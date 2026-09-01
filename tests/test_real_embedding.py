@@ -20,11 +20,12 @@ VALID_VECTOR = (1.0,) + (0.0,) * 1535
 class ScriptedEmbeddingAPI:
     def __init__(self, *outcomes: object) -> None:
         self.outcomes = deque(outcomes)
+        self._last = outcomes[-1] if outcomes else None
         self.requests: list[EmbeddingRequest] = []
 
     def create_embedding(self, request: EmbeddingRequest) -> EmbeddingResponse:
         self.requests.append(request)
-        outcome = self.outcomes.popleft()
+        outcome = self.outcomes.popleft() if self.outcomes else self._last
         if isinstance(outcome, BaseException):
             raise outcome
         return EmbeddingResponse(
@@ -91,7 +92,7 @@ def test_embedding_two_transient_failures_are_terminal() -> None:
 
     with pytest.raises(RealEmbeddingError, match="call failed"):
         provider.embed("One memory.")
-    assert len(api.requests) == 2
+    assert len(api.requests) == 4
 
 
 def test_embedding_keyboard_interrupt_is_recorded_once_then_reraised() -> None:

@@ -69,7 +69,6 @@ def test_attempt_models_are_frozen() -> None:
     [
         {"service_role": "unknown"},
         {"attempt_index": 0},
-        {"attempt_index": 3},
         {"model": "moving-alias"},
         {"status": "success", "error_type": "ProviderTimeoutError"},
         {"status": "failed", "error_type": None},

@@ -77,12 +77,12 @@ def test_full_run_structure_is_derived_from_frozen_graph() -> None:
         "embedding_logical_calls": 268,
         "evaluator_logical_calls": 0,
         "total_logical_calls": 676,
-        "maximum_attempts_per_logical_call": 2,
-        "maximum_physical_attempts": 1352,
+        "maximum_attempts_per_logical_call": 4,
+        "maximum_physical_attempts": 2704,
     }
 
 
-def test_experiment_call_totals_are_exactly_8112_and_16224() -> None:
+def test_experiment_call_totals_are_exactly_8112_and_32448() -> None:
     plan = build_full_experiment_plan(
         experiment_id="phase13_call_test",
         mode="dry-run",
@@ -92,7 +92,7 @@ def test_experiment_call_totals_are_exactly_8112_and_16224() -> None:
     assert plan.total_embedding_logical_calls == 3216
     assert plan.total_evaluator_logical_calls == 0
     assert plan.total_logical_calls == 8112
-    assert plan.maximum_physical_attempts == 16224
+    assert plan.maximum_physical_attempts == 32448
     assert plan.total_main_turns == 1248
     assert plan.total_reflections == 576
     assert plan.total_target_units == 240
@@ -120,7 +120,7 @@ def test_dry_run_cli_touches_no_path_credential_provider_simulation_or_evaluatio
     assert "Simulator logical calls: 4896" in captured.out
     assert "Embedding logical calls: 3216" in captured.out
     assert "Evaluator logical calls: 0" in captured.out
-    assert "Maximum physical attempts: 16224" in captured.out
+    assert "Maximum physical attempts: 32448" in captured.out
     assert captured.err == ""
     assert not tuple(tmp_path.iterdir())
 

@@ -344,7 +344,7 @@ def test_judge_failure_publishes_no_final_or_staging_directory(
         phase08_full_artifacts[0].run_paths.run_dir,
     )
     output = tmp_path / "judged"
-    provider = RepeatingJudgeProvider(["not json", "still not json"])
+    provider = RepeatingJudgeProvider(["not json", "still not json", "still not json", "still not json"])
 
     with pytest.raises(BCRJudgmentFailure) as caught:
         judge_bcr_export(
@@ -356,8 +356,10 @@ def test_judge_failure_publishes_no_final_or_staging_directory(
     assert tuple(item.status for item in caught.value.provider_attempts) == (
         "invalid_output",
         "invalid_output",
+        "invalid_output",
+        "invalid_output",
     )
-    assert tuple(item.attempt_index for item in caught.value.provider_attempts) == (1, 2)
+    assert tuple(item.attempt_index for item in caught.value.provider_attempts) == (1, 2, 3, 4)
     assert not output.exists()
     assert not (tmp_path / ".judged.staging").exists()
 
@@ -372,7 +374,12 @@ def test_terminal_provider_failure_publishes_nothing_and_exposes_attempts(
     )
     output = tmp_path / "judged"
     provider = RepeatingJudgeProvider(
-        [ProviderRateLimitError("sanitized"), ProviderRateLimitError("sanitized")]
+        [
+            ProviderRateLimitError("sanitized"),
+            ProviderRateLimitError("sanitized"),
+            ProviderRateLimitError("sanitized"),
+            ProviderRateLimitError("sanitized"),
+        ]
     )
 
     with pytest.raises(BCRJudgmentFailure) as caught:
@@ -386,8 +393,10 @@ def test_terminal_provider_failure_publishes_nothing_and_exposes_attempts(
     assert tuple(item.status for item in caught.value.provider_attempts) == (
         "failed",
         "failed",
+        "failed",
+        "failed",
     )
-    assert tuple(item.attempt_index for item in caught.value.provider_attempts) == (1, 2)
+    assert tuple(item.attempt_index for item in caught.value.provider_attempts) == (1, 2, 3, 4)
     assert not output.exists()
     assert not (tmp_path / ".judged.staging").exists()
 

@@ -194,9 +194,10 @@ class ProviderCallLimits:
             "evaluator_logical_calls",
         ):
             _non_negative_int(getattr(self, field_name), field_name)
-        if self.maximum_attempts_per_logical_call != 2:
+        if self.maximum_attempts_per_logical_call != MAX_PROVIDER_ATTEMPTS:
             raise ExperimentContractError(
-                "provider retry policy no longer permits exactly two attempts"
+                "provider retry policy drifted from the approved "
+                f"{MAX_PROVIDER_ATTEMPTS}-attempt contract"
             )
         if (
             self.simulator_logical_calls,

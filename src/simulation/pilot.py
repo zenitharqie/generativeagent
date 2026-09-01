@@ -1203,8 +1203,10 @@ def _load_attempts(path: Path) -> tuple[ProviderAttemptRecord, ...]:
             if logical in seen_logical:
                 raise PilotReviewError("duplicate persisted logical provider call")
             seen_logical.add(logical)
-        elif previous_logical != logical or previous_attempt_index != 1:
-            raise PilotReviewError("provider retries must immediately follow attempt one")
+        elif previous_logical != logical or previous_attempt_index != record.attempt_index - 1:
+            raise PilotReviewError(
+                "provider retries must immediately follow the previous attempt"
+            )
         expected_model = {
             "simulator": SIMULATOR_MODEL_IDENTITY,
             "embedding": EMBEDDING_MODEL_IDENTITY,

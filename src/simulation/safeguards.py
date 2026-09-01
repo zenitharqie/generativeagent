@@ -190,8 +190,8 @@ PILOT_CALL_LIMITS = PilotCallLimits(
     simulator_logical_calls=152,
     embedding_logical_calls=108,
     evaluator_logical_calls=0,
-    simulator_physical_attempts=304,
-    embedding_physical_attempts=216,
+    simulator_physical_attempts=152 * MAX_PROVIDER_ATTEMPTS,
+    embedding_physical_attempts=108 * MAX_PROVIDER_ATTEMPTS,
     evaluator_physical_attempts=0,
 )
 
@@ -473,7 +473,7 @@ def validate_phase10_runtime(prompt_loader: PromptLoader | None = None) -> None:
         EMBEDDING_PROFILE.model_identity != EMBEDDING_MODEL_IDENTITY
         or EMBEDDING_PROFILE.expected_dimension != 1536
         or EMBEDDING_PROFILE.request_timeout_seconds != 30
-        or MAX_PROVIDER_ATTEMPTS != 2
+        or MAX_PROVIDER_ATTEMPTS != 4
         or RETRY_DELAY_SECONDS != 1
         or BCR_RUBRIC_VERSION != "phase10_binary_bcr_rubric_v2"
     ):

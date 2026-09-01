@@ -37,7 +37,7 @@ def test_dry_run_reports_exact_scope_without_requiring_output_root(
     assert "Planned steps: 4" in captured.out
     assert "Planned main turns: 40" in captured.out
     assert "Planned provider logical calls: 260" in captured.out
-    assert "Maximum physical attempts: 520" in captured.out
+    assert "Maximum physical attempts: 1040" in captured.out
     assert captured.err == ""
 
 
