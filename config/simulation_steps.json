@@ -66,7 +66,7 @@
       "period": "afternoon",
       "step_type": "target_event",
       "event_id": "event_01",
-      "title": "Pengumuman Ujian",
+      "title": "Exam Announcement",
       "description": "Ms. Sunday announces that a written test will take place on Day 6 and asks the class to prepare using the material discussed during the week.",
       "participants": [
         "teacher",
@@ -103,7 +103,7 @@
       "period": "afternoon",
       "step_type": "target_event",
       "event_id": "event_02",
-      "title": "Perubahan Aturan Kelas",
+      "title": "Classroom Rules Change",
       "description": "Ms. Sunday announces that students must raise a hand and wait to be acknowledged before speaking during class discussion.",
       "participants": [
         "teacher",
@@ -140,7 +140,7 @@
       "period": "afternoon",
       "step_type": "target_event",
       "event_id": "event_03",
-      "title": "Diskusi Kelompok",
+      "title": "Group Discussion",
       "description": "Ms. Sunday assigns the students a group discussion and asks each student to contribute to a shared explanation of the current lesson.",
       "participants": [
         "teacher",
@@ -177,7 +177,7 @@
       "period": "afternoon",
       "step_type": "target_event",
       "event_id": "event_04",
-      "title": "Pemilihan Ketua Kelas",
+      "title": "Class Leader Election",
       "description": "Ms. Sunday asks the class to nominate and discuss a student who could take responsibility as class leader.",
       "participants": [
         "teacher",
@@ -214,7 +214,7 @@
       "period": "afternoon",
       "step_type": "target_event",
       "event_id": "event_05",
-      "title": "Ujian Harian",
+      "title": "Daily Quiz",
       "description": "Ms. Sunday begins the announced written test and asks each student to respond based on their preparation and understanding.",
       "participants": [
         "teacher",

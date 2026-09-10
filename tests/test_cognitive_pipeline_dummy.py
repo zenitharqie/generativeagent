@@ -204,7 +204,7 @@ def test_target_event_uses_target_response_stage_and_event_perception() -> None:
 
     assert result.source_step_type == "target_event"
     assert result.event_id == "event_01"
-    assert result.perception.event_title == "Pengumuman Ujian"
+    assert result.perception.event_title == "Exam Announcement"
     assert client.call_types == (
         LLMCallType.PLAN,
         LLMCallType.TARGET_EVENT_RESPONSE,

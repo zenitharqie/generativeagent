@@ -314,7 +314,7 @@ def test_target_reflection_includes_resolved_event_context() -> None:
     context = client.invocations[-2].request.context
     assert result.event_id == "event_01"
     assert context.event_id == "event_01"
-    assert context.event_title == "Pengumuman Ujian"
+    assert context.event_title == "Exam Announcement"
     assert context.event_description is not None
     assert context.conversation_context == complete_context
     assert engine.calls == 1

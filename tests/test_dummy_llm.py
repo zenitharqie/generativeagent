@@ -49,10 +49,10 @@ def target_context() -> LLMContext:
         natural_context(),
         source_step_id="day_02_target_01",
         source_step_type="target_event",
-        step_title="Pengumuman Ujian",
+        step_title="Exam Announcement",
         step_description="A written test is announced.",
         event_id="event_01",
-        event_title="Pengumuman Ujian",
+        event_title="Exam Announcement",
         event_description="A written test will take place on Day 6.",
     )
 

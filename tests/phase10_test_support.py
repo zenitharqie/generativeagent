@@ -46,10 +46,10 @@ def target_context(**changes: object) -> LLMContext:
         natural_context(),
         source_step_id="day_02_target_01",
         source_step_type="target_event",
-        step_title="Pengumuman Ujian",
+        step_title="Exam Announcement",
         step_description="A written test is announced.",
         event_id="event_01",
-        event_title="Pengumuman Ujian",
+        event_title="Exam Announcement",
         event_description="A written test will take place on Day 6.",
     )
     return replace(context, **changes)
@@ -68,7 +68,7 @@ def bcr_judge_input(**changes: object) -> BCRJudgeInput:
             motivations=("student understanding",),
         ),
         target_event=TargetEventJudgeInput(
-            title="Pengumuman Ujian",
+            title="Exam Announcement",
             description="A written test will take place on Day 6.",
         ),
         response="Please review the material and ask focused questions.",
@@ -79,7 +79,7 @@ def bcr_judge_input(**changes: object) -> BCRJudgeInput:
                 turn_id="day_02_target_01_turn_001",
                 turn_index=1,
                 timestamp=25,
-                event_title="Pengumuman Ujian",
+                event_title="Exam Announcement",
                 event_description="A written test was announced.",
                 response="We will prepare with a clear review plan.",
             ),
