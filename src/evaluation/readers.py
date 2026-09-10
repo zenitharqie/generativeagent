@@ -460,7 +460,9 @@ def _selected_evidence(
 ) -> tuple[SelectedMemoryEvidence, ...]:
     selected_ids = tuple(retrieval["selected_memory_ids"])
     candidates = retrieval["candidates"]
-    selected_candidates = tuple(candidates[: len(selected_ids)])
+    selected_candidates = tuple(
+        candidate for candidate in candidates if candidate["selected"]
+    )
     if tuple(candidate["memory_id"] for candidate in selected_candidates) != selected_ids:
         raise EvaluationJoinError("selected candidate order is inconsistent")
     evidence: list[SelectedMemoryEvidence] = []

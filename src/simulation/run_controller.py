@@ -130,24 +130,13 @@ class RunController:
     def _load_category_vocabulary(
         config_directory: Path,
     ) -> dict[str, tuple[str, ...]]:
-        """Derive the per-agent labeling vocabulary from the frozen ground truth."""
-        path = Path(config_directory) / "ground_truth.json"
-        try:
-            value = json.loads(path.read_text(encoding="utf-8"))
-            targets = value["targets"]
-            vocabulary: dict[str, tuple[str, ...]] = {}
-            for target in targets:
-                agent_id = target["agent_id"]
-                labels = vocabulary.setdefault(agent_id, ())
-                merged = dict.fromkeys(labels)
-                for label in target["expected_categories"]:
-                    merged[label] = None
-                vocabulary[agent_id] = tuple(merged)
-            return vocabulary
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            raise RunControllerError(
-                "could not derive category labeling vocabulary from ground truth snapshot"
-            ) from exc
+        """Return an empty vocabulary: memory categories are free-form.
+
+        The experiment now relies on unconstrained, event-aware category
+        labeling produced by the LLM itself (see prompts/*.txt). The frozen
+        ground truth is used only for evaluation, never to constrain labels.
+        """
+        return {}
 
     def run(
         self,

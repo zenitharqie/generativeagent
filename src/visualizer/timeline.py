@@ -520,9 +520,17 @@ def _validate_retrieval(
         for current, following in zip(candidates, candidates[1:])
     ):
         raise ReplayOrderingError("persisted retrieval candidate scores contradict rank order")
-    expected_selected = tuple(candidate_ids[: min(top_k, len(candidate_ids))])
+    expected_selected_count = min(top_k, len(candidate_ids))
+    if len(selected) != expected_selected_count or len(set(selected)) != len(selected):
+        raise ReplayOrderingError("persisted retrieval Top-K selection is inconsistent")
+    rank_position = {item.memory_id: index for index, item in enumerate(candidates)}
+    if any(memory_id not in rank_position for memory_id in selected):
+        raise ReplayOrderingError("persisted retrieval Top-K selection is inconsistent")
+    selected_positions = [rank_position[memory_id] for memory_id in selected]
+    if selected_positions != sorted(selected_positions):
+        raise ReplayOrderingError("persisted retrieval Top-K selection is inconsistent")
     flagged = tuple(item.memory_id for item in candidates if item.selected)
-    if selected != expected_selected or flagged != expected_selected:
+    if selected != flagged:
         raise ReplayOrderingError("persisted retrieval Top-K selection is inconsistent")
     accessed = tuple(record["accessed_memory_ids"])
     if accessed != selected:

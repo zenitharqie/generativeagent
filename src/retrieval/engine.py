@@ -136,13 +136,33 @@ class RetrievalEngine:
             )
         )
         selected_count = min(requested_top_k, len(ranked))
-        ranked_with_selection = tuple(
-            replace(candidate, selected=index < selected_count)
-            for index, candidate in enumerate(ranked)
-        )
+        selected_ids: list[str] = []
+        seen_categories: set[str] = set()
+        for candidate in ranked:
+            if len(selected_ids) >= selected_count:
+                break
+            category = candidate.memory.category
+            if category in seen_categories:
+                continue
+            seen_categories.add(category)
+            selected_ids.append(candidate.memory_id)
+        if len(selected_ids) < selected_count:
+            remaining_ids = set(selected_ids)
+            for candidate in ranked:
+                if len(selected_ids) >= selected_count:
+                    break
+                if candidate.memory_id not in remaining_ids:
+                    remaining_ids.add(candidate.memory_id)
+                    selected_ids.append(candidate.memory_id)
+        selected_id_set = set(selected_ids)
         selected_memory_ids = tuple(
             candidate.memory_id
-            for candidate in ranked_with_selection[:selected_count]
+            for candidate in ranked
+            if candidate.memory_id in selected_id_set
+        )
+        ranked_with_selection = tuple(
+            replace(candidate, selected=candidate.memory_id in selected_id_set)
+            for candidate in ranked
         )
 
         return RetrievalResult(

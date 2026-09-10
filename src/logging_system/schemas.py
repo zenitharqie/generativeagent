@@ -698,14 +698,35 @@ class RetrievalLogRecord:
         candidate_ids = tuple(candidate.memory_id for candidate in self.candidates)
         if len(candidate_ids) != len(set(candidate_ids)):
             raise LogSchemaError("retrieval candidates must have unique memory IDs")
-        expected_selected = candidate_ids[: min(self.top_k, self.candidate_count)]
+        expected_selected_count = min(self.top_k, self.candidate_count)
+        if len(self.selected_memory_ids) != expected_selected_count:
+            raise LogSchemaError(
+                "selected_memory_ids must contain exactly the expected Top-K count"
+            )
+        if len(set(self.selected_memory_ids)) != len(self.selected_memory_ids):
+            raise LogSchemaError("selected_memory_ids must be unique")
+        rank_position = {
+            candidate.memory_id: index
+            for index, candidate in enumerate(self.candidates)
+        }
+        if any(memory_id not in rank_position for memory_id in self.selected_memory_ids):
+            raise LogSchemaError(
+                "selected_memory_ids must all be ranked candidates"
+            )
+        selected_positions = [
+            rank_position[memory_id] for memory_id in self.selected_memory_ids
+        ]
+        if selected_positions != sorted(selected_positions):
+            raise LogSchemaError(
+                "selected_memory_ids must preserve ranked order"
+            )
         flagged_selected = tuple(
             candidate.memory_id for candidate in self.candidates if candidate.selected
         )
-        if self.selected_memory_ids != expected_selected:
-            raise LogSchemaError("selected_memory_ids must be the ranked Top-K IDs")
-        if flagged_selected != expected_selected:
-            raise LogSchemaError("selected flags must identify the ranked Top-K")
+        if self.selected_memory_ids != flagged_selected:
+            raise LogSchemaError(
+                "selected flags must match selected_memory_ids in order"
+            )
         if self.accessed_memory_ids != self.selected_memory_ids:
             raise LogSchemaError(
                 "accessed_memory_ids must equal selected_memory_ids in order"

@@ -225,11 +225,18 @@
     unique(candidates.map((candidate) => candidate.memory_id), `${label}.candidates`);
     const selected = textArray(retrieval.selected_memory_ids, `${label}.selected_memory_ids`, { identifiers: true, uniqueValues: true });
     const accessed = textArray(retrieval.accessed_memory_ids, `${label}.accessed_memory_ids`, { identifiers: true, uniqueValues: true });
-    const expectedSelected = candidates.slice(0, Math.min(retrieval.top_k, candidates.length)).map((candidate) => candidate.memory_id);
-    if (selected.length !== expectedSelected.length || selected.some((id, index) => id !== expectedSelected[index])) throw new Error(`${label} selected Top-K prefix is invalid`);
+    const expectedSelectedCount = Math.min(retrieval.top_k, candidates.length);
+    if (selected.length !== expectedSelectedCount) throw new Error(`${label} selected Top-K count is invalid`);
+    const candidateById = new Map(candidates.map((candidate, index) => [candidate.memory_id, index]));
+    const selectedPositions = selected.map((id) => {
+      if (!candidateById.has(id)) throw new Error(`${label} selected Top-K references unknown candidate`);
+      return candidateById.get(id);
+    });
+    if (selectedPositions.some((position, index) => index > 0 && position <= selectedPositions[index - 1])) throw new Error(`${label} selected Top-K order is invalid`);
     if (accessed.length !== selected.length || accessed.some((id, index) => id !== selected[index])) throw new Error(`${label} accessed order is invalid`);
-    candidates.forEach((candidate, index) => {
-      if (candidate.selected !== (index < expectedSelected.length)) throw new Error(`${label} selected flags are inconsistent`);
+    const selectedSet = new Set(selected);
+    candidates.forEach((candidate) => {
+      if (candidate.selected !== selectedSet.has(candidate.memory_id)) throw new Error(`${label} selected flags are inconsistent`);
     });
   };
 

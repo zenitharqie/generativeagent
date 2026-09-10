@@ -318,3 +318,70 @@ def test_missing_memory_embedding_fails_instead_of_using_a_fallback() -> None:
 
     with pytest.raises(MissingEmbeddingError, match="memory_embedding is required"):
         retrieve(engine, config, missing_stream)
+
+
+def build_mixed_category_stream(
+    categories: tuple[str, ...], *, run_id: str = "run_01"
+) -> MemoryStream:
+    factory = MemoryFactory("academic_student", run_id=run_id)
+    stream = MemoryStream("academic_student", run_id=run_id)
+    for index, category in enumerate(categories):
+        stream.add_memory(
+            factory.create_memory(
+                memory_type="observation",
+                text=f"Academic memory {index + 1}.",
+                category=category,
+                importance=10,
+                created_at=index,
+                source_step_id="day_01_natural_01",
+                source_step_type="natural_interaction_block",
+                embedding=(1.0, 1.0),
+            )
+        )
+    return stream
+
+
+def test_top_k_selection_deduplicates_categories_first() -> None:
+    engine, config = loaded_engine_and_config()
+    stream = build_mixed_category_stream(
+        ("study_strategy", "study_strategy", "study_strategy", "exam_concern", "social_learning")
+    )
+
+    result = retrieve(engine, config, stream)
+
+    selected = tuple(
+        candidate.memory.category for candidate in result.candidates if candidate.selected
+    )
+    assert len(selected) == engine.configured_top_k
+    unique_in_rank_order = list(dict.fromkeys(selected))
+    assert selected[: len(unique_in_rank_order)] == tuple(unique_in_rank_order)
+    assert len(unique_in_rank_order) == 3
+    assert selected_memory_ids_preserve_rank_order(result)
+
+
+def selected_memory_ids_preserve_rank_order(result) -> bool:
+    rank_position = {
+        candidate.memory_id: index for index, candidate in enumerate(result.candidates)
+    }
+    positions = [rank_position[memory_id] for memory_id in result.selected_memory_ids]
+    return positions == sorted(positions)
+
+
+def test_duplicate_backfill_fills_remaining_slots_in_rank_order() -> None:
+    engine, config = loaded_engine_and_config()
+    stream = build_mixed_category_stream(
+        ("study_strategy", "study_strategy", "study_strategy", "study_strategy", "study_strategy", "study_strategy")
+    )
+
+    result = retrieve(engine, config, stream)
+
+    assert len(result.selected_memory_ids) == engine.configured_top_k
+    rank_position = {
+        candidate.memory_id: index for index, candidate in enumerate(result.candidates)
+    }
+    positions = [rank_position[memory_id] for memory_id in result.selected_memory_ids]
+    assert positions == sorted(positions)
+    flagged = tuple(
+        candidate.memory_id for candidate in result.candidates if candidate.selected
+    )
+    assert flagged == result.selected_memory_ids

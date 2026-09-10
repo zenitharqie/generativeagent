@@ -121,14 +121,30 @@ class RetrievalResult:
             raise ValueError("selected_memory_ids must contain non-empty strings")
 
         expected_selected_count = min(self.top_k, self.candidate_count)
-        expected_selected_ids = candidate_ids[:expected_selected_count]
+        if len(self.selected_memory_ids) != expected_selected_count:
+            raise ValueError(
+                "selected_memory_ids must contain exactly the expected Top-K count"
+            )
+        if len(set(self.selected_memory_ids)) != len(self.selected_memory_ids):
+            raise ValueError("selected_memory_ids must be unique")
+        rank_position = {
+            candidate.memory_id: index
+            for index, candidate in enumerate(self.candidates)
+        }
+        if any(memory_id not in rank_position for memory_id in self.selected_memory_ids):
+            raise ValueError("selected_memory_ids must all be ranked candidates")
+        selected_positions = [
+            rank_position[memory_id] for memory_id in self.selected_memory_ids
+        ]
+        if selected_positions != sorted(selected_positions):
+            raise ValueError("selected_memory_ids must preserve ranked order")
         flagged_selected_ids = tuple(
             candidate.memory_id for candidate in self.candidates if candidate.selected
         )
-        if self.selected_memory_ids != expected_selected_ids:
-            raise ValueError("selected_memory_ids must be the ranked Top-K IDs")
-        if flagged_selected_ids != expected_selected_ids:
-            raise ValueError("candidate selected flags must identify the ranked Top-K")
+        if self.selected_memory_ids != flagged_selected_ids:
+            raise ValueError(
+                "candidate selected flags must match selected_memory_ids in order"
+            )
 
     @property
     def weights(self) -> RetrievalWeights:
