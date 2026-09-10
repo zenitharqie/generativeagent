@@ -92,7 +92,7 @@ from src.storage.experiment_directory import (
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-OPERATIONAL_MINIMUM_FREE_BYTES = 3584 * 1024 * 1024  # 3.5 GiB
+OPERATIONAL_MINIMUM_FREE_BYTES = 2048 * 1024 * 1024  # 2.0 GiB
 _EXPECTED_PROMPT_FOR_CALL = {
     "plan": "plan",
     "natural_response": "natural_interaction",
