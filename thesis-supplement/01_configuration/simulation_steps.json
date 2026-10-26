@@ -1,0 +1,229 @@
+{
+  "steps": [
+    {
+      "step_id": "day_01_natural_01",
+      "day": 1,
+      "period": "morning",
+      "step_type": "natural_interaction_block",
+      "title": "Classroom Introductions and Expectations",
+      "description": "The class establishes a shared tone by discussing participation and general classroom expectations. Each student also shares how they prefer to learn and prepare for lessons.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "turns_per_agent": 3,
+      "total_turns": 12,
+      "teacher_opens_block": true,
+      "turn_policy": "controlled_fixed",
+      "memory_generation_enabled": true,
+      "evaluation_enabled": false
+    },
+    {
+      "step_id": "day_01_natural_02",
+      "day": 1,
+      "period": "afternoon",
+      "step_type": "natural_interaction_block",
+      "title": "Learning Habits and Classroom Support",
+      "description": "The class discusses general learning habits and ways students can seek or offer support. The conversation also covers what makes each student confident or nervous about schoolwork in general. Ms. Sunday also explains how lesson material is built up step by step so every student can understand it, and students share how they usually prepare for school assessments in general.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "turns_per_agent": 3,
+      "total_turns": 12,
+      "teacher_opens_block": true,
+      "turn_policy": "controlled_fixed",
+      "memory_generation_enabled": true,
+      "evaluation_enabled": false
+    },
+    {
+      "step_id": "day_02_natural_03",
+      "day": 2,
+      "period": "morning",
+      "step_type": "natural_interaction_block",
+      "title": "Reviewing Recent Material",
+      "description": "The class reviews recent material and discusses how students handle unclear topics.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "turns_per_agent": 3,
+      "total_turns": 12,
+      "teacher_opens_block": true,
+      "turn_policy": "controlled_fixed",
+      "memory_generation_enabled": true,
+      "evaluation_enabled": false
+    },
+    {
+      "step_id": "day_02_target_01",
+      "day": 2,
+      "period": "afternoon",
+      "step_type": "target_event",
+      "event_id": "event_01",
+      "title": "Exam Announcement",
+      "description": "Ms. Sunday announces that a written test will take place on Day 6 and asks the class to prepare using the material discussed during the week.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "memory_generation_enabled": true,
+      "evaluation_enabled": true
+    },
+    {
+      "step_id": "day_03_natural_04",
+      "day": 3,
+      "period": "morning",
+      "step_type": "natural_interaction_block",
+      "title": "Participation and Preparation",
+      "description": "The class discusses how the new raise-hand procedure is working in practice for each student, including how they adapt their speaking style to it, and reviews their preparation routines for upcoming school assessments.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "turns_per_agent": 3,
+      "total_turns": 12,
+      "teacher_opens_block": true,
+      "turn_policy": "controlled_fixed",
+      "memory_generation_enabled": true,
+      "evaluation_enabled": false
+    },
+    {
+      "step_id": "day_03_target_02",
+      "day": 3,
+      "period": "afternoon",
+      "step_type": "target_event",
+      "event_id": "event_02",
+      "title": "Classroom Rules Change",
+      "description": "Ms. Sunday announces that students must raise a hand and wait to be acknowledged before speaking during class discussion.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "memory_generation_enabled": true,
+      "evaluation_enabled": true
+    },
+    {
+      "step_id": "day_04_natural_05",
+      "day": 4,
+      "period": "morning",
+      "step_type": "natural_interaction_block",
+      "title": "Working with Different Classmates",
+      "description": "The class considers how students can share ideas and contribute when working with classmates. The class also considers how groups decide who guides the explanation and how classmates evaluate each contribution fairly.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "turns_per_agent": 3,
+      "total_turns": 12,
+      "teacher_opens_block": true,
+      "turn_policy": "controlled_fixed",
+      "memory_generation_enabled": true,
+      "evaluation_enabled": false
+    },
+    {
+      "step_id": "day_04_target_03",
+      "day": 4,
+      "period": "afternoon",
+      "step_type": "target_event",
+      "event_id": "event_03",
+      "title": "Group Discussion",
+      "description": "Ms. Sunday assigns the students a group discussion and asks each student to contribute to a shared explanation of the current lesson.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "memory_generation_enabled": true,
+      "evaluation_enabled": true
+    },
+    {
+      "step_id": "day_05_natural_06",
+      "day": 5,
+      "period": "morning",
+      "step_type": "natural_interaction_block",
+      "title": "Responsibility and Classroom Initiative",
+      "description": "The class discusses everyday responsibility, cooperation, and constructive initiative in the classroom. The discussion includes what makes a classmate dependable when taking responsibility as class leader.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "turns_per_agent": 3,
+      "total_turns": 12,
+      "teacher_opens_block": true,
+      "turn_policy": "controlled_fixed",
+      "memory_generation_enabled": true,
+      "evaluation_enabled": false
+    },
+    {
+      "step_id": "day_05_target_04",
+      "day": 5,
+      "period": "afternoon",
+      "step_type": "target_event",
+      "event_id": "event_04",
+      "title": "Class Leader Election",
+      "description": "Ms. Sunday asks the class to nominate and discuss a student who could take responsibility as class leader.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "memory_generation_enabled": true,
+      "evaluation_enabled": true
+    },
+    {
+      "step_id": "day_06_natural_07",
+      "day": 6,
+      "period": "morning",
+      "step_type": "natural_interaction_block",
+      "title": "Final Review and Study Reflection",
+      "description": "The class reviews the week's learning and discusses general approaches to checking understanding. Students also describe how they approach answering test questions calmly and accurately during the test itself.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "turns_per_agent": 3,
+      "total_turns": 12,
+      "teacher_opens_block": true,
+      "turn_policy": "controlled_fixed",
+      "memory_generation_enabled": true,
+      "evaluation_enabled": false
+    },
+    {
+      "step_id": "day_06_target_05",
+      "day": 6,
+      "period": "afternoon",
+      "step_type": "target_event",
+      "event_id": "event_05",
+      "title": "Daily Quiz",
+      "description": "Ms. Sunday begins the announced written test and asks each student to respond based on their preparation and understanding.",
+      "participants": [
+        "teacher",
+        "active_student",
+        "quiet_student",
+        "academic_student"
+      ],
+      "memory_generation_enabled": true,
+      "evaluation_enabled": true
+    }
+  ]
+}

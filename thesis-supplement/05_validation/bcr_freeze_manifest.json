@@ -1,0 +1,26 @@
+{
+  "artifact_hashes": {
+    "aggregated_bcr.json": "45444cfbf9ad365ef5aec64aad1443e412275c3e95b0cbe9b3a380dacd90b5e6",
+    "aggregated_bcr.md": "fac34cf547763264ee3af2b289fb70b849d838185561f6ca258036126580c1fd",
+    "evidence/agents.json": "273cd1285ae14794e1527ed525dc5545373823b664dccac73e973e416566d043",
+    "evidence/bcr_results.json": "bf6724b79864ecc86800ac7971a6201a9aa016ad22db5732d03578d023ff0f21",
+    "evidence/evaluate_bcr_v2.py": "f1a9c9e113372d281dc0726176995f7f36a7b9d8e129c0ba6ae4de73c98074a7",
+    "evidence/experiment_manifest.json": "13944a3b840f6a31920cc7813a22782300d44ecff07bbe554becf0410e144880",
+    "evidence/finalize_bcr_v2.py": "ae9e9cd89652123c208a843d54b261b77ed0dc0ba8f2fad1a34b664000957bbf",
+    "evidence/judge_cache.json": "24f61bbb1a17c9e54b0c22a2d1b3a5199c58366b19ab001928f090f184327ef4",
+    "evidence/target_events.json": "349d259fdf62c12be6d5810000c2e65212d4ec6637a918570057f03d74e0ffdf"
+  },
+  "bundle_id": "bcr_final_v2",
+  "created_at_utc": "2026-09-20T13:47:17.280155+00:00",
+  "freeze_fingerprint_sha256": "b21ade084d335d48fe9a01e6ed03235485f679b4ddc56a3a693bf6cea141b4ea",
+  "methodology": {
+    "confusion_matrix": false,
+    "history_policy": "all_prior_target_event_responses_for_same_agent_and_run",
+    "human_validation": false,
+    "judge_model": "gpt-5.6-luna",
+    "judge_relationship": "same_model_as_simulator",
+    "metric": "Strict BCR with BCS supplementary score"
+  },
+  "schema_version": "2.0",
+  "status": "frozen"
+}

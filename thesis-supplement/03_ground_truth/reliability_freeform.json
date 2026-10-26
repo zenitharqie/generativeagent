@@ -1,0 +1,55 @@
+{
+ "metadata": {
+  "method": "Free-form annotation by 3 LLM annotators + LLM semantic normalization",
+  "source": "semantic_normalized_annotation.json",
+  "total_normalized_categories": 123,
+  "annotators": {
+   "gpt5_6_sol": "GPT-5.6-SOL",
+   "claude_sonnet_5": "Claude Sonnet 5",
+   "qwen3_8": "Qwen3.8"
+  },
+  "note": "Kappa dihitung dari matriks biner lengkap (termasuk kategori support=1). Kappa negatif menunjukkan kesepakatan di bawah kebetulan karena distribusi label timpang (prevalence paradox)."
+ },
+ "cohen_kappa_pairwise": {
+  "GPT-5.6-SOL–Claude Sonnet 5": {
+   "pair": "GPT-5.6-SOL–Claude Sonnet 5",
+   "Po_observed_agreement": 0.2358,
+   "Pe_expected_agreement": 0.5098,
+   "cohen_kappa": -0.5591,
+   "total_items": 123,
+   "agreeing_items": 29
+  },
+  "GPT-5.6-SOL–Qwen3.8": {
+   "pair": "GPT-5.6-SOL–Qwen3.8",
+   "Po_observed_agreement": 0.7398,
+   "Pe_expected_agreement": 0.4979,
+   "cohen_kappa": 0.4818,
+   "total_items": 123,
+   "agreeing_items": 91
+  },
+  "Claude Sonnet 5–Qwen3.8": {
+   "pair": "Claude Sonnet 5–Qwen3.8",
+   "Po_observed_agreement": 0.3496,
+   "Pe_expected_agreement": 0.4924,
+   "cohen_kappa": -0.2812,
+   "total_items": 123,
+   "agreeing_items": 43
+  }
+ },
+ "fleiss_kappa": {
+  "P_observed_agreement": 0.2683,
+  "Pe_expected_agreement": 0.5045,
+  "fleiss_kappa": -0.4767,
+  "total_items": 123,
+  "distribution": {
+   "support_1/3": 64,
+   "support_2/3": 39,
+   "support_3/3": 20
+  }
+ },
+ "summary": {
+  "best_pair": "GPT-5.6-SOL–Qwen3.8",
+  "best_cohen_kappa": 0.4818,
+  "interpretation": "Pasangan GPT–Qwen menunjukkan moderate agreement (κ=0,482). Claude divergen terhadap keduanya (κ negatif)."
+ }
+}

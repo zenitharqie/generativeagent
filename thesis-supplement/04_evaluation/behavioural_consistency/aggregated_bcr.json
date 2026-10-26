@@ -1,0 +1,1015 @@
+{
+  "by_agent": {
+    "academic_student": {
+      "bcs": 1.0,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 60
+          },
+          "normalized_score": 1.0
+        },
+        "focus_consistency": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 60
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48,
+            "NOT_EVALUABLE": 12
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 60,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 0
+      },
+      "strict_bcr": 1.0,
+      "total": 60
+    },
+    "active_student": {
+      "bcs": 0.9653,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 49,
+            "PARTIALLY_CONSISTENT": 11
+          },
+          "normalized_score": 0.9083
+        },
+        "focus_consistency": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 60
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 47,
+            "NOT_EVALUABLE": 12,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.9896
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 49,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 11
+      },
+      "strict_bcr": 0.8167,
+      "total": 60
+    },
+    "quiet_student": {
+      "bcs": 0.9889,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 57,
+            "PARTIALLY_CONSISTENT": 3
+          },
+          "normalized_score": 0.975
+        },
+        "focus_consistency": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 59,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.9917
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48,
+            "NOT_EVALUABLE": 12
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 56,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 4
+      },
+      "strict_bcr": 0.9333,
+      "total": 60
+    },
+    "teacher": {
+      "bcs": 1.0,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 60
+          },
+          "normalized_score": 1.0
+        },
+        "focus_consistency": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 60
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48,
+            "NOT_EVALUABLE": 12
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 60,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 0
+      },
+      "strict_bcr": 1.0,
+      "total": 60
+    }
+  },
+  "by_config": {
+    "balanced": {
+      "bcs": 0.9875,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 57,
+            "PARTIALLY_CONSISTENT": 3
+          },
+          "normalized_score": 0.975
+        },
+        "focus_consistency": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 59,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.9917
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48,
+            "NOT_EVALUABLE": 12
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 56,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 4
+      },
+      "strict_bcr": 0.9333,
+      "total": 60
+    },
+    "importance_heavy": {
+      "bcs": 0.9889,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 56,
+            "PARTIALLY_CONSISTENT": 4
+          },
+          "normalized_score": 0.9667
+        },
+        "focus_consistency": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 60
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48,
+            "NOT_EVALUABLE": 12
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 56,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 4
+      },
+      "strict_bcr": 0.9333,
+      "total": 60
+    },
+    "recency_heavy": {
+      "bcs": 0.9833,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 55,
+            "PARTIALLY_CONSISTENT": 5
+          },
+          "normalized_score": 0.9583
+        },
+        "focus_consistency": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 60
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 47,
+            "NOT_EVALUABLE": 12,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.9896
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 55,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 5
+      },
+      "strict_bcr": 0.9167,
+      "total": 60
+    },
+    "relevance_heavy": {
+      "bcs": 0.9944,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 58,
+            "PARTIALLY_CONSISTENT": 2
+          },
+          "normalized_score": 0.9833
+        },
+        "focus_consistency": {
+          "evaluable_count": 60,
+          "label_counts": {
+            "CONSISTENT": 60
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48,
+            "NOT_EVALUABLE": 12
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 58,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 2
+      },
+      "strict_bcr": 0.9667,
+      "total": 60
+    }
+  },
+  "by_event": {
+    "event_01": {
+      "bcs": 0.9948,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 47,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.9896
+        },
+        "focus_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 0,
+          "label_counts": {
+            "NOT_EVALUABLE": 48
+          },
+          "normalized_score": 0.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 47,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.9792,
+      "total": 48
+    },
+    "event_02": {
+      "bcs": 0.9965,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48
+          },
+          "normalized_score": 1.0
+        },
+        "focus_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 47,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.9896
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 47,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.9792,
+      "total": 48
+    },
+    "event_03": {
+      "bcs": 0.9965,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 47,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.9896
+        },
+        "focus_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 47,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.9792,
+      "total": 48
+    },
+    "event_04": {
+      "bcs": 0.9931,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 46,
+            "PARTIALLY_CONSISTENT": 2
+          },
+          "normalized_score": 0.9792
+        },
+        "focus_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 46,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 2
+      },
+      "strict_bcr": 0.9583,
+      "total": 48
+    },
+    "event_05": {
+      "bcs": 0.9618,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 38,
+            "PARTIALLY_CONSISTENT": 10
+          },
+          "normalized_score": 0.8958
+        },
+        "focus_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 48
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 48,
+          "label_counts": {
+            "CONSISTENT": 47,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.9896
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 38,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 10
+      },
+      "strict_bcr": 0.7917,
+      "total": 48
+    }
+  },
+  "by_run": {
+    "balanced_rep01": {
+      "bcs": 0.9917,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 19,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.975
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 19,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.95,
+      "total": 20
+    },
+    "balanced_rep02": {
+      "bcs": 0.9792,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 18,
+            "PARTIALLY_CONSISTENT": 2
+          },
+          "normalized_score": 0.95
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 18,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 2
+      },
+      "strict_bcr": 0.9,
+      "total": 20
+    },
+    "balanced_rep03": {
+      "bcs": 0.9917,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 19,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.975
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 19,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.95,
+      "total": 20
+    },
+    "importance_heavy_rep01": {
+      "bcs": 0.9917,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 19,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.975
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 19,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.95,
+      "total": 20
+    },
+    "importance_heavy_rep02": {
+      "bcs": 0.9833,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 18,
+            "PARTIALLY_CONSISTENT": 2
+          },
+          "normalized_score": 0.95
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 18,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 2
+      },
+      "strict_bcr": 0.9,
+      "total": 20
+    },
+    "importance_heavy_rep03": {
+      "bcs": 0.9917,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 19,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.975
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 19,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.95,
+      "total": 20
+    },
+    "recency_heavy_rep01": {
+      "bcs": 0.9833,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 18,
+            "PARTIALLY_CONSISTENT": 2
+          },
+          "normalized_score": 0.95
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 18,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 2
+      },
+      "strict_bcr": 0.9,
+      "total": 20
+    },
+    "recency_heavy_rep02": {
+      "bcs": 0.9833,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 18,
+            "PARTIALLY_CONSISTENT": 2
+          },
+          "normalized_score": 0.95
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 18,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 2
+      },
+      "strict_bcr": 0.9,
+      "total": 20
+    },
+    "recency_heavy_rep03": {
+      "bcs": 0.9833,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 19,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.975
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 15,
+            "NOT_EVALUABLE": 4,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.9688
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 19,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.95,
+      "total": 20
+    },
+    "relevance_heavy_rep01": {
+      "bcs": 0.9917,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 19,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.975
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 19,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.95,
+      "total": 20
+    },
+    "relevance_heavy_rep02": {
+      "bcs": 1.0,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 20,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 0
+      },
+      "strict_bcr": 1.0,
+      "total": 20
+    },
+    "relevance_heavy_rep03": {
+      "bcs": 0.9917,
+      "dimensions": {
+        "communication_style": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 19,
+            "PARTIALLY_CONSISTENT": 1
+          },
+          "normalized_score": 0.975
+        },
+        "focus_consistency": {
+          "evaluable_count": 20,
+          "label_counts": {
+            "CONSISTENT": 20
+          },
+          "normalized_score": 1.0
+        },
+        "temporal_consistency": {
+          "evaluable_count": 16,
+          "label_counts": {
+            "CONSISTENT": 16,
+            "NOT_EVALUABLE": 4
+          },
+          "normalized_score": 1.0
+        }
+      },
+      "label_counts": {
+        "CONSISTENT": 19,
+        "INCONSISTENT": 0,
+        "PARTIALLY_CONSISTENT": 1
+      },
+      "strict_bcr": 0.95,
+      "total": 20
+    }
+  },
+  "metadata": {
+    "bcs_policy": "mean_dimension_score_divided_by_2_excluding_not_evaluable",
+    "history_policy": "all_prior_target_event_responses_for_same_agent_and_run",
+    "judge_model": "gpt-5.6-luna",
+    "judge_relationship": "same_model_as_simulator",
+    "log_source": "/Users/zenitharq/Documents/classroom-generative-agents-clean/logs/full_experiment_v11/phase13_full_experiment",
+    "overall_label_policy": "inconsistent_if_any_dimension_inconsistent; partial_if_any_dimension_partial; otherwise_consistent",
+    "prompt_sha256": "5a6e3cd446b8e50c649ca1c26c3a0c4a173db82a0a1968434ba90111a572bf09",
+    "retrieval_evidence_provided": false,
+    "schema_version": "2.0",
+    "strict_bcr_policy": "overall_label_consistent_divided_by_all_units",
+    "unit_definition": "run_id x target_event x agent_id"
+  },
+  "overall": {
+    "bcs": 0.9885,
+    "dimensions": {
+      "communication_style": {
+        "evaluable_count": 240,
+        "label_counts": {
+          "CONSISTENT": 226,
+          "PARTIALLY_CONSISTENT": 14
+        },
+        "normalized_score": 0.9708
+      },
+      "focus_consistency": {
+        "evaluable_count": 240,
+        "label_counts": {
+          "CONSISTENT": 239,
+          "PARTIALLY_CONSISTENT": 1
+        },
+        "normalized_score": 0.9979
+      },
+      "temporal_consistency": {
+        "evaluable_count": 192,
+        "label_counts": {
+          "CONSISTENT": 191,
+          "NOT_EVALUABLE": 48,
+          "PARTIALLY_CONSISTENT": 1
+        },
+        "normalized_score": 0.9974
+      }
+    },
+    "label_counts": {
+      "CONSISTENT": 225,
+      "INCONSISTENT": 0,
+      "PARTIALLY_CONSISTENT": 15
+    },
+    "strict_bcr": 0.9375,
+    "total": 240
+  },
+  "repetition_statistics": {
+    "balanced": {
+      "bcs": {
+        "mean": 0.9875,
+        "run_values": [
+          0.9917,
+          0.9792,
+          0.9917
+        ],
+        "sample_std": 0.0072
+      },
+      "strict_bcr": {
+        "mean": 0.9333,
+        "run_values": [
+          0.95,
+          0.9,
+          0.95
+        ],
+        "sample_std": 0.0289
+      }
+    },
+    "importance_heavy": {
+      "bcs": {
+        "mean": 0.9889,
+        "run_values": [
+          0.9917,
+          0.9833,
+          0.9917
+        ],
+        "sample_std": 0.0048
+      },
+      "strict_bcr": {
+        "mean": 0.9333,
+        "run_values": [
+          0.95,
+          0.9,
+          0.95
+        ],
+        "sample_std": 0.0289
+      }
+    },
+    "recency_heavy": {
+      "bcs": {
+        "mean": 0.9833,
+        "run_values": [
+          0.9833,
+          0.9833,
+          0.9833
+        ],
+        "sample_std": 0.0
+      },
+      "strict_bcr": {
+        "mean": 0.9167,
+        "run_values": [
+          0.9,
+          0.9,
+          0.95
+        ],
+        "sample_std": 0.0289
+      }
+    },
+    "relevance_heavy": {
+      "bcs": {
+        "mean": 0.9945,
+        "run_values": [
+          0.9917,
+          1.0,
+          0.9917
+        ],
+        "sample_std": 0.0048
+      },
+      "strict_bcr": {
+        "mean": 0.9667,
+        "run_values": [
+          0.95,
+          1.0,
+          0.95
+        ],
+        "sample_std": 0.0289
+      }
+    }
+  }
+}

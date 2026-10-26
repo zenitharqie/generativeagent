@@ -1,0 +1,1203 @@
+{
+  "metadata": {
+    "method": "free-form annotation by 3 LLM annotators + LLM semantic review + normalization",
+    "source_files": [
+      "annotationv3/gpt5_6_sol.json",
+      "annotationv3/claude_sonnet_5.json",
+      "annotationv3/qwen3_8.json"
+    ],
+    "unit_count": 20,
+    "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+    "annotator_labels": {
+      "gpt5_6_sol": "GPT-5.6-SOL",
+      "claude_sonnet_5": "Claude Sonnet 5",
+      "qwen3_8": "Qwen3.8"
+    },
+    "note": "Semantic review dilakukan oleh LLM (bukan cosine clustering). Frasa yang bermakna sama digabung menjadi satu kategori kanonik per unit berdasarkan pemahaman makna, bukan keyword overlap."
+  },
+  "units": {
+    "gt_event_01_teacher": {
+      "event_id": "event_01",
+      "agent_id": "teacher",
+      "normalized_categories": [
+        {
+          "category": "Clear guidance about upcoming test preparation",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Clear guidance for academic preparation",
+            "claude_sonnet_5": "Clear articulation of test timing and expectations",
+            "qwen3_8": "Clear guidance for upcoming written assessment"
+          }
+        },
+        {
+          "category": "Consistent expectations for assessment preparation",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Consistent classroom expectations around assessment",
+            "claude_sonnet_5": "Concern for consistent, fair evaluation standards",
+            "qwen3_8": "Consistent preparation expectations for student study"
+          }
+        },
+        {
+          "category": "Attentive support for student understanding",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Attentive support for student understanding",
+            "claude_sonnet_5": "Attentiveness to whether students grasp weekly material"
+          }
+        },
+        {
+          "category": "Calm reassurance to reduce student test anxiety",
+          "annotators": ["claude_sonnet_5", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "claude_sonnet_5": "Calm reassurance to reduce student test anxiety",
+            "qwen3_8": "Calm reassurance during weekly material review"
+          }
+        }
+      ]
+    },
+    "gt_event_01_active_student": {
+      "event_id": "event_01",
+      "agent_id": "active_student",
+      "normalized_categories": [
+        {
+          "category": "Asking clarifying questions about test expectations",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Question-driven clarification of uncertain material",
+            "claude_sonnet_5": "Direct questioning to clarify test expectations",
+            "qwen3_8": "Eager clarification about upcoming test expectations"
+          }
+        },
+        {
+          "category": "Discussing and reviewing test material with classmates",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Discussion-based preparation for academic assessment",
+            "claude_sonnet_5": "Eagerness to discuss test material with classmates",
+            "qwen3_8": "Collaborative preparation through classmate discussion"
+          }
+        },
+        {
+          "category": "Active energetic participation in new tasks",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Active participation in shared learning",
+            "claude_sonnet_5": "Energetic engagement when new tasks are announced",
+            "qwen3_8": "Energetic initiation of study questions"
+          }
+        },
+        {
+          "category": "Encouraging peers to prepare together for the test",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Encouraging peers to prepare together for the test"
+          }
+        }
+      ]
+    },
+    "gt_event_01_quiet_student": {
+      "event_id": "event_01",
+      "agent_id": "quiet_student",
+      "normalized_categories": [
+        {
+          "category": "Careful preparation for upcoming written test",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Careful preparation for academic assessment",
+            "qwen3_8": "Cautious planning for written assessment"
+          }
+        },
+        {
+          "category": "Desire for clarity about test expectations",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Preference for clear assessment expectations",
+            "qwen3_8": "Careful attention to test expectations"
+          }
+        },
+        {
+          "category": "Quiet independent test preparation",
+          "annotators": ["claude_sonnet_5", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "claude_sonnet_5": "Preference for quiet, independent test preparation",
+            "qwen3_8": "Private preparation before responding"
+          }
+        },
+        {
+          "category": "Preparing concise response before speaking up",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Preparing a concise response before speaking up"
+          }
+        },
+        {
+          "category": "Cautious avoidance of drawing attention",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Cautious avoidance of drawing attention during announcements"
+          }
+        },
+        {
+          "category": "Deliberate responses under academic pressure",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Deliberate responses under academic pressure"
+          }
+        },
+        {
+          "category": "Careful note-taking to clarify test requirements",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Careful note-taking to clarify test requirements"
+          }
+        }
+      ]
+    },
+    "gt_event_01_academic_student": {
+      "event_id": "event_01",
+      "agent_id": "academic_student",
+      "normalized_categories": [
+        {
+          "category": "Structured study planning for upcoming test",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Structured preparation for academic assessment",
+            "claude_sonnet_5": "Structured study planning ahead of scheduled test",
+            "qwen3_8": "Structured preparation for written mastery"
+          }
+        },
+        {
+          "category": "Systematic mastery of classroom material",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Systematic mastery of classroom material",
+            "claude_sonnet_5": "Drive toward mastering content before evaluation"
+          }
+        },
+        {
+          "category": "Organized review of weekly material",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Evidence-based organization of study material",
+            "qwen3_8": "Organized review of weekly material"
+          }
+        },
+        {
+          "category": "Precise understanding of assessment requirements",
+          "annotators": ["claude_sonnet_5", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "claude_sonnet_5": "Precise tracking of material covered during the week",
+            "qwen3_8": "Precise understanding of assessment requirements"
+          }
+        },
+        {
+          "category": "Composed methodical approach to exam preparation",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Composed, methodical approach to exam preparation"
+          }
+        }
+      ]
+    },
+    "gt_event_02_teacher": {
+      "event_id": "event_02",
+      "agent_id": "teacher",
+      "normalized_categories": [
+        {
+          "category": "Clear instruction on orderly participation procedures",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Clear instructional guidance for participation",
+            "qwen3_8": "Clear instruction on orderly speaking"
+          }
+        },
+        {
+          "category": "Consistent enforcement of classroom norms",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Consistent enforcement of classroom norms",
+            "qwen3_8": "Fair enforcement of discussion expectations"
+          }
+        },
+        {
+          "category": "Balanced and respectful student participation",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Balanced and respectful student participation",
+            "claude_sonnet_5": "Encouraging orderly, balanced student participation",
+            "qwen3_8": "Patient support for balanced participation"
+          }
+        },
+        {
+          "category": "Clear enforcement of discussion procedures",
+          "annotators": ["claude_sonnet_5", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "claude_sonnet_5": "Clear enforcement of respectful discussion procedures",
+            "qwen3_8": "Fair enforcement of discussion expectations"
+          }
+        },
+        {
+          "category": "Fair consistent moderation of who may speak",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Fair, consistent moderation of who may speak"
+          }
+        },
+        {
+          "category": "Patient reinforcement of participation rules",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Patient reinforcement of classroom participation rules"
+          }
+        }
+      ]
+    },
+    "gt_event_02_active_student": {
+      "event_id": "event_02",
+      "agent_id": "active_student",
+      "normalized_categories": [
+        {
+          "category": "Active participation within structured discussion",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Active participation within structured discussion",
+            "qwen3_8": "Energetic participation within speaking rules"
+          }
+        },
+        {
+          "category": "Waiting patiently for turn while staying engaged",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Respectful turn-taking during collaborative learning",
+            "claude_sonnet_5": "Waiting patiently for turn while staying engaged",
+            "qwen3_8": "Patient waiting before sharing ideas"
+          }
+        },
+        {
+          "category": "Adapting eager speaking habits to new discussion rules",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Adjusting eager speaking habits to new discussion rules"
+          }
+        },
+        {
+          "category": "Direct question-asking within participation rules",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Direct question-asking within participation rules"
+          }
+        },
+        {
+          "category": "Encouraging quieter classmates to raise hands",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Encouraging quieter classmates to raise hands too"
+          }
+        },
+        {
+          "category": "Curiosity about how new rule affects discussion flow",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Curiosity about how new rule affects discussion flow"
+          }
+        },
+        {
+          "category": "Friendly encouragement of classmate participation",
+          "annotators": ["qwen3_8"],
+          "support": 1,
+          "original_phrases": {
+            "qwen3_8": "Friendly encouragement of classmate participation"
+          }
+        }
+      ]
+    },
+    "gt_event_02_quiet_student": {
+      "event_id": "event_02",
+      "agent_id": "quiet_student",
+      "normalized_categories": [
+        {
+          "category": "Preference for orderly speaking procedures",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Preference for orderly speaking procedures",
+            "qwen3_8": "Respectful compliance with speaking expectations"
+          }
+        },
+        {
+          "category": "Cautious participation without unnecessary attention",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Cautious participation without unnecessary attention",
+            "qwen3_8": "Quiet participation after teacher acknowledgment"
+          }
+        },
+        {
+          "category": "Deliberate preparation before speaking",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Deliberate preparation before speaking",
+            "qwen3_8": "Deliberate waiting before speaking"
+          }
+        },
+        {
+          "category": "Comfort with structured hand-raising speaking order",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Comfort with structured, hand-raising speaking order"
+          }
+        },
+        {
+          "category": "Relief at reduced pressure to speak spontaneously",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Relief at reduced pressure to speak spontaneously"
+          }
+        },
+        {
+          "category": "Preparing thoughts fully before raising hand",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Preparing thoughts fully before raising a hand"
+          }
+        },
+        {
+          "category": "Valuing predictable respectful turn-taking norms",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Valuing predictable, respectful turn-taking norms"
+          }
+        }
+      ]
+    },
+    "gt_event_02_academic_student": {
+      "event_id": "event_02",
+      "agent_id": "academic_student",
+      "normalized_categories": [
+        {
+          "category": "Structured and precise classroom participation",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Structured and precise classroom participation"
+          }
+        },
+        {
+          "category": "Accurate contribution during academic discussion",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Accurate contribution during academic discussion"
+          }
+        },
+        {
+          "category": "Composed adherence to classroom procedures",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Composed adherence to classroom procedures",
+            "qwen3_8": "Composed adherence to discussion procedure"
+          }
+        },
+        {
+          "category": "Appreciation for orderly rule-based discussion structure",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Appreciation for orderly, rule-based discussion structure"
+          }
+        },
+        {
+          "category": "Composed patience while waiting to be acknowledged",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Composed patience while waiting to be acknowledged"
+          }
+        },
+        {
+          "category": "Precise well-organized responses once called on",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Precise, well-organized responses once called on"
+          }
+        },
+        {
+          "category": "Precise contributions after acknowledgment",
+          "annotators": ["qwen3_8"],
+          "support": 1,
+          "original_phrases": {
+            "qwen3_8": "Precise contributions after acknowledgment"
+          }
+        },
+        {
+          "category": "Focused attention to speaking rules",
+          "annotators": ["qwen3_8"],
+          "support": 1,
+          "original_phrases": {
+            "qwen3_8": "Focused attention to speaking rules"
+          }
+        },
+        {
+          "category": "Analytical attention to procedural classroom structure",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Analytical attention to procedural classroom structure"
+          }
+        }
+      ]
+    },
+    "gt_event_03_teacher": {
+      "event_id": "event_03",
+      "agent_id": "teacher",
+      "normalized_categories": [
+        {
+          "category": "Facilitation of balanced group participation",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Facilitation of balanced group participation",
+            "qwen3_8": "Balanced facilitation of group discussion"
+          }
+        },
+        {
+          "category": "Clear guidance for collaborative learning",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Clear guidance for collaborative learning",
+            "qwen3_8": "Clear expectations for shared explanations"
+          }
+        },
+        {
+          "category": "Constructive coordination of student contributions",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Constructive coordination of student contributions"
+          }
+        },
+        {
+          "category": "Attentive monitoring of group discussion dynamics",
+          "annotators": ["claude_sonnet_5", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "claude_sonnet_5": "Attentive monitoring of group discussion dynamics",
+            "qwen3_8": "Supportive monitoring of student participation"
+          }
+        },
+        {
+          "category": "Concern for each student's understanding of material",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Concern for each student's understanding of material"
+          }
+        },
+        {
+          "category": "Clear framing of group discussion objectives",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Clear framing of group discussion objectives"
+          }
+        },
+        {
+          "category": "Support for balanced contribution across all students",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Support for balanced contribution across all students"
+          }
+        }
+      ]
+    },
+    "gt_event_03_active_student": {
+      "event_id": "event_03",
+      "agent_id": "active_student",
+      "normalized_categories": [
+        {
+          "category": "Energetic participation in group learning",
+          "annotators": ["gpt5_6_sol", "qwen3_8", "claude_sonnet_5"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Energetic participation in group learning",
+            "qwen3_8": "Energetic initiation of group discussion",
+            "claude_sonnet_5": "Collaborative energy when working in small groups"
+          }
+        },
+        {
+          "category": "Collaborative explanation of lesson concepts",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Collaborative explanation of lesson concepts"
+          }
+        },
+        {
+          "category": "Question-driven clarification through discussion",
+          "annotators": ["gpt5_6_sol", "qwen3_8", "claude_sonnet_5"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Question-driven clarification through discussion",
+            "qwen3_8": "Questioning to build shared understanding",
+            "claude_sonnet_5": "Asking clarifying questions to deepen group understanding"
+          }
+        },
+        {
+          "category": "Encouraging quieter groupmates to share ideas",
+          "annotators": ["claude_sonnet_5", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "claude_sonnet_5": "Encouraging quieter groupmates to share ideas",
+            "qwen3_8": "Friendly invitations for classmate contributions"
+          }
+        },
+        {
+          "category": "Enthusiasm for leading group discussion contributions",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Enthusiasm for leading group discussion contributions"
+          }
+        }
+      ]
+    },
+    "gt_event_03_quiet_student": {
+      "event_id": "event_03",
+      "agent_id": "quiet_student",
+      "normalized_categories": [
+        {
+          "category": "Careful preparation before group contribution",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Careful contribution within group discussion",
+            "claude_sonnet_5": "Careful preparation before contributing to group discussion",
+            "qwen3_8": "Careful listening before group contribution"
+          }
+        },
+        {
+          "category": "Prepared concise responses for collaboration",
+          "annotators": ["gpt5_6_sol", "qwen3_8", "claude_sonnet_5"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Prepared concise responses for collaboration",
+            "qwen3_8": "Concise sharing of prepared ideas",
+            "claude_sonnet_5": "Concise, respectful contribution within group work"
+          }
+        },
+        {
+          "category": "Respectful participation without drawing attention",
+          "annotators": ["gpt5_6_sol", "qwen3_8", "claude_sonnet_5"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Respectful participation in collaborative settings",
+            "qwen3_8": "Respectful participation without drawing attention",
+            "claude_sonnet_5": "Preference for a defined, limited speaking role"
+          }
+        },
+        {
+          "category": "Listening closely to group members before responding",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Listening closely to group members before responding"
+          }
+        }
+      ]
+    },
+    "gt_event_03_academic_student": {
+      "event_id": "event_03",
+      "agent_id": "academic_student",
+      "normalized_categories": [
+        {
+          "category": "Precise contributions to shared academic understanding",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Precise contributions to shared academic understanding",
+            "qwen3_8": "Accurate contributions to shared discussion"
+          }
+        },
+        {
+          "category": "Structured approach to shared group explanations",
+          "annotators": ["gpt5_6_sol", "qwen3_8", "claude_sonnet_5"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Structured organization of lesson concepts",
+            "qwen3_8": "Structured explanation of lesson content",
+            "claude_sonnet_5": "Structured approach to shared group explanations"
+          }
+        },
+        {
+          "category": "Analytical verification of lesson understanding",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Analytical verification of lesson understanding",
+            "qwen3_8": "Analytical organization of group understanding"
+          }
+        },
+        {
+          "category": "Composed collaboration without losing academic rigor",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Composed collaboration without losing academic rigor"
+          }
+        },
+        {
+          "category": "Focus on factual accuracy within group discussion",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Focus on factual accuracy within group discussion"
+          }
+        },
+        {
+          "category": "Organizing accurate points before group contribution",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Organizing accurate points before group contribution"
+          }
+        }
+      ]
+    },
+    "gt_event_04_teacher": {
+      "event_id": "event_04",
+      "agent_id": "teacher",
+      "normalized_categories": [
+        {
+          "category": "Fair facilitation of student nominations",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Fair evaluation of student leadership",
+            "claude_sonnet_5": "Facilitating fair nomination of a class leader",
+            "qwen3_8": "Fair facilitation of student nominations"
+          }
+        },
+        {
+          "category": "Clear guidance for classroom responsibility",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Clear guidance for classroom responsibility",
+            "qwen3_8": "Respectful discussion of leadership responsibility"
+          }
+        },
+        {
+          "category": "Balanced student participation in decision-making",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Balanced student participation in decision-making",
+            "qwen3_8": "Balanced participation in leadership selection"
+          }
+        },
+        {
+          "category": "Encouraging thoughtful respectful peer discussion",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Encouraging thoughtful, respectful peer discussion"
+          }
+        },
+        {
+          "category": "Balanced consideration of multiple student nominees",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Balanced consideration of multiple student nominees"
+          }
+        },
+        {
+          "category": "Calm guidance of socially sensitive discussion",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Calm guidance of a socially sensitive discussion"
+          }
+        }
+      ]
+    },
+    "gt_event_04_active_student": {
+      "event_id": "event_04",
+      "agent_id": "active_student",
+      "normalized_categories": [
+        {
+          "category": "Eagerness to nominate and advocate for classmates",
+          "annotators": ["gpt5_6_sol", "qwen3_8", "claude_sonnet_5"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Outgoing participation in class decisions",
+            "qwen3_8": "Eager nomination of classmate leaders",
+            "claude_sonnet_5": "Eagerness to nominate and advocate for classmates"
+          }
+        },
+        {
+          "category": "Collaborative evaluation of classmates",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Collaborative evaluation of classmates",
+            "claude_sonnet_5": "Encouraging discussion about peer leadership qualities"
+          }
+        },
+        {
+          "category": "Friendly encouragement of peer leadership",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Constructive encouragement of peer participation",
+            "qwen3_8": "Friendly encouragement of peer leadership"
+          }
+        },
+        {
+          "category": "Energetic discussion and nomination of class leader",
+          "annotators": ["claude_sonnet_5", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "claude_sonnet_5": "Energetic discussion and nomination of class leader",
+            "qwen3_8": "Energetic discussion and nomination of class leader"
+          }
+        },
+        {
+          "category": "Asking questions to clarify leadership expectations",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Asking questions to clarify leadership expectations"
+          }
+        }
+      ]
+    },
+    "gt_event_04_quiet_student": {
+      "event_id": "event_04",
+      "agent_id": "quiet_student",
+      "normalized_categories": [
+        {
+          "category": "Cautious participation in leadership discussions",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Cautious participation in leadership discussions",
+            "claude_sonnet_5": "Cautious, considered opinion on leadership nominations",
+            "qwen3_8": "Cautious reflection before nominating classmates"
+          }
+        },
+        {
+          "category": "Brief contribution when prepared",
+          "annotators": ["claude_sonnet_5", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "claude_sonnet_5": "Preference for brief, respectful nomination remarks",
+            "qwen3_8": "Brief contribution when prepared"
+          }
+        },
+        {
+          "category": "Discomfort with high-visibility social discussions",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Discomfort with high-visibility social discussions"
+          }
+        },
+        {
+          "category": "Careful observation of classmates' leadership qualities",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Careful observation of classmates' leadership qualities"
+          }
+        },
+        {
+          "category": "Deliberate evaluation before expressing opinions",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Deliberate evaluation before expressing opinions"
+          }
+        },
+        {
+          "category": "Respectful consideration of classroom responsibilities",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Respectful consideration of classroom responsibilities"
+          }
+        }
+      ]
+    },
+    "gt_event_04_academic_student": {
+      "event_id": "event_04",
+      "agent_id": "academic_student",
+      "normalized_categories": [
+        {
+          "category": "Analytical evaluation of leadership suitability",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Analytical evaluation of leadership suitability",
+            "qwen3_8": "Analytical assessment of leadership suitability"
+          }
+        },
+        {
+          "category": "Precise reasoning during class decisions",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Precise reasoning during class decisions"
+          }
+        },
+        {
+          "category": "Structured consideration of student responsibilities",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Structured consideration of student responsibilities",
+            "qwen3_8": "Structured discussion of leadership responsibilities"
+          }
+        },
+        {
+          "category": "Composed precise phrasing when nominating a classmate",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Composed, precise phrasing when nominating a classmate"
+          }
+        },
+        {
+          "category": "Evidence-based reasoning when evaluating peer leadership",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Evidence-based reasoning when evaluating peer leadership"
+          }
+        },
+        {
+          "category": "Organizing thoughts before contributing to open discussion",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Organizing thoughts before contributing to open discussion"
+          }
+        },
+        {
+          "category": "Preference for merit-based structured decision-making",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Preference for merit-based, structured decision-making"
+          }
+        }
+      ]
+    },
+    "gt_event_05_teacher": {
+      "event_id": "event_05",
+      "agent_id": "teacher",
+      "normalized_categories": [
+        {
+          "category": "Clear and calm administration of written test",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Clear and calm administration of written test",
+            "claude_sonnet_5": "Clear, calm instructions as the test begins",
+            "qwen3_8": "Clear administration of written assessment"
+          }
+        },
+        {
+          "category": "Fair assessment of student understanding",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Clear and fair assessment of student understanding",
+            "qwen3_8": "Fair evaluation of individual understanding"
+          }
+        },
+        {
+          "category": "Consistent fair test administration expectations",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Maintaining consistent, fair test administration expectations",
+            "claude_sonnet_5": "Fair, consistent application of test procedures"
+          }
+        },
+        {
+          "category": "Attentive monitoring of students during test",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Attentive monitoring of students during the test"
+          }
+        },
+        {
+          "category": "Calm instructional support during assessment",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Calm instructional support during assessment"
+          }
+        },
+        {
+          "category": "Student understanding of classroom material",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Student understanding of classroom material"
+          }
+        },
+        {
+          "category": "Patient support for students' focus during evaluation",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Patient support for students' focus during evaluation"
+          }
+        }
+      ]
+    },
+    "gt_event_05_active_student": {
+      "event_id": "event_05",
+      "agent_id": "active_student",
+      "normalized_categories": [
+        {
+          "category": "Clarifying test instructions before work begins",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Seeking clarification about test instructions before individual work begins",
+            "qwen3_8": "Question-driven clarification before responding"
+          }
+        },
+        {
+          "category": "Understanding lesson material",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Understanding lesson material",
+            "qwen3_8": "Recall of material learned through discussion"
+          }
+        },
+        {
+          "category": "Confident expression of learned understanding",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Confident expression of learned understanding",
+            "qwen3_8": "Independent expression of prepared understanding"
+          }
+        },
+        {
+          "category": "Active engagement with academic preparation",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Active engagement with academic preparation"
+          }
+        },
+        {
+          "category": "Restlessness during quiet individually-focused test time",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Restlessness during quiet, individually-focused test time"
+          }
+        },
+        {
+          "category": "Interest in comparing answers with classmates afterward",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Interest in comparing answers with classmates afterward"
+          }
+        },
+        {
+          "category": "Eagerness to finish and resume group interaction",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Eagerness to finish and resume group interaction"
+          }
+        },
+        {
+          "category": "Energetic focus on written responses",
+          "annotators": ["qwen3_8"],
+          "support": 1,
+          "original_phrases": {
+            "qwen3_8": "Energetic focus on written responses"
+          }
+        }
+      ]
+    },
+    "gt_event_05_quiet_student": {
+      "event_id": "event_05",
+      "agent_id": "quiet_student",
+      "normalized_categories": [
+        {
+          "category": "Careful deliberate pacing through test questions",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Careful and deliberate response to written test",
+            "claude_sonnet_5": "Careful, deliberate pacing through test questions"
+          }
+        },
+        {
+          "category": "Comfort with quiet individual testing format",
+          "annotators": ["gpt5_6_sol", "claude_sonnet_5", "qwen3_8"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Comfort with quiet, individual task formats free from public participation pressure",
+            "claude_sonnet_5": "Preference for a quiet, focused testing environment",
+            "qwen3_8": "Comfort with quiet, individual task formats free from public participation pressure"
+          }
+        },
+        {
+          "category": "Prepared and clear responses during assessment",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Prepared and clear responses during assessment",
+            "qwen3_8": "Prepared recall before answering"
+          }
+        },
+        {
+          "category": "Calm adherence to test expectations",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Calm participation under evaluative conditions",
+            "qwen3_8": "Calm adherence to test expectations"
+          }
+        },
+        {
+          "category": "Reviewing answers thoroughly before finishing",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Reviewing answers thoroughly before finishing"
+          }
+        },
+        {
+          "category": "Careful independent response preparation",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Careful independent response preparation"
+          }
+        },
+        {
+          "category": "Concise responses demonstrating clear understanding",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Concise responses demonstrating clear understanding"
+          }
+        }
+      ]
+    },
+    "gt_event_05_academic_student": {
+      "event_id": "event_05",
+      "agent_id": "academic_student",
+      "normalized_categories": [
+        {
+          "category": "Structured recall of studied material",
+          "annotators": ["gpt5_6_sol", "qwen3_8", "claude_sonnet_5"],
+          "support": 3,
+          "original_phrases": {
+            "gpt5_6_sol": "Structured application of prepared knowledge",
+            "qwen3_8": "Structured recall of studied material",
+            "claude_sonnet_5": "Drawing on organized study notes during the test"
+          }
+        },
+        {
+          "category": "Precise demonstration of subject mastery",
+          "annotators": ["gpt5_6_sol", "qwen3_8"],
+          "support": 2,
+          "original_phrases": {
+            "gpt5_6_sol": "Precise demonstration of subject mastery",
+            "qwen3_8": "Precise written demonstration of mastery"
+          }
+        },
+        {
+          "category": "Composed focus under timed evaluation conditions",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Composed focus under timed evaluation conditions"
+          }
+        },
+        {
+          "category": "Composed evidence-based academic responses",
+          "annotators": ["gpt5_6_sol"],
+          "support": 1,
+          "original_phrases": {
+            "gpt5_6_sol": "Composed evidence-based academic responses"
+          }
+        },
+        {
+          "category": "Precision and accuracy in written test responses",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Precision and accuracy in written test responses"
+          }
+        },
+        {
+          "category": "Methodical structured approach to answering test questions",
+          "annotators": ["claude_sonnet_5"],
+          "support": 1,
+          "original_phrases": {
+            "claude_sonnet_5": "Methodical, structured approach to answering test questions"
+          }
+        }
+      ]
+    }
+  }
+}

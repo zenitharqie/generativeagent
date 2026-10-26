@@ -1,0 +1,703 @@
+{
+  "methodology": {
+    "behavior_metric": "BCR with same-model LLM judge",
+    "primary_retrieval": "Intersection 46",
+    "retrieval_selection_source": "selected_memory_ids",
+    "sensitivity_retrieval": "Union 78",
+    "supplementary_metric": "Cosine Set-Level Similarity"
+  },
+  "retrieval": {
+    "intersection_46": {
+      "by_agent": {
+        "academic_student": {
+          "cosine": 0.4682,
+          "f1": 0.071,
+          "gtc": 0.1278,
+          "n_units": 60,
+          "rrr": 0.05
+        },
+        "active_student": {
+          "cosine": 0.5206,
+          "f1": 0.3209,
+          "gtc": 0.4222,
+          "n_units": 60,
+          "rrr": 0.28
+        },
+        "quiet_student": {
+          "cosine": 0.6003,
+          "f1": 0.3866,
+          "gtc": 0.5333,
+          "n_units": 60,
+          "rrr": 0.3533
+        },
+        "teacher": {
+          "cosine": 0.5799,
+          "f1": 0.399,
+          "gtc": 0.5111,
+          "n_units": 60,
+          "rrr": 0.3467
+        }
+      },
+      "by_config": {
+        "balanced": {
+          "cosine": 0.5501,
+          "f1": 0.3129,
+          "gtc": 0.4389,
+          "n_units": 60,
+          "rrr": 0.2667
+        },
+        "importance_heavy": {
+          "cosine": 0.5321,
+          "f1": 0.2657,
+          "gtc": 0.3639,
+          "n_units": 60,
+          "rrr": 0.24
+        },
+        "recency_heavy": {
+          "cosine": 0.5334,
+          "f1": 0.3015,
+          "gtc": 0.4056,
+          "n_units": 60,
+          "rrr": 0.26
+        },
+        "relevance_heavy": {
+          "cosine": 0.5534,
+          "f1": 0.2974,
+          "gtc": 0.3861,
+          "n_units": 60,
+          "rrr": 0.2633
+        }
+      },
+      "by_event": {
+        "event_01": {
+          "cosine": 0.5173,
+          "f1": 0.3343,
+          "gtc": 0.4618,
+          "n_units": 48,
+          "rrr": 0.2833
+        },
+        "event_02": {
+          "cosine": 0.5656,
+          "f1": 0.3491,
+          "gtc": 0.4271,
+          "n_units": 48,
+          "rrr": 0.3292
+        },
+        "event_03": {
+          "cosine": 0.5955,
+          "f1": 0.4581,
+          "gtc": 0.5382,
+          "n_units": 48,
+          "rrr": 0.4208
+        },
+        "event_04": {
+          "cosine": 0.5547,
+          "f1": 0.2847,
+          "gtc": 0.4896,
+          "n_units": 48,
+          "rrr": 0.2208
+        },
+        "event_05": {
+          "cosine": 0.478,
+          "f1": 0.0458,
+          "gtc": 0.0764,
+          "n_units": 48,
+          "rrr": 0.0333
+        }
+      },
+      "by_run": {
+        "balanced_rep01": {
+          "cosine": 0.5595,
+          "f1": 0.334,
+          "gtc": 0.4333,
+          "n_units": 20,
+          "rrr": 0.29
+        },
+        "balanced_rep02": {
+          "cosine": 0.5585,
+          "f1": 0.2969,
+          "gtc": 0.4833,
+          "n_units": 20,
+          "rrr": 0.24
+        },
+        "balanced_rep03": {
+          "cosine": 0.5323,
+          "f1": 0.3078,
+          "gtc": 0.4,
+          "n_units": 20,
+          "rrr": 0.27
+        },
+        "importance_heavy_rep01": {
+          "cosine": 0.5163,
+          "f1": 0.2373,
+          "gtc": 0.3417,
+          "n_units": 20,
+          "rrr": 0.2
+        },
+        "importance_heavy_rep02": {
+          "cosine": 0.5462,
+          "f1": 0.2583,
+          "gtc": 0.3417,
+          "n_units": 20,
+          "rrr": 0.25
+        },
+        "importance_heavy_rep03": {
+          "cosine": 0.5337,
+          "f1": 0.3015,
+          "gtc": 0.4083,
+          "n_units": 20,
+          "rrr": 0.27
+        },
+        "recency_heavy_rep01": {
+          "cosine": 0.5191,
+          "f1": 0.338,
+          "gtc": 0.4583,
+          "n_units": 20,
+          "rrr": 0.29
+        },
+        "recency_heavy_rep02": {
+          "cosine": 0.5467,
+          "f1": 0.2624,
+          "gtc": 0.3333,
+          "n_units": 20,
+          "rrr": 0.23
+        },
+        "recency_heavy_rep03": {
+          "cosine": 0.5345,
+          "f1": 0.3042,
+          "gtc": 0.425,
+          "n_units": 20,
+          "rrr": 0.26
+        },
+        "relevance_heavy_rep01": {
+          "cosine": 0.5558,
+          "f1": 0.3214,
+          "gtc": 0.4083,
+          "n_units": 20,
+          "rrr": 0.29
+        },
+        "relevance_heavy_rep02": {
+          "cosine": 0.5638,
+          "f1": 0.2987,
+          "gtc": 0.3667,
+          "n_units": 20,
+          "rrr": 0.27
+        },
+        "relevance_heavy_rep03": {
+          "cosine": 0.5405,
+          "f1": 0.2722,
+          "gtc": 0.3833,
+          "n_units": 20,
+          "rrr": 0.23
+        }
+      },
+      "overall": {
+        "cosine": 0.5422,
+        "f1": 0.2944,
+        "gtc": 0.3986,
+        "n_units": 240,
+        "rrr": 0.2575
+      },
+      "repetition_statistics": {
+        "balanced": {
+          "cosine": {
+            "mean": 0.5501,
+            "run_values": [
+              0.5595,
+              0.5585,
+              0.5323
+            ],
+            "sample_std": 0.0154
+          },
+          "f1": {
+            "mean": 0.3129,
+            "run_values": [
+              0.334,
+              0.2969,
+              0.3078
+            ],
+            "sample_std": 0.0191
+          },
+          "gtc": {
+            "mean": 0.4389,
+            "run_values": [
+              0.4333,
+              0.4833,
+              0.4
+            ],
+            "sample_std": 0.0419
+          },
+          "rrr": {
+            "mean": 0.2667,
+            "run_values": [
+              0.29,
+              0.24,
+              0.27
+            ],
+            "sample_std": 0.0252
+          }
+        },
+        "importance_heavy": {
+          "cosine": {
+            "mean": 0.5321,
+            "run_values": [
+              0.5163,
+              0.5462,
+              0.5337
+            ],
+            "sample_std": 0.015
+          },
+          "f1": {
+            "mean": 0.2657,
+            "run_values": [
+              0.2373,
+              0.2583,
+              0.3015
+            ],
+            "sample_std": 0.0327
+          },
+          "gtc": {
+            "mean": 0.3639,
+            "run_values": [
+              0.3417,
+              0.3417,
+              0.4083
+            ],
+            "sample_std": 0.0385
+          },
+          "rrr": {
+            "mean": 0.24,
+            "run_values": [
+              0.2,
+              0.25,
+              0.27
+            ],
+            "sample_std": 0.0361
+          }
+        },
+        "recency_heavy": {
+          "cosine": {
+            "mean": 0.5334,
+            "run_values": [
+              0.5191,
+              0.5467,
+              0.5345
+            ],
+            "sample_std": 0.0138
+          },
+          "f1": {
+            "mean": 0.3015,
+            "run_values": [
+              0.338,
+              0.2624,
+              0.3042
+            ],
+            "sample_std": 0.0379
+          },
+          "gtc": {
+            "mean": 0.4055,
+            "run_values": [
+              0.4583,
+              0.3333,
+              0.425
+            ],
+            "sample_std": 0.0647
+          },
+          "rrr": {
+            "mean": 0.26,
+            "run_values": [
+              0.29,
+              0.23,
+              0.26
+            ],
+            "sample_std": 0.03
+          }
+        },
+        "relevance_heavy": {
+          "cosine": {
+            "mean": 0.5534,
+            "run_values": [
+              0.5558,
+              0.5638,
+              0.5405
+            ],
+            "sample_std": 0.0118
+          },
+          "f1": {
+            "mean": 0.2974,
+            "run_values": [
+              0.3214,
+              0.2987,
+              0.2722
+            ],
+            "sample_std": 0.0246
+          },
+          "gtc": {
+            "mean": 0.3861,
+            "run_values": [
+              0.4083,
+              0.3667,
+              0.3833
+            ],
+            "sample_std": 0.0209
+          },
+          "rrr": {
+            "mean": 0.2633,
+            "run_values": [
+              0.29,
+              0.27,
+              0.23
+            ],
+            "sample_std": 0.0306
+          }
+        }
+      }
+    },
+    "union_78": {
+      "by_agent": {
+        "academic_student": {
+          "cosine": 0.528,
+          "f1": 0.1761,
+          "gtc": 0.1992,
+          "n_units": 60,
+          "rrr": 0.18
+        },
+        "active_student": {
+          "cosine": 0.5563,
+          "f1": 0.3778,
+          "gtc": 0.4081,
+          "n_units": 60,
+          "rrr": 0.3933
+        },
+        "quiet_student": {
+          "cosine": 0.6245,
+          "f1": 0.4607,
+          "gtc": 0.4819,
+          "n_units": 60,
+          "rrr": 0.4733
+        },
+        "teacher": {
+          "cosine": 0.5962,
+          "f1": 0.4179,
+          "gtc": 0.4822,
+          "n_units": 60,
+          "rrr": 0.3933
+        }
+      },
+      "by_config": {
+        "balanced": {
+          "cosine": 0.5835,
+          "f1": 0.4108,
+          "gtc": 0.4667,
+          "n_units": 60,
+          "rrr": 0.3867
+        },
+        "importance_heavy": {
+          "cosine": 0.5666,
+          "f1": 0.3469,
+          "gtc": 0.3858,
+          "n_units": 60,
+          "rrr": 0.3633
+        },
+        "recency_heavy": {
+          "cosine": 0.5689,
+          "f1": 0.3299,
+          "gtc": 0.3519,
+          "n_units": 60,
+          "rrr": 0.3467
+        },
+        "relevance_heavy": {
+          "cosine": 0.5861,
+          "f1": 0.3449,
+          "gtc": 0.3669,
+          "n_units": 60,
+          "rrr": 0.3433
+        }
+      },
+      "by_event": {
+        "event_01": {
+          "cosine": 0.5465,
+          "f1": 0.4333,
+          "gtc": 0.4653,
+          "n_units": 48,
+          "rrr": 0.45
+        },
+        "event_02": {
+          "cosine": 0.6065,
+          "f1": 0.3825,
+          "gtc": 0.4243,
+          "n_units": 48,
+          "rrr": 0.3875
+        },
+        "event_03": {
+          "cosine": 0.6176,
+          "f1": 0.4868,
+          "gtc": 0.5382,
+          "n_units": 48,
+          "rrr": 0.4708
+        },
+        "event_04": {
+          "cosine": 0.5843,
+          "f1": 0.3293,
+          "gtc": 0.3837,
+          "n_units": 48,
+          "rrr": 0.3083
+        },
+        "event_05": {
+          "cosine": 0.5262,
+          "f1": 0.1589,
+          "gtc": 0.1528,
+          "n_units": 48,
+          "rrr": 0.1833
+        }
+      },
+      "by_run": {
+        "balanced_rep01": {
+          "cosine": 0.5865,
+          "f1": 0.4112,
+          "gtc": 0.47,
+          "n_units": 20,
+          "rrr": 0.38
+        },
+        "balanced_rep02": {
+          "cosine": 0.5952,
+          "f1": 0.382,
+          "gtc": 0.4417,
+          "n_units": 20,
+          "rrr": 0.36
+        },
+        "balanced_rep03": {
+          "cosine": 0.5688,
+          "f1": 0.4393,
+          "gtc": 0.4883,
+          "n_units": 20,
+          "rrr": 0.42
+        },
+        "importance_heavy_rep01": {
+          "cosine": 0.549,
+          "f1": 0.3414,
+          "gtc": 0.385,
+          "n_units": 20,
+          "rrr": 0.37
+        },
+        "importance_heavy_rep02": {
+          "cosine": 0.5827,
+          "f1": 0.3785,
+          "gtc": 0.4242,
+          "n_units": 20,
+          "rrr": 0.38
+        },
+        "importance_heavy_rep03": {
+          "cosine": 0.568,
+          "f1": 0.3209,
+          "gtc": 0.3483,
+          "n_units": 20,
+          "rrr": 0.34
+        },
+        "recency_heavy_rep01": {
+          "cosine": 0.5559,
+          "f1": 0.432,
+          "gtc": 0.4358,
+          "n_units": 20,
+          "rrr": 0.45
+        },
+        "recency_heavy_rep02": {
+          "cosine": 0.5747,
+          "f1": 0.2799,
+          "gtc": 0.3225,
+          "n_units": 20,
+          "rrr": 0.29
+        },
+        "recency_heavy_rep03": {
+          "cosine": 0.576,
+          "f1": 0.2778,
+          "gtc": 0.2975,
+          "n_units": 20,
+          "rrr": 0.3
+        },
+        "relevance_heavy_rep01": {
+          "cosine": 0.585,
+          "f1": 0.4131,
+          "gtc": 0.4433,
+          "n_units": 20,
+          "rrr": 0.4
+        },
+        "relevance_heavy_rep02": {
+          "cosine": 0.5921,
+          "f1": 0.3096,
+          "gtc": 0.3292,
+          "n_units": 20,
+          "rrr": 0.32
+        },
+        "relevance_heavy_rep03": {
+          "cosine": 0.5813,
+          "f1": 0.312,
+          "gtc": 0.3283,
+          "n_units": 20,
+          "rrr": 0.31
+        }
+      },
+      "overall": {
+        "cosine": 0.5763,
+        "f1": 0.3581,
+        "gtc": 0.3928,
+        "n_units": 240,
+        "rrr": 0.36
+      },
+      "repetition_statistics": {
+        "balanced": {
+          "cosine": {
+            "mean": 0.5835,
+            "run_values": [
+              0.5865,
+              0.5952,
+              0.5688
+            ],
+            "sample_std": 0.0135
+          },
+          "f1": {
+            "mean": 0.4108,
+            "run_values": [
+              0.4112,
+              0.382,
+              0.4393
+            ],
+            "sample_std": 0.0287
+          },
+          "gtc": {
+            "mean": 0.4667,
+            "run_values": [
+              0.47,
+              0.4417,
+              0.4883
+            ],
+            "sample_std": 0.0235
+          },
+          "rrr": {
+            "mean": 0.3867,
+            "run_values": [
+              0.38,
+              0.36,
+              0.42
+            ],
+            "sample_std": 0.0306
+          }
+        },
+        "importance_heavy": {
+          "cosine": {
+            "mean": 0.5666,
+            "run_values": [
+              0.549,
+              0.5827,
+              0.568
+            ],
+            "sample_std": 0.0169
+          },
+          "f1": {
+            "mean": 0.3469,
+            "run_values": [
+              0.3414,
+              0.3785,
+              0.3209
+            ],
+            "sample_std": 0.0292
+          },
+          "gtc": {
+            "mean": 0.3858,
+            "run_values": [
+              0.385,
+              0.4242,
+              0.3483
+            ],
+            "sample_std": 0.038
+          },
+          "rrr": {
+            "mean": 0.3633,
+            "run_values": [
+              0.37,
+              0.38,
+              0.34
+            ],
+            "sample_std": 0.0208
+          }
+        },
+        "recency_heavy": {
+          "cosine": {
+            "mean": 0.5689,
+            "run_values": [
+              0.5559,
+              0.5747,
+              0.576
+            ],
+            "sample_std": 0.0112
+          },
+          "f1": {
+            "mean": 0.3299,
+            "run_values": [
+              0.432,
+              0.2799,
+              0.2778
+            ],
+            "sample_std": 0.0884
+          },
+          "gtc": {
+            "mean": 0.3519,
+            "run_values": [
+              0.4358,
+              0.3225,
+              0.2975
+            ],
+            "sample_std": 0.0737
+          },
+          "rrr": {
+            "mean": 0.3467,
+            "run_values": [
+              0.45,
+              0.29,
+              0.3
+            ],
+            "sample_std": 0.0896
+          }
+        },
+        "relevance_heavy": {
+          "cosine": {
+            "mean": 0.5861,
+            "run_values": [
+              0.585,
+              0.5921,
+              0.5813
+            ],
+            "sample_std": 0.0055
+          },
+          "f1": {
+            "mean": 0.3449,
+            "run_values": [
+              0.4131,
+              0.3096,
+              0.312
+            ],
+            "sample_std": 0.0591
+          },
+          "gtc": {
+            "mean": 0.3669,
+            "run_values": [
+              0.4433,
+              0.3292,
+              0.3283
+            ],
+            "sample_std": 0.0661
+          },
+          "rrr": {
+            "mean": 0.3433,
+            "run_values": [
+              0.4,
+              0.32,
+              0.31
+            ],
+            "sample_std": 0.0493
+          }
+        }
+      }
+    }
+  }
+}

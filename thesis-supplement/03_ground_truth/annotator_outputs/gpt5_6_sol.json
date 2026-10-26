@@ -1,0 +1,462 @@
+[
+  {
+    "annotation_unit_id": "gt_event_01_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_01",
+    "input_sha256": "bc1932d7a1a72838cfa8ee0b878fb4dffc86ec6a98742602f4ef720b4dfd8e15",
+    "categories": [
+      {
+        "category": "Clear guidance for academic preparation",
+        "relevant": 1,
+        "reason": "The teacher prioritizes student understanding and gives clear instructional guidance, making structured preparation relevant to announcing an upcoming assessment."
+      },
+      {
+        "category": "Consistent classroom expectations around assessment",
+        "relevant": 1,
+        "reason": "Maintaining fair and clear classroom expectations is a core goal, and the test announcement establishes an important expectation."
+      },
+      {
+        "category": "Attentive support for student understanding",
+        "relevant": 1,
+        "reason": "Student understanding is a primary motivation, so supporting students in understanding and preparing for assessed material is necessary."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_01_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_01",
+    "input_sha256": "90466e2a7f1ce8bed0f4643c1f612b3658f420e673481e1a3fe1ddd287e03c5d",
+    "categories": [
+      {
+        "category": "Discussion-based preparation for academic assessment",
+        "relevant": 1,
+        "reason": "The student learns through discussion, making collaborative preparation for the announced test directly relevant."
+      },
+      {
+        "category": "Question-driven clarification of uncertain material",
+        "relevant": 1,
+        "reason": "Clarifying uncertainty by asking questions is a core goal and becomes particularly necessary when preparing for an assessment."
+      },
+      {
+        "category": "Active participation in shared learning",
+        "relevant": 1,
+        "reason": "Active participation and social learning are central motivations, and preparation creates a natural context for engaging classmates."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_01_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_01",
+    "input_sha256": "10642f479d77bd7c2644436d37d4abbbf0643d5a98ecdeedc15c578849d083c7",
+    "categories": [
+      {
+        "category": "Careful preparation for academic assessment",
+        "relevant": 1,
+        "reason": "Preparedness is a primary motivation, and the announced test directly creates a need for careful preparation."
+      },
+      {
+        "category": "Preference for clear assessment expectations",
+        "relevant": 1,
+        "reason": "Understanding classroom expectations and valuing clarity make knowing the assessment requirements directly relevant."
+      },
+      {
+        "category": "Deliberate responses under academic pressure",
+        "relevant": 1,
+        "reason": "The student's cautious and deliberate communication style makes thoughtful preparation before responding relevant to the assessment context."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_01_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_01",
+    "input_sha256": "acf92dbe85ee5bf4031682cd2b19e62e07f0221bb5694417f0a3d0fd9c6c2812",
+    "categories": [
+      {
+        "category": "Structured preparation for academic assessment",
+        "relevant": 1,
+        "reason": "Academic preparation and an organized study routine are core goals, directly activated by the upcoming test."
+      },
+      {
+        "category": "Systematic mastery of classroom material",
+        "relevant": 1,
+        "reason": "Subject mastery is a primary motivation, making systematic review of the week's material necessary for the assessment."
+      },
+      {
+        "category": "Evidence-based organization of study material",
+        "relevant": 1,
+        "reason": "The persona favors organized, evidence-based study strategies, which are directly relevant when preparing for a written test."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_02_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_02",
+    "input_sha256": "3c64a383ef5577c8d6b1e23a24ca7ef10e90279070ef25d881c70cad4c30b3f3",
+    "categories": [
+      {
+        "category": "Consistent enforcement of classroom norms",
+        "relevant": 1,
+        "reason": "Consistent classroom norms are a core motivation, and the speaking procedure establishes a specific norm the teacher must apply."
+      },
+      {
+        "category": "Clear instructional guidance for participation",
+        "relevant": 1,
+        "reason": "The teacher's communication style is clear and instructional, making explicit guidance about participation directly necessary."
+      },
+      {
+        "category": "Balanced and respectful student participation",
+        "relevant": 1,
+        "reason": "Supporting balanced participation is a core goal, while the speaking procedure regulates turn-taking and respectful discussion."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_02_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_02",
+    "input_sha256": "599672c47bca5bfc26edf335bf87b881006db074de82bf0b513615dfe2216c66",
+    "categories": [
+      {
+        "category": "Active participation within structured discussion",
+        "relevant": 1,
+        "reason": "Active participation is central to the student's motivation, while the new speaking procedure directly affects how that participation occurs."
+      },
+      {
+        "category": "Respectful turn-taking during collaborative learning",
+        "relevant": 1,
+        "reason": "The student is collaborative and outgoing, so adapting active discussion to structured turn-taking is necessary in this context."
+      },
+      {
+        "category": "Direct question-asking within participation rules",
+        "relevant": 1,
+        "reason": "Asking questions is a core goal, and the speaking procedure directly constrains when those questions can be voiced."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_02_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_02",
+    "input_sha256": "3685d4467a5974ff3e5656b17f767ec29c015f0528a45303eaf2f63e1a5fb7e2",
+    "categories": [
+      {
+        "category": "Preference for orderly speaking procedures",
+        "relevant": 1,
+        "reason": "The student values clarity and a respectful classroom atmosphere, making an orderly speaking procedure directly relevant."
+      },
+      {
+        "category": "Cautious participation without unnecessary attention",
+        "relevant": 1,
+        "reason": "The student prefers participating without unnecessary attention, and structured turn-taking supports this communication preference."
+      },
+      {
+        "category": "Deliberate preparation before speaking",
+        "relevant": 1,
+        "reason": "Preparing a clear response before speaking is an explicit goal and directly fits the requirement to wait before contributing."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_02_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_02",
+    "input_sha256": "b2eca2dfba47ed688954db09347766ba16a91476961cb8776eb07f22461574e8",
+    "categories": [
+      {
+        "category": "Structured and precise classroom participation",
+        "relevant": 1,
+        "reason": "The student's precise and structured communication style makes orderly participation directly relevant to the new discussion procedure."
+      },
+      {
+        "category": "Accurate contribution during academic discussion",
+        "relevant": 1,
+        "reason": "Contributing accurate details during class work is a core goal and remains relevant when participation is regulated."
+      },
+      {
+        "category": "Composed adherence to classroom procedures",
+        "relevant": 1,
+        "reason": "The student's composed, organized persona aligns with following a clearly defined participation procedure."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_03_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_03",
+    "input_sha256": "6eb3abd1fe77a7bda92a022d81cbd8ea8528fbcc6feb158efc1bafbb93cd6f66",
+    "categories": [
+      {
+        "category": "Facilitation of balanced group participation",
+        "relevant": 1,
+        "reason": "Balanced student participation is a core goal, and the group discussion explicitly requires each student to contribute."
+      },
+      {
+        "category": "Clear guidance for collaborative learning",
+        "relevant": 1,
+        "reason": "The teacher's instructional communication style and focus on student understanding make clear group guidance necessary."
+      },
+      {
+        "category": "Constructive coordination of student contributions",
+        "relevant": 1,
+        "reason": "Constructive participation is a core motivation, requiring the teacher to coordinate individual contributions into shared understanding."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_03_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_03",
+    "input_sha256": "6728644ca832b7cc985158022934edf507fe4529794af618d170a23026a39c7f",
+    "categories": [
+      {
+        "category": "Energetic participation in group learning",
+        "relevant": 1,
+        "reason": "The student's outgoing, energetic style and active participation motivation directly fit a group discussion."
+      },
+      {
+        "category": "Collaborative explanation of lesson concepts",
+        "relevant": 1,
+        "reason": "Social learning and shared understanding are core motivations, making collaborative explanation directly necessary."
+      },
+      {
+        "category": "Question-driven clarification through discussion",
+        "relevant": 1,
+        "reason": "The student clarifies uncertainty through questions, which is directly useful during collaborative discussion of lesson material."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_03_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_03",
+    "input_sha256": "119f70bdb51fc7a308f963fc618cf28312ed5edd8530522db439f2f20dbd4977",
+    "categories": [
+      {
+        "category": "Careful contribution within group discussion",
+        "relevant": 1,
+        "reason": "The student is cautious and deliberate but has a goal of participating without unnecessary attention, making careful group contribution necessary."
+      },
+      {
+        "category": "Prepared concise responses for collaboration",
+        "relevant": 1,
+        "reason": "Preparing a clear response before speaking is an explicit goal and is directly relevant when contributing to shared explanations."
+      },
+      {
+        "category": "Respectful participation in collaborative settings",
+        "relevant": 1,
+        "reason": "A respectful classroom atmosphere is a core motivation and is directly relevant to group interaction."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_03_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_03",
+    "input_sha256": "587d602fd6aab3e32a0b6295785f4001338c374eae2a5027ce6ec91a5467fa77",
+    "categories": [
+      {
+        "category": "Precise contributions to shared academic understanding",
+        "relevant": 1,
+        "reason": "Contributing accurate details and pursuing subject mastery are core goals directly activated by building a shared lesson explanation."
+      },
+      {
+        "category": "Structured organization of lesson concepts",
+        "relevant": 1,
+        "reason": "The student maintains an organized approach to material, which is necessary for producing a coherent shared explanation."
+      },
+      {
+        "category": "Analytical verification of lesson understanding",
+        "relevant": 1,
+        "reason": "The analytical persona and motivation for accurate understanding make checking the correctness of group explanations directly relevant."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_04_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_04",
+    "input_sha256": "084f025ef2cee11b963df650476e3fd00d5e7f0ceb456ce5599dcca04599c263",
+    "categories": [
+      {
+        "category": "Fair evaluation of student leadership",
+        "relevant": 1,
+        "reason": "The teacher's goal of maintaining fair expectations makes impartial consideration of leadership candidates directly relevant."
+      },
+      {
+        "category": "Clear guidance for classroom responsibility",
+        "relevant": 1,
+        "reason": "The teacher communicates clearly and structurally, making guidance about a leadership responsibility necessary in this context."
+      },
+      {
+        "category": "Balanced student participation in decision-making",
+        "relevant": 1,
+        "reason": "Supporting balanced participation is a core goal, and nomination discussion requires students to participate respectfully."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_04_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_04",
+    "input_sha256": "25ce9299bf2df4e0095277d8faebc1732e2edd7bf4e66ad44f4847c5ce7942f4",
+    "categories": [
+      {
+        "category": "Outgoing participation in class decisions",
+        "relevant": 1,
+        "reason": "The student is outgoing and willing to speak first, making active participation in a nomination discussion directly relevant."
+      },
+      {
+        "category": "Collaborative evaluation of classmates",
+        "relevant": 1,
+        "reason": "The student's collaborative orientation and social-learning motivation support discussing classmates collectively."
+      },
+      {
+        "category": "Constructive encouragement of peer participation",
+        "relevant": 1,
+        "reason": "Encouraging classmates to participate is a core goal and directly applies to a group decision about leadership."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_04_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_04",
+    "input_sha256": "b85fadfed17cebf43bc1bb536f8905137c4ccaf704bf36490827e0479da3e6b8",
+    "categories": [
+      {
+        "category": "Cautious participation in leadership discussions",
+        "relevant": 1,
+        "reason": "The student prefers participation without unnecessary attention and communicates cautiously, making restrained involvement relevant."
+      },
+      {
+        "category": "Deliberate evaluation before expressing opinions",
+        "relevant": 1,
+        "reason": "The student prepares clear responses before speaking and is observant, supporting deliberate judgment before contributing."
+      },
+      {
+        "category": "Respectful consideration of classroom responsibilities",
+        "relevant": 1,
+        "reason": "A respectful classroom atmosphere is a core motivation, making respectful consideration of leadership responsibility directly relevant."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_04_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_04",
+    "input_sha256": "02dff8c7090d3c6c8fe1934185da272b8021de0fb6ce27089a2a8023f3726911",
+    "categories": [
+      {
+        "category": "Analytical evaluation of leadership suitability",
+        "relevant": 1,
+        "reason": "The student's analytical and evidence-based orientation makes evaluating suitability for responsibility directly relevant."
+      },
+      {
+        "category": "Precise reasoning during class decisions",
+        "relevant": 1,
+        "reason": "The student's precise communication style and preference for accurate understanding support reasoned contributions to the discussion."
+      },
+      {
+        "category": "Structured consideration of student responsibilities",
+        "relevant": 1,
+        "reason": "The student's organized nature makes structured consideration of a classroom responsibility relevant to the event."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_05_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_05",
+    "input_sha256": "8a582dd344f404d51c1af459c4c812a1c585aff3ea715194f77d5f62925365fc",
+    "categories": [
+      {
+        "category": "Clear and fair assessment administration",
+        "relevant": 1,
+        "reason": "Maintaining fair and clear classroom expectations is a core goal and is directly necessary during the written assessment."
+      },
+      {
+        "category": "Attentive evaluation of student understanding",
+        "relevant": 1,
+        "reason": "Student understanding is the teacher's primary motivation, making attentive evaluation of responses directly relevant."
+      },
+      {
+        "category": "Calm instructional support during assessment",
+        "relevant": 1,
+        "reason": "The teacher's calm, patient, instructional style remains necessary while students respond to the assessment."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_05_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_05",
+    "input_sha256": "212af19e2c00318d92b07b9fe5426be614540e67bd6c4806beeba7555e4ff145",
+    "categories": [
+      {
+        "category": "Confident expression of learned understanding",
+        "relevant": 1,
+        "reason": "The student is energetic and willing to speak first, while the assessment requires expressing understanding directly."
+      },
+      {
+        "category": "Question-driven clarification before responding",
+        "relevant": 1,
+        "reason": "Clarifying uncertainty through questions is a core goal, though the assessment context makes this especially relevant before providing answers."
+      },
+      {
+        "category": "Active engagement with academic preparation",
+        "relevant": 1,
+        "reason": "Active participation and shared understanding are core motivations, and the assessment directly tests the student's preparation."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_05_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_05",
+    "input_sha256": "f63388907186508fcb1073b9dd74f74835a074095ca29b68dd70b1153868ff3d",
+    "categories": [
+      {
+        "category": "Careful independent response preparation",
+        "relevant": 1,
+        "reason": "The student explicitly values preparedness and deliberate responses, making careful preparation directly relevant to the assessment."
+      },
+      {
+        "category": "Concise responses demonstrating clear understanding",
+        "relevant": 1,
+        "reason": "The student's reserved communication style favors brief, clear responses, which is directly relevant when answering assessment questions."
+      },
+      {
+        "category": "Calm participation under evaluative conditions",
+        "relevant": 1,
+        "reason": "The student values a respectful atmosphere and cautious participation, making composed engagement with assessment conditions relevant."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_05_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_05",
+    "input_sha256": "716ad6704a73e86b75d761d4c7dfb6d364ed5599152a446c1b4c943541907174",
+    "categories": [
+      {
+        "category": "Precise demonstration of subject mastery",
+        "relevant": 1,
+        "reason": "Subject mastery and accurate understanding are primary motivations, and the assessment directly requires demonstrating them."
+      },
+      {
+        "category": "Structured application of prepared knowledge",
+        "relevant": 1,
+        "reason": "The student's organized study orientation makes systematic application of prepared material directly relevant to the test."
+      },
+      {
+        "category": "Composed evidence-based academic responses",
+        "relevant": 1,
+        "reason": "The student prefers precise, composed, evidence-based work, making this response style directly relevant during written assessment."
+      }
+    ]
+  }
+]

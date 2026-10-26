@@ -1,0 +1,462 @@
+[
+  {
+    "annotation_unit_id": "gt_event_01_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_01",
+    "input_sha256": "bc1932d7a1a72838cfa8ee0b878fb4dffc86ec6a98742602f4ef720b4dfd8e15",
+    "categories": [
+      {
+        "category": "Clear guidance for upcoming written assessment",
+        "relevant": 1,
+        "reason": "Ms. Sunday communicates clearly and instructs students, so test announcements require clear guidance."
+      },
+      {
+        "category": "Consistent preparation expectations for student study",
+        "relevant": 1,
+        "reason": "Her goal of consistent classroom expectations makes study preparation norms necessary."
+      },
+      {
+        "category": "Calm reassurance during weekly material review",
+        "relevant": 1,
+        "reason": "Her calm style supports students as they review weekly material for the test."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_01_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_01",
+    "input_sha256": "90466e2a7f1ce8bed0f4643c1f612b3658f420e673481e1a3fe1ddd287e03c5d",
+    "categories": [
+      {
+        "category": "Eager clarification about upcoming test expectations",
+        "relevant": 1,
+        "reason": "Monday clarifies uncertainty by asking questions, which is needed when a test is announced."
+      },
+      {
+        "category": "Collaborative preparation through classmate discussion",
+        "relevant": 1,
+        "reason": "Monday learns socially, so discussing preparation with classmates is relevant."
+      },
+      {
+        "category": "Energetic initiation of study questions",
+        "relevant": 1,
+        "reason": "Monday is energetic and active, so initiating study questions fits the event."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_01_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_01",
+    "input_sha256": "10642f479d77bd7c2644436d37d4abbbf0643d5a98ecdeedc15c578849d083c7",
+    "categories": [
+      {
+        "category": "Careful attention to test expectations",
+        "relevant": 1,
+        "reason": "Tuesday seeks clarity about expectations, so noticing test details is necessary."
+      },
+      {
+        "category": "Private preparation before responding",
+        "relevant": 1,
+        "reason": "Tuesday prepares before speaking, making private test preparation relevant."
+      },
+      {
+        "category": "Cautious planning for written assessment",
+        "relevant": 1,
+        "reason": "Tuesday is cautious and prefers preparedness for written assessments."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_01_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_01",
+    "input_sha256": "acf92dbe85ee5bf4031682cd2b19e62e07f0221bb5694417f0a3d0fd9c6c2812",
+    "categories": [
+      {
+        "category": "Organized review of weekly material",
+        "relevant": 1,
+        "reason": "Wednesday organizes material carefully, so reviewing weekly content is necessary."
+      },
+      {
+        "category": "Precise understanding of assessment requirements",
+        "relevant": 1,
+        "reason": "Wednesday seeks accurate understanding, requiring precise assessment requirements."
+      },
+      {
+        "category": "Structured preparation for written mastery",
+        "relevant": 1,
+        "reason": "Wednesday values academic preparation and structured study for mastery."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_02_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_02",
+    "input_sha256": "3c64a383ef5577c8d6b1e23a24ca7ef10e90279070ef25d881c70cad4c30b3f3",
+    "categories": [
+      {
+        "category": "Clear instruction on orderly speaking",
+        "relevant": 1,
+        "reason": "Ms. Sunday gives clear instruction, necessary for teaching hand-raising rules."
+      },
+      {
+        "category": "Fair enforcement of discussion expectations",
+        "relevant": 1,
+        "reason": "She maintains fair expectations, so enforcing discussion rules is relevant."
+      },
+      {
+        "category": "Patient support for balanced participation",
+        "relevant": 1,
+        "reason": "She supports balanced participation, requiring patience during turn-taking."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_02_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_02",
+    "input_sha256": "599672c47bca5bfc26edf335bf87b881006db074de82bf0b513615dfe2216c66",
+    "categories": [
+      {
+        "category": "Energetic participation within speaking rules",
+        "relevant": 1,
+        "reason": "Monday is energetic and speaks readily, so participation must fit speaking rules."
+      },
+      {
+        "category": "Patient waiting before sharing ideas",
+        "relevant": 1,
+        "reason": "Monday must wait for acknowledgment despite eagerness to share ideas."
+      },
+      {
+        "category": "Friendly encouragement of classmate participation",
+        "relevant": 1,
+        "reason": "Monday encourages classmates, so supporting peer turn-taking is relevant."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_02_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_02",
+    "input_sha256": "3685d4467a5974ff3e5656b17f767ec29c015f0528a45303eaf2f63e1a5fb7e2",
+    "categories": [
+      {
+        "category": "Respectful compliance with speaking expectations",
+        "relevant": 1,
+        "reason": "Tuesday respects classroom expectations, making compliance with speaking rules necessary."
+      },
+      {
+        "category": "Deliberate waiting before speaking",
+        "relevant": 1,
+        "reason": "Tuesday is deliberate and prepares before speaking, fitting hand-raising."
+      },
+      {
+        "category": "Quiet participation after teacher acknowledgment",
+        "relevant": 1,
+        "reason": "Tuesday prefers respectful, low-attention participation when acknowledged."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_02_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_02",
+    "input_sha256": "b2eca2dfba47ed688954db09347766ba16a91476961cb8776eb07f22461574e8",
+    "categories": [
+      {
+        "category": "Composed adherence to discussion procedure",
+        "relevant": 1,
+        "reason": "Wednesday is composed and follows structured procedures in class."
+      },
+      {
+        "category": "Precise contributions after acknowledgment",
+        "relevant": 1,
+        "reason": "Wednesday contributes accurate details after being acknowledged."
+      },
+      {
+        "category": "Focused attention to speaking rules",
+        "relevant": 1,
+        "reason": "Wednesday stays focused on classroom rules that support learning."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_03_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_03",
+    "input_sha256": "6eb3abd1fe77a7bda92a022d81cbd8ea8528fbcc6feb158efc1bafbb93cd6f66",
+    "categories": [
+      {
+        "category": "Balanced facilitation of group discussion",
+        "relevant": 1,
+        "reason": "Ms. Sunday supports balanced participation during group discussion."
+      },
+      {
+        "category": "Clear expectations for shared explanations",
+        "relevant": 1,
+        "reason": "She gives clear expectations for shared lesson explanations."
+      },
+      {
+        "category": "Supportive monitoring of student participation",
+        "relevant": 1,
+        "reason": "Her attentive style helps monitor constructive student participation."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_03_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_03",
+    "input_sha256": "6728644ca832b7cc985158022934edf507fe4529794af618d170a23026a39c7f",
+    "categories": [
+      {
+        "category": "Energetic initiation of group discussion",
+        "relevant": 1,
+        "reason": "Monday is outgoing and willing to start discussions."
+      },
+      {
+        "category": "Friendly invitations for classmate contributions",
+        "relevant": 1,
+        "reason": "Monday encourages classmates to participate in shared explanations."
+      },
+      {
+        "category": "Questioning to build shared understanding",
+        "relevant": 1,
+        "reason": "Monday asks questions to build shared understanding."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_03_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_03",
+    "input_sha256": "119f70bdb51fc7a308f963fc618cf28312ed5edd8530522db439f2f20dbd4977",
+    "categories": [
+      {
+        "category": "Careful listening before group contribution",
+        "relevant": 1,
+        "reason": "Tuesday listens carefully before contributing to group discussion."
+      },
+      {
+        "category": "Concise sharing of prepared ideas",
+        "relevant": 1,
+        "reason": "Tuesday prefers concise, prepared responses during participation."
+      },
+      {
+        "category": "Respectful participation without drawing attention",
+        "relevant": 1,
+        "reason": "Tuesday aims to participate without unnecessary attention."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_03_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_03",
+    "input_sha256": "587d602fd6aab3e32a0b6295785f4001338c374eae2a5027ce6ec91a5467fa77",
+    "categories": [
+      {
+        "category": "Structured explanation of lesson content",
+        "relevant": 1,
+        "reason": "Wednesday structures material carefully for lesson explanations."
+      },
+      {
+        "category": "Accurate contributions to shared discussion",
+        "relevant": 1,
+        "reason": "Wednesday contributes accurate details during class work."
+      },
+      {
+        "category": "Analytical organization of group understanding",
+        "relevant": 1,
+        "reason": "Wednesday analyzes content to support group understanding."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_04_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_04",
+    "input_sha256": "084f025ef2cee11b963df650476e3fd00d5e7f0ceb456ce5599dcca04599c263",
+    "categories": [
+      {
+        "category": "Fair facilitation of student nominations",
+        "relevant": 1,
+        "reason": "Ms. Sunday maintains fair expectations during nomination discussions."
+      },
+      {
+        "category": "Respectful discussion of leadership responsibility",
+        "relevant": 1,
+        "reason": "She invites respectful discussion about leadership responsibility."
+      },
+      {
+        "category": "Balanced participation in leadership selection",
+        "relevant": 1,
+        "reason": "She supports balanced participation in selecting a class leader."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_04_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_04",
+    "input_sha256": "25ce9299bf2df4e0095277d8faebc1732e2edd7bf4e66ad44f4847c5ce7942f4",
+    "categories": [
+      {
+        "category": "Eager nomination of classmate leaders",
+        "relevant": 1,
+        "reason": "Monday is direct and energetic, likely to nominate peers."
+      },
+      {
+        "category": "Friendly encouragement of peer leadership",
+        "relevant": 1,
+        "reason": "Monday encourages classmates to consider leadership participation."
+      },
+      {
+        "category": "Direct discussion of leadership qualities",
+        "relevant": 1,
+        "reason": "Monday discusses ideas openly to clarify leadership qualities."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_04_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_04",
+    "input_sha256": "b85fadfed17cebf43bc1bb536f8905137c4ccaf704bf36490827e0479da3e6b8",
+    "categories": [
+      {
+        "category": "Cautious reflection before nominating classmates",
+        "relevant": 1,
+        "reason": "Tuesday is cautious and prepares before naming a classmate."
+      },
+      {
+        "category": "Respectful observation of leadership discussion",
+        "relevant": 1,
+        "reason": "Tuesday observes carefully during sensitive peer discussions."
+      },
+      {
+        "category": "Brief contribution when prepared",
+        "relevant": 1,
+        "reason": "Tuesday contributes briefly only when prepared."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_04_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_04",
+    "input_sha256": "02dff8c7090d3c6c8fe1934185da272b8021de0fb6ce27089a2a8023f3726911",
+    "categories": [
+      {
+        "category": "Analytical assessment of leadership suitability",
+        "relevant": 1,
+        "reason": "Wednesday analyzes evidence when judging leadership suitability."
+      },
+      {
+        "category": "Accurate evidence for classmate nomination",
+        "relevant": 1,
+        "reason": "Wednesday values accurate details when nominating classmates."
+      },
+      {
+        "category": "Structured discussion of leadership responsibilities",
+        "relevant": 1,
+        "reason": "Wednesday approaches leadership discussion in a structured way."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_05_teacher",
+    "agent_id": "teacher",
+    "target_event_id": "event_05",
+    "input_sha256": "8a582dd344f404d51c1af459c4c812a1c585aff3ea715194f77d5f62925365fc",
+    "categories": [
+      {
+        "category": "Clear administration of written assessment",
+        "relevant": 1,
+        "reason": "Ms. Sunday gives clear instructions when beginning assessments."
+      },
+      {
+        "category": "Calm support for student responses",
+        "relevant": 1,
+        "reason": "Her calm style supports students responding to test tasks."
+      },
+      {
+        "category": "Fair evaluation of individual understanding",
+        "relevant": 1,
+        "reason": "Her goal of fair expectations supports evaluating understanding."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_05_active_student",
+    "agent_id": "active_student",
+    "target_event_id": "event_05",
+    "input_sha256": "212af19e2c00318d92b07b9fe5426be614540e67bd6c4806beeba7555e4ff145",
+    "categories": [
+      {
+        "category": "Independent expression of prepared understanding",
+        "relevant": 1,
+        "reason": "Monday must express understanding independently during the written test."
+      },
+      {
+        "category": "Energetic focus on written responses",
+        "relevant": 1,
+        "reason": "Monday needs energetic focus on written test responses."
+      },
+      {
+        "category": "Recall of material learned through discussion",
+        "relevant": 1,
+        "reason": "Monday learned through discussion, so recalling discussed material is relevant."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_05_quiet_student",
+    "agent_id": "quiet_student",
+    "target_event_id": "event_05",
+    "input_sha256": "f63388907186508fcb1073b9dd74f74835a074095ca29b68dd70b1153868ff3d",
+    "categories": [
+      {
+        "category": "Careful completion of written responses",
+        "relevant": 1,
+        "reason": "Tuesday completes tasks carefully and respectfully."
+      },
+      {
+        "category": "Prepared recall before answering",
+        "relevant": 1,
+        "reason": "Tuesday prepares clear responses before answering."
+      },
+      {
+        "category": "Calm adherence to test expectations",
+        "relevant": 1,
+        "reason": "Tuesday seeks clarity and calm adherence to expectations."
+      }
+    ]
+  },
+  {
+    "annotation_unit_id": "gt_event_05_academic_student",
+    "agent_id": "academic_student",
+    "target_event_id": "event_05",
+    "input_sha256": "716ad6704a73e86b75d761d4c7dfb6d364ed5599152a446c1b4c943541907174",
+    "categories": [
+      {
+        "category": "Structured recall of studied material",
+        "relevant": 1,
+        "reason": "Wednesday uses organized study habits for test recall."
+      },
+      {
+        "category": "Precise written demonstration of mastery",
+        "relevant": 1,
+        "reason": "Wednesday aims to show mastery precisely in writing."
+      },
+      {
+        "category": "Organized approach to assessment tasks",
+        "relevant": 1,
+        "reason": "Wednesday approaches assessment tasks with structured focus."
+      }
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "artifact_hashes": {
+    "aggregated_tables.json": "25ce94819692eea82ffbb296c15917cc8cb8379293ab062e2caba2bc13348b4c",
+    "aggregated_tables.md": "435daf673d97efac437205c1b790fad678d54ffbb47aa670d740feb53d05482e",
+    "evidence/bcr/bcr_cache.json": "76d7a4277d4e0084c8ec9d85f63e87a050bcfb07ea18561f6ef5ae0beb1733ac",
+    "evidence/bcr/bcr_results.json": "453fd0b85b5784b8d6bf1bf28bd2e37da7c11e3690c26b8aebf6d398107b577a",
+    "evidence/retrieval_intersection/cosine_set_level.json": "a51006b9df34d10e2a35e9f17fefa335138dcb332b2ebbea2c4ad494d40c6e8d",
+    "evidence/retrieval_intersection/judge_cache.json": "71d5c5c2760eb0c9808e324a199cde90e26fdf79d5193754f1c0e7704185633f",
+    "evidence/retrieval_intersection/rrr_gtc_f1.json": "a83856384d91676c587f7013294a391799609a49f0d9af10ea5277ef75e470f7",
+    "evidence/retrieval_intersection/summary.json": "b7211d664e7601c55f96c1bb26b1ae19e02f5230e255db4d49d8aaff1d2799c3",
+    "evidence/retrieval_union/cosine_set_level.json": "72b8d68b7942f0e6e332e87f2529d1bb6194d87fe4b3c523298e98a57448e778",
+    "evidence/retrieval_union/judge_cache.json": "a4ec259a9ae5d08c6c89f8ccc2f929a48923975d48c1acc04fc781fa2ba758f3",
+    "evidence/retrieval_union/rrr_gtc_f1.json": "f42c6febcf3738d085e57aa5723f21651a3e18c0aa2ec69d7d3a012d559729f0",
+    "evidence/retrieval_union/summary.json": "207df2603963c56299b4121ac4474e86a4b1a51e98870d97bd2b78434e76c28e",
+    "evidence/source/evaluate_bcr_strict.py": "1317a8ce2121a62191cc5fa6e40ca1a00d8b09e1dc1842448777e9f4c569fd04",
+    "evidence/source/evaluate_retrieval_rrr_gtc.py": "e347d67ceb880e176ffdce97d32b3db83e29f1f9aeb4a0a02807a8fd36c0933c",
+    "evidence/source/evaluate_retrieval_rrr_gtc_union.py": "20369e45a3d0d60f29058903ff4ef6979087c342d3382d759016540fa37e5bc1",
+    "evidence/source/experiment_manifest.json": "13944a3b840f6a31920cc7813a22782300d44ecff07bbe554becf0410e144880",
+    "evidence/source/final_ground_truth.json": "459b77046378e281209e3988da9114b7aea4be6f23e4fd7851ddb094024f5590",
+    "evidence/source/final_ground_truth_union.json": "0c2414d2cefd3d5f8a7d9ec26c189ebb7731de78044143484b6861adbb04c095",
+    "evidence/source/finalize_evaluation_artifacts.py": "807cb142aa3100beb98ad7e3abd37d7b9fa3cd66efa61ca12c5787a197d460fd"
+  },
+  "bundle_id": "evaluation_final_v1",
+  "created_at_utc": "2026-09-20T12:54:47.562169+00:00",
+  "freeze_fingerprint_sha256": "b387d89ef2ce91fc1fe96d1bc00cfcb98878d12112614acba1c4b21c837e7a95",
+  "methodology": {
+    "behavior_metric": "BCR with same-model LLM judge",
+    "primary_retrieval": "Intersection 46",
+    "retrieval_selection_source": "selected_memory_ids",
+    "sensitivity_retrieval": "Union 78",
+    "supplementary_metric": "Cosine Set-Level Similarity"
+  },
+  "schema_version": "1.0",
+  "status": "frozen"
+}

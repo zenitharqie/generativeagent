@@ -1,0 +1,51 @@
+{
+ "metadata": {
+  "description": "Retrieval quality: Cosine Set-Level + RRR/GTC/F1",
+  "gt_source": "/Users/zenitharq/ground_truth_research/annotationv3/final_ground_truth.json",
+  "log_source": "logs/full_experiment_v11/phase13_full_experiment/",
+  "top_k": 5,
+  "selection_source": "retrieval_logs.selected_memory_ids",
+  "embedding_model": "text-embedding-3-small",
+  "judge_model": "gpt-5.6-luna"
+ },
+ "cosine_set_level": {
+  "by_config": {
+   "balanced": 0.5501,
+   "importance_heavy": 0.5321,
+   "recency_heavy": 0.5334,
+   "relevance_heavy": 0.5534
+  },
+  "overall": 0.5422,
+  "n_units": 240
+ },
+ "rrr_gtc_f1": {
+  "by_config": {
+   "balanced": {
+    "rrr": 0.2667,
+    "gtc": 0.4389,
+    "f1": 0.3129
+   },
+   "importance_heavy": {
+    "rrr": 0.24,
+    "gtc": 0.3639,
+    "f1": 0.2657
+   },
+   "recency_heavy": {
+    "rrr": 0.26,
+    "gtc": 0.4056,
+    "f1": 0.3015
+   },
+   "relevance_heavy": {
+    "rrr": 0.2633,
+    "gtc": 0.3861,
+    "f1": 0.2974
+   }
+  },
+  "overall": {
+   "rrr": 0.2575,
+   "gtc": 0.3986,
+   "f1": 0.2944
+  },
+  "n_units": 240
+ }
+}

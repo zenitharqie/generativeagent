@@ -1,0 +1,52 @@
+{
+ "metadata": {
+  "description": "Retrieval quality: Cosine Set-Level + RRR/GTC/F1",
+  "gt_source": "/Users/zenitharq/ground_truth_research/annotationv3/final_ground_truth_union.json",
+  "gt_type": "Union (GPT ∪ Qwen)",
+  "log_source": "logs/full_experiment_v11/phase13_full_experiment/",
+  "top_k": 5,
+  "selection_source": "retrieval_logs.selected_memory_ids",
+  "embedding_model": "text-embedding-3-small",
+  "judge_model": "gpt-5.6-luna"
+ },
+ "cosine_set_level": {
+  "by_config": {
+   "balanced": 0.5835,
+   "importance_heavy": 0.5666,
+   "recency_heavy": 0.5689,
+   "relevance_heavy": 0.5861
+  },
+  "overall": 0.5763,
+  "n_units": 240
+ },
+ "rrr_gtc_f1": {
+  "by_config": {
+   "balanced": {
+    "rrr": 0.3867,
+    "gtc": 0.4667,
+    "f1": 0.4108
+   },
+   "importance_heavy": {
+    "rrr": 0.3633,
+    "gtc": 0.3858,
+    "f1": 0.3469
+   },
+   "recency_heavy": {
+    "rrr": 0.3467,
+    "gtc": 0.3519,
+    "f1": 0.3299
+   },
+   "relevance_heavy": {
+    "rrr": 0.3433,
+    "gtc": 0.3669,
+    "f1": 0.3449
+   }
+  },
+  "overall": {
+   "rrr": 0.36,
+   "gtc": 0.3928,
+   "f1": 0.3581
+  },
+  "n_units": 240
+ }
+}

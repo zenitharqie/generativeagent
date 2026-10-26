@@ -1,0 +1,242 @@
+[
+ {
+  "annotation_unit_id": "gt_event_01_teacher",
+  "agent_id": "teacher",
+  "target_event_id": "event_01",
+  "input_sha256": "bc1932d7a1a72838cfa8ee0b878fb4dffc86ec6a98742602f4ef720b4dfd8e15",
+  "categories": [
+   {"category": "Clear articulation of test timing and expectations", "relevant": 1, "reason": "Matches clear, instructional communication style and directly applies to announcing the test."},
+   {"category": "Concern for consistent, fair evaluation standards", "relevant": 1, "reason": "Ties to motivation of consistent classroom norms in a testing context."},
+   {"category": "Attentiveness to whether students grasp weekly material", "relevant": 1, "reason": "Reflects goal of student understanding, necessary when assigning test prep."},
+   {"category": "Calm reassurance to reduce student test anxiety", "relevant": 1, "reason": "Calm trait applies naturally when introducing an assessment."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_01_active_student",
+  "agent_id": "active_student",
+  "target_event_id": "event_01",
+  "input_sha256": "90466e2a7f1ce8bed0f4643c1f612b3658f420e673481e1a3fe1ddd287e03c5d",
+  "categories": [
+   {"category": "Eagerness to discuss test material with classmates", "relevant": 1, "reason": "Social learning motivation applies directly to preparing for the announced test."},
+   {"category": "Direct questioning to clarify test expectations", "relevant": 1, "reason": "Goal of clarifying uncertainty via questions fits the test announcement."},
+   {"category": "Encouraging peers to prepare together for the test", "relevant": 1, "reason": "Goal of encouraging classmates' participation extends to shared test prep."},
+   {"category": "Energetic engagement when new tasks are announced", "relevant": 1, "reason": "Energetic, outgoing trait shows up when a new classroom task is introduced."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_01_quiet_student",
+  "agent_id": "quiet_student",
+  "target_event_id": "event_01",
+  "input_sha256": "10642f479d77bd7c2644436d37d4abbbf0643d5a98ecdeedc15c578849d083c7",
+  "categories": [
+   {"category": "Careful note-taking to clarify test requirements", "relevant": 1, "reason": "Motivation for clarity supports quietly recording exact test expectations."},
+   {"category": "Preference for quiet, independent test preparation", "relevant": 1, "reason": "Reserved trait and preparedness motivation fit solitary test prep."},
+   {"category": "Cautious avoidance of drawing attention during announcements", "relevant": 1, "reason": "Goal of participating without unnecessary attention applies during the announcement."},
+   {"category": "Preparing a concise response before speaking up", "relevant": 1, "reason": "Deliberate communication style matches preparing before any spoken response."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_01_academic_student",
+  "agent_id": "academic_student",
+  "target_event_id": "event_01",
+  "input_sha256": "acf92dbe85ee5bf4031682cd2b19e62e07f0221bb5694417f0a3d0fd9c6c2812",
+  "categories": [
+   {"category": "Structured study planning ahead of scheduled test", "relevant": 1, "reason": "Goal of maintaining an organized study routine applies directly to the test announcement."},
+   {"category": "Precise tracking of material covered during the week", "relevant": 1, "reason": "Motivation of accurate understanding fits reviewing the week's material."},
+   {"category": "Drive toward mastering content before evaluation", "relevant": 1, "reason": "Subject mastery motivation is central when a test is announced."},
+   {"category": "Composed, methodical approach to exam preparation", "relevant": 1, "reason": "Composed, structured traits describe how this agent handles upcoming exams."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_02_teacher",
+  "agent_id": "teacher",
+  "target_event_id": "event_02",
+  "input_sha256": "3c64a383ef5577c8d6b1e23a24ca7ef10e90279070ef25d881c70cad4c30b3f3",
+  "categories": [
+   {"category": "Clear enforcement of respectful discussion procedures", "relevant": 1, "reason": "Clear, instructional style fits announcing a hand-raising rule."},
+   {"category": "Patient reinforcement of classroom participation rules", "relevant": 1, "reason": "Patient trait applies to introducing and upholding a new norm."},
+   {"category": "Fair, consistent moderation of who may speak", "relevant": 1, "reason": "Motivation of consistent classroom norms matches enforcing turn-taking."},
+   {"category": "Encouraging orderly, balanced student participation", "relevant": 1, "reason": "Goal of supporting balanced participation is directly tied to this rule."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_02_active_student",
+  "agent_id": "active_student",
+  "target_event_id": "event_02",
+  "input_sha256": "599672c47bca5bfc26edf335bf87b881006db074de82bf0b513615dfe2216c66",
+  "categories": [
+   {"category": "Adjusting eager speaking habits to new discussion rules", "relevant": 1, "reason": "Willingness to speak first must adapt to the new hand-raising rule."},
+   {"category": "Waiting patiently for turn while staying engaged", "relevant": 1, "reason": "Active participation goal persists despite the new turn-taking constraint."},
+   {"category": "Encouraging quieter classmates to raise hands too", "relevant": 1, "reason": "Goal of encouraging classmates' participation applies to the new rule."},
+   {"category": "Curiosity about how new rule affects discussion flow", "relevant": 1, "reason": "Curious trait naturally engages with a change in classroom process."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_02_quiet_student",
+  "agent_id": "quiet_student",
+  "target_event_id": "event_02",
+  "input_sha256": "3685d4467a5974ff3e5656b17f767ec29c015f0528a45303eaf2f63e1a5fb7e2",
+  "categories": [
+   {"category": "Comfort with structured, hand-raising speaking order", "relevant": 1, "reason": "Respectful classroom atmosphere motivation aligns well with this rule."},
+   {"category": "Relief at reduced pressure to speak spontaneously", "relevant": 1, "reason": "Reserved trait benefits from a formalized turn-taking structure."},
+   {"category": "Preparing thoughts fully before raising a hand", "relevant": 1, "reason": "Goal of preparing a clear response before speaking fits directly."},
+   {"category": "Valuing predictable, respectful turn-taking norms", "relevant": 1, "reason": "Motivation for a respectful classroom atmosphere matches the new rule."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_02_academic_student",
+  "agent_id": "academic_student",
+  "target_event_id": "event_02",
+  "input_sha256": "b2eca2dfba47ed688954db09347766ba16a91476961cb8776eb07f22461574e8",
+  "categories": [
+   {"category": "Appreciation for orderly, rule-based discussion structure", "relevant": 1, "reason": "Structured trait aligns with a formal hand-raising procedure."},
+   {"category": "Composed patience while waiting to be acknowledged", "relevant": 1, "reason": "Composed trait describes behavior while waiting under the new rule."},
+   {"category": "Precise, well-organized responses once called on", "relevant": 1, "reason": "Precise communication style shapes contributions once acknowledged."},
+   {"category": "Analytical attention to procedural classroom structure", "relevant": 1, "reason": "Analytical trait engages with the mechanics of the new norm."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_03_teacher",
+  "agent_id": "teacher",
+  "target_event_id": "event_03",
+  "input_sha256": "6eb3abd1fe77a7bda92a022d81cbd8ea8528fbcc6feb158efc1bafbb93cd6f66",
+  "categories": [
+   {"category": "Clear framing of group discussion objectives", "relevant": 1, "reason": "Clear, instructional style is needed to set up the group task."},
+   {"category": "Support for balanced contribution across all students", "relevant": 1, "reason": "Goal of balanced participation applies directly to group discussion."},
+   {"category": "Attentive monitoring of group discussion dynamics", "relevant": 1, "reason": "Attentive trait fits overseeing multiple simultaneous group contributions."},
+   {"category": "Concern for each student's understanding of material", "relevant": 1, "reason": "Motivation of student understanding underlies the group explanation task."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_03_active_student",
+  "agent_id": "active_student",
+  "target_event_id": "event_03",
+  "input_sha256": "6728644ca832b7cc985158022934edf507fe4529794af618d170a23026a39c7f",
+  "categories": [
+   {"category": "Enthusiasm for leading group discussion contributions", "relevant": 1, "reason": "Willingness to speak first fits leading a shared group explanation."},
+   {"category": "Encouraging quieter groupmates to share ideas", "relevant": 1, "reason": "Goal of encouraging classmates' participation applies within small groups."},
+   {"category": "Asking clarifying questions to deepen group understanding", "relevant": 1, "reason": "Goal of clarifying uncertainty via questions supports the group task."},
+   {"category": "Collaborative energy when working in small groups", "relevant": 1, "reason": "Collaborative trait describes engagement during a group assignment."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_03_quiet_student",
+  "agent_id": "quiet_student",
+  "target_event_id": "event_03",
+  "input_sha256": "119f70bdb51fc7a308f963fc618cf28312ed5edd8530522db439f2f20dbd4977",
+  "categories": [
+   {"category": "Careful preparation before contributing to group discussion", "relevant": 1, "reason": "Goal of preparing before speaking fits contributing to a group explanation."},
+   {"category": "Preference for a defined, limited speaking role", "relevant": 1, "reason": "Goal of participating without unnecessary attention applies within a group setting."},
+   {"category": "Listening closely to group members before responding", "relevant": 1, "reason": "Observant trait shapes how this agent engages in group work."},
+   {"category": "Concise, respectful contribution within group work", "relevant": 1, "reason": "Brief, respectful communication style describes group contributions."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_03_academic_student",
+  "agent_id": "academic_student",
+  "target_event_id": "event_03",
+  "input_sha256": "587d602fd6aab3e32a0b6295785f4001338c374eae2a5027ce6ec91a5467fa77",
+  "categories": [
+   {"category": "Organizing accurate points before group contribution", "relevant": 1, "reason": "Goal of contributing accurate details fits the shared explanation task."},
+   {"category": "Structured approach to shared group explanations", "relevant": 1, "reason": "Structured trait applies to organizing input for a group task."},
+   {"category": "Focus on factual accuracy within group discussion", "relevant": 1, "reason": "Motivation of accurate understanding is relevant to group contributions."},
+   {"category": "Composed collaboration without losing academic rigor", "relevant": 1, "reason": "Composed trait describes balancing group work with academic focus."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_04_teacher",
+  "agent_id": "teacher",
+  "target_event_id": "event_04",
+  "input_sha256": "084f025ef2cee11b963df650476e3fd00d5e7f0ceb456ce5599dcca04599c263",
+  "categories": [
+   {"category": "Facilitating fair nomination of a class leader", "relevant": 1, "reason": "Goal of maintaining fair expectations applies to a leadership nomination."},
+   {"category": "Encouraging thoughtful, respectful peer discussion", "relevant": 1, "reason": "Motivation of constructive participation supports this sensitive topic."},
+   {"category": "Balanced consideration of multiple student nominees", "relevant": 1, "reason": "Goal of supporting balanced participation fits weighing several nominees."},
+   {"category": "Calm guidance of a socially sensitive discussion", "relevant": 1, "reason": "Calm trait is needed to guide a discussion about peer status."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_04_active_student",
+  "agent_id": "active_student",
+  "target_event_id": "event_04",
+  "input_sha256": "25ce9299bf2df4e0095277d8faebc1732e2edd7bf4e66ad44f4847c5ce7942f4",
+  "categories": [
+   {"category": "Eagerness to nominate and advocate for classmates", "relevant": 1, "reason": "Willingness to speak first fits actively nominating a peer."},
+   {"category": "Encouraging discussion about peer leadership qualities", "relevant": 1, "reason": "Goal of encouraging classmates' participation extends to this topic."},
+   {"category": "Friendly enthusiasm for social classroom decisions", "relevant": 1, "reason": "Friendly, energetic traits show in a social nomination discussion."},
+   {"category": "Asking questions to clarify leadership expectations", "relevant": 1, "reason": "Goal of clarifying uncertainty applies to understanding the leader role."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_04_quiet_student",
+  "agent_id": "quiet_student",
+  "target_event_id": "event_04",
+  "input_sha256": "b85fadfed17cebf43bc1bb536f8905137c4ccaf704bf36490827e0479da3e6b8",
+  "categories": [
+   {"category": "Cautious, considered opinion on leadership nominations", "relevant": 1, "reason": "Cautious trait shapes how this agent forms an opinion on nominees."},
+   {"category": "Preference for brief, respectful nomination remarks", "relevant": 1, "reason": "Brief, respectful communication style fits contributing to this discussion."},
+   {"category": "Discomfort with high-visibility social discussions", "relevant": 1, "reason": "Goal of participating without unnecessary attention is relevant to a public nomination."},
+   {"category": "Careful observation of classmates' leadership qualities", "relevant": 1, "reason": "Observant trait supports forming a view before speaking."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_04_academic_student",
+  "agent_id": "academic_student",
+  "target_event_id": "event_04",
+  "input_sha256": "02dff8c7090d3c6c8fe1934185da272b8021de0fb6ce27089a2a8023f3726911",
+  "categories": [
+   {"category": "Evidence-based reasoning when evaluating peer leadership", "relevant": 1, "reason": "Evidence-based approach to study extends to judging nominees on merit."},
+   {"category": "Composed, precise phrasing when nominating a classmate", "relevant": 1, "reason": "Precise, composed communication style fits offering a nomination."},
+   {"category": "Organizing thoughts before contributing to open discussion", "relevant": 1, "reason": "Organized trait shapes preparation before an open-ended discussion."},
+   {"category": "Preference for merit-based, structured decision-making", "relevant": 1, "reason": "Structured, analytical traits support a merit-based view of leadership."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_05_teacher",
+  "agent_id": "teacher",
+  "target_event_id": "event_05",
+  "input_sha256": "8a582dd344f404d51c1af459c4c812a1c585aff3ea715194f77d5f62925365fc",
+  "categories": [
+   {"category": "Clear, calm instructions as the test begins", "relevant": 1, "reason": "Clear, calm communication style is needed to start the test smoothly."},
+   {"category": "Attentive monitoring of students during the test", "relevant": 1, "reason": "Attentive trait fits overseeing students during an active assessment."},
+   {"category": "Fair, consistent application of test procedures", "relevant": 1, "reason": "Motivation of consistent classroom norms applies to administering the test."},
+   {"category": "Patient support for students' focus during evaluation", "relevant": 1, "reason": "Patient trait supports students as they work through the test."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_05_active_student",
+  "agent_id": "active_student",
+  "target_event_id": "event_05",
+  "input_sha256": "212af19e2c00318d92b07b9fe5426be614540e67bd6c4806beeba7555e4ff145",
+  "categories": [
+   {"category": "Restlessness during quiet, individually-focused test time", "relevant": 1, "reason": "Energetic, social traits contrast with the quiet, solitary test format."},
+   {"category": "Interest in comparing answers with classmates afterward", "relevant": 1, "reason": "Social learning motivation persists even during an individual test."},
+   {"category": "Eagerness to finish and resume group interaction", "relevant": 1, "reason": "Active participation motivation drives wanting to return to discussion."},
+   {"category": "Occasional urge to ask for clarification aloud", "relevant": 1, "reason": "Willingness to speak first shows up even in a quiet test setting."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_05_quiet_student",
+  "agent_id": "quiet_student",
+  "target_event_id": "event_05",
+  "input_sha256": "f63388907186508fcb1073b9dd74f74835a074095ca29b68dd70b1153868ff3d",
+  "categories": [
+   {"category": "Careful, deliberate pacing through test questions", "relevant": 1, "reason": "Deliberate, careful traits directly shape how the test is approached."},
+   {"category": "Preference for a quiet, focused testing environment", "relevant": 1, "reason": "Reserved trait fits well with the quiet nature of a written test."},
+   {"category": "Reviewing answers thoroughly before finishing", "relevant": 1, "reason": "Preparedness motivation supports a thorough review before submitting."},
+   {"category": "Reduced anxiety in individual, low-attention tasks", "relevant": 1, "reason": "Goal of participating without unnecessary attention fits an individual test."}
+  ]
+ },
+ {
+  "annotation_unit_id": "gt_event_05_academic_student",
+  "agent_id": "academic_student",
+  "target_event_id": "event_05",
+  "input_sha256": "716ad6704a73e86b75d761d4c7dfb6d364ed5599152a446c1b4c943541907174",
+  "categories": [
+   {"category": "Methodical, structured approach to answering test questions", "relevant": 1, "reason": "Structured, organized traits directly shape test-taking behavior."},
+   {"category": "Drawing on organized study notes during the test", "relevant": 1, "reason": "Academic preparation motivation is put into practice during the test."},
+   {"category": "Precision and accuracy in written test responses", "relevant": 1, "reason": "Precise communication style and accurate understanding motivation apply here."},
+   {"category": "Composed focus under timed evaluation conditions", "relevant": 1, "reason": "Composed trait describes handling the pressure of a written test."}
+  ]
+ }
+]

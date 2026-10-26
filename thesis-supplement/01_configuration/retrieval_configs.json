@@ -1,0 +1,36 @@
+{
+  "configurations": [
+    {
+      "config_id": "balanced",
+      "weights": {
+        "recency": 0.33,
+        "importance": 0.33,
+        "relevance": 0.33
+      }
+    },
+    {
+      "config_id": "recency_heavy",
+      "weights": {
+        "recency": 0.60,
+        "importance": 0.20,
+        "relevance": 0.20
+      }
+    },
+    {
+      "config_id": "importance_heavy",
+      "weights": {
+        "recency": 0.20,
+        "importance": 0.60,
+        "relevance": 0.20
+      }
+    },
+    {
+      "config_id": "relevance_heavy",
+      "weights": {
+        "recency": 0.20,
+        "importance": 0.20,
+        "relevance": 0.60
+      }
+    }
+  ]
+}

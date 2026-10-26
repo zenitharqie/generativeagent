@@ -1,0 +1,220 @@
+{
+ "metadata": {
+  "method": "Final Multi-label Ground Truth",
+  "pipeline": "Free-form annotation → Semantic normalization → Agreement analysis → GPT∩Qwen core",
+  "core_rule": "Categories annotated by both GPT and Qwen (support ≥ 2 from GPT+Qwen)",
+  "filter_rule": "None — all core candidates retained to preserve raw intersection",
+  "claude_role": "Supporting evidence only — standalone Claude categories excluded",
+  "total_units": 20,
+  "total_categories": 46,
+  "avg_per_unit": 2.3
+ },
+ "ground_truth": {
+  "gt_event_01_academic_student": {
+   "event_id": "event_01",
+   "agent_id": "academic_student",
+   "categories": [
+    "Structured study planning for upcoming test",
+    "Organized review of weekly material"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_01_active_student": {
+   "event_id": "event_01",
+   "agent_id": "active_student",
+   "categories": [
+    "Asking clarifying questions about test expectations",
+    "Discussing and reviewing test material with classmates",
+    "Active energetic participation in new tasks"
+   ],
+   "category_count": 3,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_01_quiet_student": {
+   "event_id": "event_01",
+   "agent_id": "quiet_student",
+   "categories": [
+    "Careful preparation for upcoming written test",
+    "Desire for clarity about test expectations"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_01_teacher": {
+   "event_id": "event_01",
+   "agent_id": "teacher",
+   "categories": [
+    "Clear guidance about upcoming test preparation",
+    "Consistent expectations for assessment preparation"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_02_academic_student": {
+   "event_id": "event_02",
+   "agent_id": "academic_student",
+   "categories": [
+    "Composed adherence to classroom procedures"
+   ],
+   "category_count": 1,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_02_active_student": {
+   "event_id": "event_02",
+   "agent_id": "active_student",
+   "categories": [
+    "Active participation within structured discussion",
+    "Waiting patiently for turn while staying engaged"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_02_quiet_student": {
+   "event_id": "event_02",
+   "agent_id": "quiet_student",
+   "categories": [
+    "Preference for orderly speaking procedures",
+    "Cautious participation without unnecessary attention",
+    "Deliberate preparation before speaking"
+   ],
+   "category_count": 3,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_02_teacher": {
+   "event_id": "event_02",
+   "agent_id": "teacher",
+   "categories": [
+    "Clear instruction on orderly participation procedures",
+    "Consistent enforcement of classroom norms",
+    "Balanced and respectful student participation"
+   ],
+   "category_count": 3,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_03_academic_student": {
+   "event_id": "event_03",
+   "agent_id": "academic_student",
+   "categories": [
+    "Precise contributions to shared academic understanding",
+    "Structured approach to shared group explanations",
+    "Analytical verification of lesson understanding"
+   ],
+   "category_count": 3,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_03_active_student": {
+   "event_id": "event_03",
+   "agent_id": "active_student",
+   "categories": [
+    "Energetic participation in group learning",
+    "Question-driven clarification through discussion"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_03_quiet_student": {
+   "event_id": "event_03",
+   "agent_id": "quiet_student",
+   "categories": [
+    "Careful preparation before group contribution",
+    "Prepared concise responses for collaboration",
+    "Respectful participation without drawing attention"
+   ],
+   "category_count": 3,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_03_teacher": {
+   "event_id": "event_03",
+   "agent_id": "teacher",
+   "categories": [
+    "Facilitation of balanced group participation",
+    "Clear guidance for collaborative learning"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_04_academic_student": {
+   "event_id": "event_04",
+   "agent_id": "academic_student",
+   "categories": [
+    "Analytical evaluation of leadership suitability",
+    "Structured consideration of student responsibilities"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_04_active_student": {
+   "event_id": "event_04",
+   "agent_id": "active_student",
+   "categories": [
+    "Eagerness to nominate and advocate for classmates",
+    "Friendly encouragement of peer leadership"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_04_quiet_student": {
+   "event_id": "event_04",
+   "agent_id": "quiet_student",
+   "categories": [
+    "Cautious participation in leadership discussions"
+   ],
+   "category_count": 1,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_04_teacher": {
+   "event_id": "event_04",
+   "agent_id": "teacher",
+   "categories": [
+    "Fair facilitation of student nominations",
+    "Clear guidance for classroom responsibility",
+    "Balanced student participation in decision-making"
+   ],
+   "category_count": 3,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_05_academic_student": {
+   "event_id": "event_05",
+   "agent_id": "academic_student",
+   "categories": [
+    "Structured recall of studied material",
+    "Precise demonstration of subject mastery"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_05_active_student": {
+   "event_id": "event_05",
+   "agent_id": "active_student",
+   "categories": [
+    "Clarifying test instructions before work begins",
+    "Understanding lesson material",
+    "Confident expression of learned understanding"
+   ],
+   "category_count": 3,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_05_quiet_student": {
+   "event_id": "event_05",
+   "agent_id": "quiet_student",
+   "categories": [
+    "Comfort with quiet individual testing format",
+    "Prepared and clear responses during assessment",
+    "Calm adherence to test expectations"
+   ],
+   "category_count": 3,
+   "source": "GPT∩Qwen core (unfiltered)"
+  },
+  "gt_event_05_teacher": {
+   "event_id": "event_05",
+   "agent_id": "teacher",
+   "categories": [
+    "Clear and calm administration of written test",
+    "Fair assessment of student understanding"
+   ],
+   "category_count": 2,
+   "source": "GPT∩Qwen core (unfiltered)"
+  }
+ }
+}
